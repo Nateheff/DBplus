@@ -14,6 +14,7 @@
 #include "Parser/Construct.cpp"
 #include "Disk_Space/Disk_SM.h"
 #include "Disk_Space/FSM.h"
+#include "Buffer_Manager/Buffer_PM.h"
 
 
 #define SIZE_NAME_COLUMN 10
@@ -62,11 +63,17 @@ int main()
    fs.write(reinterpret_cast<char*>(&test_fsm),sizeof(test_fsm));
    Disk_SM test{std::string{"file"}};
    Node new_node;
+   Buffer_Pool pool{&test};
+   
    for(size_t i = 1;i<8;i++){
-   test.read_page(i,&new_node);
-    new_node.print_data();
-    std::cout<<"\n";
+   new_node = *pool.get_page(i);
+   new_node.print_data();
+   std::cout<<"\n";
    };
+
+
+
+   
 //    test.read_page(1,&new_node);
 //    new_node.print_data();
 //    Node new_node2;

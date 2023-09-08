@@ -50,6 +50,7 @@ uint16_t Disk_SM::write_new_page(){
     fs.seekp(offset_free,std::ios_base::beg);
     fs.write(reinterpret_cast<char*>(&empty),4096);
     fs.close();
+    
     return fsm.page();
     };
 
@@ -72,6 +73,7 @@ uint16_t Disk_SM::write_new_page(){
 }
 
 bool Disk_SM::write_page(Node* page,uint16_t page_num){
+    page->set_id(page_num);
     std::cout<<"writing: "<<page_num<<std::endl;
     std::fstream fs;
     fs.open(file,std::ios_base::binary | std::ios_base::out | std::ios_base::in);

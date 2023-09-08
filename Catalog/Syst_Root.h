@@ -1,14 +1,12 @@
-#ifndef SYST_ROOT_H
-#define SYST_ROOT_H
+#pragma once
 
-#include "Internal_Index_Node.hpp"
 
-class Syst_Root: public Internal_Index_Node
+
+class Syst_Root
 {
 public:
-    Syst_Root();
-    ~Syst_Root();
+    
 
 };
 
-#endif // SYST_ROOT_H
+

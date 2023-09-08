@@ -28,7 +28,7 @@ void Node::set_next(uint16_t next_p){
 };
 
 void Node::print_data(){  
-    
+    std::cout<<data[0]<<std::endl;
     for(size_t i= 0;i<4084;i++){
         if(data[i]!='\0')
     std::cout<<data[i];
