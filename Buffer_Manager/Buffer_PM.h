@@ -15,7 +15,7 @@ class Buffer_Pool
 
     public:
     
-    Buffer_Pool(Disk_SM* dsm_p):dsm(dsm_p){pool.reserve(6);};
+    Buffer_Pool(Disk_SM* dsm_p):dsm(dsm_p){pool.reserve(POOL_SIZE);};
     Node* get_page(uint16_t page_num);
     bool release_page(uint16_t page_num);
 };
