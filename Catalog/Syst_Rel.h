@@ -28,5 +28,5 @@ struct Syst_Rel{
     uint8_t is_index{0};
     uint32_t bottom_p{};
     System_Rel_Row rows[4089/sizeof(System_Rel_Row)]; //array of them
-    
+    char padding [4096 - (sizeof(rows)+14)];
 };

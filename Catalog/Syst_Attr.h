@@ -12,8 +12,8 @@ attr_len(int)
 attr_align(char)
 */
 typedef struct{
-    std::string attr_name;
-    std::string rel_name;
+    char rel_name[64];
+    char attr_name[64];
     uint16_t position{};
     char type;
     uint8_t attr_len{};
@@ -22,11 +22,13 @@ typedef struct{
 
 typedef struct 
 {
+    uint16_t page_id{};
     uint8_t is_index{0};
-    uint16_t last_p{};
-    Syst_Attr_Row row;//array of them
-    uint16_t next_p{};
-};
+    
+    Syst_Attr_Row rows[4089/sizeof(Syst_Attr_Row)];
+    uint32_t next_p{};
+    char padding[4096-(sizeof(rows)+10)];
+}Syst_Attr;
     
 
 

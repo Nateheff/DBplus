@@ -20,7 +20,7 @@ class FSM
     void set_hole(uint8_t num){data.hole=num;};
     uint16_t page(){return data.free_page;};
     void set_page(uint16_t page_num){data.free_page = page_num;};
-    uint8_t has_space(uint16_t page_num){return data.free_space[page_num];};
+    uint8_t has_space(uint16_t page_num){return (data.free_space[page_num]==1);};
     void set_space(uint16_t page_num,uint8_t space){data.free_space[page_num] = space;};
     void delete_space(){delete[] data.free_space;};
     void get_fsm(std::string name, FSM_Data* fsm);

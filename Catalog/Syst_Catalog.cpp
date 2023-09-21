@@ -6,6 +6,7 @@
 
 #include <fstream>
 #include <vector>
+#include <set>
 
 typedef struct {
     uint16_t index{};
@@ -15,6 +16,19 @@ typedef struct {
     std::vector<uint32_t> offsets;
 
 }Info_Pack;
+
+typedef struct{
+    uint16_t index;
+    uint16_t index_first{};
+    uint16_t index_last{};
+    std::vector<Syst_Attr_Row>data;
+    Syst_Attr* attr;
+    std::fstream* fs;
+    std::vector<uint32_t> offsets;
+    std::vector<uint16_t>pg_ids;
+    FSM* fsm;
+    
+}Attr_Info_Pack;
 
 void create_catalog(std::string type){
     std::string name = {"catalog_"+type};
@@ -29,7 +43,7 @@ void create_catalog(std::string type){
 Info_Pack* search_rel(uint16_t key,bool has_height=1){
     //get root
     std::fstream fs;
-    fs.open("catalog.db",std::ios_base::binary | std::ios_base::out | std::ios_base::in);
+    fs.open("catalog_rel.db",std::ios_base::binary | std::ios_base::out | std::ios_base::in);
     //search through root
     
     Syst_Rel rel;
@@ -53,6 +67,7 @@ Info_Pack* search_rel(uint16_t key,bool has_height=1){
             fs.seekg(offset);
             fs.read(reinterpret_cast<char*>(&root),4096);
             index = root.next_index;
+            
 
         } else if(root.arr[i].key > key && root.arr[i-1].key < key){
             offset = root.arr[i].pointer;
@@ -60,6 +75,7 @@ Info_Pack* search_rel(uint16_t key,bool has_height=1){
             fs.seekg(offset);
             fs.read(reinterpret_cast<char*>(&root),4096);
             index = root.next_index;
+            
         }
     }
     };
@@ -71,6 +87,7 @@ Info_Pack* search_rel(uint16_t key,bool has_height=1){
             pack.offsets.push_back(offset);
             fs.seekg(offset);
             fs.read(reinterpret_cast<char*>(&rel),4096);
+            break;
             
 
         } else if(root.arr[i].key > key && root.arr[i-1].key < key){
@@ -78,12 +95,12 @@ Info_Pack* search_rel(uint16_t key,bool has_height=1){
             pack.offsets.push_back(offset);
             fs.seekg(offset);
             fs.read(reinterpret_cast<char*>(&rel),4096);
-            
+            break;
         }
     }
     }else{
         fs.read(reinterpret_cast<char*>(&rel),sizeof(rel));
-        rel.page_id = 1;
+        rel.page_id = 0;
     };
 
     for(size_t i =0;i<27;i++){
@@ -91,7 +108,7 @@ Info_Pack* search_rel(uint16_t key,bool has_height=1){
         for(size_t j = 0; j<65;j++)
         name += rel.rows[i].rel_name[j];
 
-        if(key == name){
+        if(key <= name || (i == 26 && key > name)||rel.rows[i].num_attrs == 0){
             
             pack.index = i;
             pack.data = rel.rows[i];
@@ -99,15 +116,15 @@ Info_Pack* search_rel(uint16_t key,bool has_height=1){
             pack.fs = &fs;
             
             return &pack;
-        };
+        }
 
                 
     }
 
     
-    pack.index = 0;
-    pack.rel = &rel;
-    pack.fs = &fs;
+    // pack.index = 0;
+    // pack.rel = &rel;
+    // pack.fs = &fs;
     
    
 
@@ -151,6 +168,7 @@ void insert_rel(uint16_t key, System_Rel_Row row){
     //THIS IS BASICALLY JUST THE B+ TREE INSERT IMPLEMENTATION, SO JUST REPLACE THIS WITH B+ TREE INSERT WHEN ITS DONE
     uint16_t key_of_interest{};
     uint32_t new_page_offset{};
+    uint32_t new_low_p{};
     if(fsm.has_space(pack->rel->page_id)){
 
         for(size_t i =0;i<27;i++){
@@ -192,8 +210,6 @@ void insert_rel(uint16_t key, System_Rel_Row row){
             for(size_t j = 0; j<65;j++)
                 name += pack->rel->rows[i].rel_name[j];
             
-            
-
             if(key == name){
                 pack->index = i;
                 break;
@@ -208,9 +224,10 @@ void insert_rel(uint16_t key, System_Rel_Row row){
         };
 
         
-
+        System_Rel_Row empty;
         for(size_t i = 13; i<27;i++){
             half.rows[i-13]=pack->rel->rows[i];
+            pack->rel->rows[i] = empty;
         }
 
         //make room and insert new row into proper leaf and get upper median key to send to parent node.
@@ -249,7 +266,7 @@ void insert_rel(uint16_t key, System_Rel_Row row){
         if(fsm.has_space(root.page_id)){
             // step 3: if parent has room, insert at appropriate location. 
 
-            for(size_t i =0; i<510;i++){
+            for(size_t i =0; i<511;i++){
                 if(key_of_interest < root.arr[i].key){
                     pack->index = i;
                     break;
@@ -260,11 +277,11 @@ void insert_rel(uint16_t key, System_Rel_Row row){
                 }
             };
 
-            for(size_t i = 511;i > pack->index;i--)
+            for(size_t i = 510;i > pack->index;i--)
             root.arr[i] = root.arr[i-1];
 
             root.arr[pack->index] = k_p;
-            if(root.arr[511].key != 0)
+            if(root.arr[510].key != 0)
             fsm.set_space(root.page_id,0);
             pack->fs->seekp(pack->offsets.at(i));
             pack->fs->write(reinterpret_cast<char*>(&root),4096);
@@ -276,38 +293,59 @@ void insert_rel(uint16_t key, System_Rel_Row row){
             half_root.page_id = fsm.page();
             uint32_t offset_new_index = (half_root.page_id -1 )*4096;
             uint16_t temp_koi{};
+            
 
-            for(size_t i = 0; i< 512;i++){
+            for(size_t i = 0; i< 511;i++){
                 if(root.arr[i].key > key_of_interest){
                 pack->index = i;
                 break;
                 };
 
-                if(i == 511 && root.arr[i].key < key_of_interest){
-                pack->index = 511;
+                if(i == 510 && root.arr[i].key < key_of_interest){
+                pack->index = 510;
                 break;
                 };
             }
-            //split
-            for(size_t i = 256; i< 512;i++){
-                half_root.arr[i-256]=root.arr[i];
-            }
 
+            //split
+            Key_Pointer empty;
             if(pack->index > 256){
-            temp_koi = half_root.arr[0].key;
-            for(size_t i= 256; i > pack->index - 256;i--){
+            for(size_t i = 257; i< 511;i++){
+                half_root.arr[i-257]=root.arr[i];
+                root.arr[i]=empty;
+            }
+            temp_koi = root.arr[256].key;
+            new_low_p = root.arr[256].pointer;
+            half_root.bottom_p = new_low_p;
+            root.arr[256] = {0,0};
+            for(size_t i= 257; i > pack->index-257;i--){
                 half_root.arr[i] = half_root.arr[i-1];
             }
             half_root.arr[pack->index] = k_p;
             }else if(pack->index< 256){
+
+            for(size_t i = 256; i< 511;i++){
+                half_root.arr[i-256]=root.arr[i];
+                root.arr[i]=empty;
+            }
+
             temp_koi = root.arr[255].key;
-            for(size_t i =256; i > pack->index;i--){
+            new_low_p = root.arr[255].pointer;
+            half_root.bottom_p = new_low_p;
+            root.arr[255]={0,0};
+            for(size_t i =255; i > pack->index-255;i--){
                 root.arr[i]=root.arr[i-1];
             }
             root.arr[pack->index] = k_p;
             }else{
+            for(size_t i = 256; i < 511;i++){
+                half_root.arr[i-256] = root.arr[i];
+                root.arr[i]=empty;
+            }
             temp_koi = key;
-            for(size_t i= 256; i > pack->index - 256;i--){
+            new_low_p = new_page_offset;
+            half_root.bottom_p = new_low_p;
+            for(size_t i= 256; i > pack->index-256;i--){
                 half_root.arr[i] = half_root.arr[i-1];
             }
             half_root.arr[pack->index] = k_p;
@@ -318,12 +356,14 @@ void insert_rel(uint16_t key, System_Rel_Row row){
             k_p.pointer = offset_new_index;
 
         }else if(!fsm.has_space(root.page_id) && i == 0){
+            Key_Pointer empty;
             Syst_Root half_root;
             fsm.calc_free();
             half_root.page_id = fsm.page();
         //split current root
-        for(size_t i = 256;i <= 511;i++){
+        for(size_t i = 256;i < 511;i++){
             half_root.arr[i-256] = root.arr[i];
+            root.arr[i]=empty;
         }
         fsm.set_space(half_root.page_id,1);
 
@@ -335,14 +375,14 @@ void insert_rel(uint16_t key, System_Rel_Row row){
         uint16_t temp_koi{};
         uint32_t temp_p{};
 
-        for(size_t i = 0;i<512;i++){
+        for(size_t i = 0;i<511;i++){
             if(root.arr[i].key > key){
             pack->index = i;
             break;
             };
 
-            if(i==511&&root.arr[i].key < key){
-                pack->index = 511;
+            if(i==510&&root.arr[i].key < key){
+                pack->index = 510;
                 break;
             }
 
@@ -387,11 +427,339 @@ void insert_rel(uint16_t key, System_Rel_Row row){
 // step 6: if need to split root, get new root page, send koi and locations of children to new root. save location of new root in specialized file with root locations of each index.
 
 };
-void search_range_attr(uint16_t key,uint16_t num){
+Attr_Info_Pack* search_range_attr(uint16_t key,uint16_t num,bool has_height = 1){
+    //get first index of key
+    //get root
+    FSM fsm;
+    fsm.get_fsm(std::string{"catalog_attr"},fsm.access_data());
+    std::fstream fs;
+    fs.open("catalog_attr.db",std::ios_base::binary | std::ios_base::out | std::ios_base::in);
+    //search through root
+    
+    Syst_Attr attr;
+    
+    //get pointer
+    Attr_Info_Pack pack;
+    uint32_t offset{};
+    
+    if(has_height){
 
+        Syst_Root root;
+        fs.read(reinterpret_cast<char*>(&root),4096);
+        uint16_t index = root.next_index;
+
+    while(index == 1){
+    for(size_t i = 0; i < 511;i++){
+        if(root.arr[i].key == key){
+
+            pack.offsets.push_back(root.arr[i].pointer);
+            offset = root.arr[i].pointer;
+            fs.seekg(offset);
+            fs.read(reinterpret_cast<char*>(&root),4096);
+            index = root.next_index;
+            
+        } else if(root.arr[i].key > key && root.arr[i-1].key < key){
+            offset = root.arr[i].pointer;
+            pack.offsets.push_back(offset);
+            fs.seekg(offset);
+            fs.read(reinterpret_cast<char*>(&root),4096);
+            index = root.next_index;
+            
+        }
+    }
+    };
+
+    for(size_t i = 0; i < 511;i++){
+        if(root.arr[i].key == key){
+
+            offset = root.arr[i].pointer;
+            pack.offsets.push_back(offset);
+            pack.offsets.push_back(root.arr[i+1].pointer);
+            fs.seekg(offset);
+            fs.read(reinterpret_cast<char*>(&attr),4096);
+            break;
+
+        } else if(root.arr[i].key >= key && root.arr[i-1].key < key){
+            offset = root.arr[i].pointer;
+            pack.offsets.push_back(offset);
+            fs.seekg(offset);
+            fs.read(reinterpret_cast<char*>(&attr),4096);
+            break;
+            
+        }
+    }
+    }else{
+        fs.read(reinterpret_cast<char*>(&attr),sizeof(attr));
+        attr.page_id = 0;
+        
+    };
+
+    for(size_t i =0;i<31;i++){
+        uint16_t name{};
+        for(size_t j = 0; j<65;j++)
+        name += attr.rows[i].rel_name[j];
+
+        if(key == name){
+            
+            pack.index = i;
+            pack.pg_ids.push_back(attr.page_id);
+            pack.index_first = i;
+            pack.attr = &attr;
+            pack.fs = &fs;
+            break;
+            // return &pack;
+        }else if(key < name || (i == 30 && key > name)||attr.rows[i].attr_len == 0){
+            
+            pack.index = i;
+            pack.index_first = i;
+            pack.pg_ids.push_back(attr.page_id);
+            pack.attr = &attr;
+            pack.fs = &fs;
+            break;
+        }    
+    }
+    if((pack.index + num) > 30){
+
+        for(size_t i = pack.index;i < 31;i++)
+        pack.data.push_back(pack.attr->rows[i]);
+
+        uint8_t num_pages = (num-pack.index)/30;
+        uint8_t num_last = num % 30; 
+
+        for(size_t i = 0; i >= num_pages;i++){
+        pack.fs->seekp(pack.attr->next_p);
+        pack.fs->read(reinterpret_cast<char*>(&attr),4096);
+        pack.pg_ids.push_back(attr.page_id);
+        if(i != num_pages){
+            for(size_t i = 0; i< 31;i++)
+            pack.data.push_back(attr.rows[i]);
+            
+        }else{
+            for(size_t i = 0; i<num_last;i++){
+                pack.data.push_back(attr.rows[i]);
+            }
+            pack.index_last = num_last;
+            
+        }
+
+        }
+
+    }else{
+        for(size_t i = pack.index;i <= pack.index+num;i++)
+        pack.data.push_back(pack.attr->rows[i]);
+    }
+    pack.fsm = &fsm;
+    return &pack;
+    
 };
-void remove_range_atrr(uint16_t key, uint16_t num){};
-void insert_range_attr(uint16_t key, uint16_t num){};
+void remove_range_atrr(uint16_t key, uint16_t num){
+    //search to get pages and indexes
+    Attr_Info_Pack* pack = search_range_attr(key,num);
+    FSM fsm;
+    std::string name{"catalog_attr"};
+    fsm.get_fsm(name,fsm.access_data());
+    //set page(s) space(s) (fsm)
+    Syst_Attr_Row empty;
+    pack->fs->seekp((pack->pg_ids.at(0)-1)*4096);
+    pack->fs->read(reinterpret_cast<char*>(pack->attr),4096);
+    
+
+    for(size_t i = pack->index;((i<pack->index + num)&&(i < 31));i++){
+        pack->attr->rows[i] = empty;
+    }
+    fsm.set_space(pack->attr->page_id,1);
+    for(size_t i = 1;i<pack->pg_ids.size() -1;i++){
+        pack->fs->seekg(pack->pg_ids.at(i));
+        pack->fs->read(reinterpret_cast<char*>(pack->attr),4096);
+        if(i == pack->pg_ids.size()-1){
+            for(size_t i =0;i<pack->index_last -1;i++){
+                pack->attr->rows[i] = empty;
+            }
+            fsm.set_space(pack->attr->page_id,1);
+        }else{
+            for(size_t i = 0;i<31;i++){
+                pack->attr->rows[i] = empty;
+            }
+            fsm.set_space(pack->attr->page_id,2);
+        }
+    }
+    //set space(s) to empty
+};
+void insert_range_attr(uint16_t key,std::vector<Syst_Attr_Row>rows){
+    Attr_Info_Pack* pack = search_range_attr(key,rows.size());
+    while(rows.size() > 0){
+    for(size_t i = 0;i<rows.size();i++){
+            uint16_t final_i{};
+        while(pack->fsm->has_space(pack->attr->page_id)){
+
+            for(size_t i = 31;i>pack->index_first;i--){
+                pack->attr->rows[i] = pack->attr->rows[i-1]; 
+            }
+            if(pack->attr->rows[30].attr_len != 0){
+                pack->fsm->set_space(pack->attr->page_id,0);
+            }
+         pack->attr->rows[pack->index_first] = rows.at(i);
+                final_i = i;
+        };
+        rows.erase(rows.begin(),rows.begin() + final_i);
+        if(rows.size()==0)
+        return;
+
+        break;
+    };
+    Key_Pointer k_p{};
+    //find index of key
+    for(size_t i =0;i<31;i++){
+            uint16_t name{};
+            for(size_t j = 0; j<65;j++)
+                name += pack->attr->rows[i].rel_name[j];
+
+            if(key == name){
+                pack->index = i;
+                break;
+            } 
+            if(key < name){
+            pack->index = i;
+            break;  
+            }
+            if(key > name && i == 30)
+            pack->index = 30;
+            
+        };
+    //split
+    Syst_Attr new_attr;
+    pack->fsm->calc_free();
+    new_attr.page_id = pack->fsm->page();
+    Syst_Attr_Row empty;
+    for(size_t i = 15;i<31;i++){
+        new_attr.rows[i-15] = pack->attr->rows[i];
+        pack->attr->rows[i]=empty;//set rows 16-30 to empty as they are now in the new leaf
+    }
+    pack->fsm->set_space(new_attr.page_id,1);
+    pack->fsm->set_space(pack->attr->page_id,1);
+    new_attr.next_p = pack->attr->next_p;
+    pack->attr->next_p = (new_attr.page_id -1)*4096;
+    if(pack->index < 15){
+        for(size_t i = 16;i > (pack->index);i--){
+            pack->attr->rows[i]=pack->attr->rows[i-1]; 
+        }
+        pack->attr->rows[pack->index] = rows.at(0);
+        rows.erase(rows.begin());
+        k_p.key = calc_name(new_attr.rows[0].rel_name);
+        k_p.pointer = (new_attr.page_id -1)*4096;
+    }else if(pack->index >= 15){
+        for(size_t i = 16;i > (pack->index-15);i--){
+            new_attr.rows[i]=new_attr.rows[i-1]; 
+        }
+        new_attr.rows[pack->index-15] = rows.at(0);
+        rows.erase(rows.begin());
+        k_p.key = calc_name(new_attr.rows[0].rel_name);
+        k_p.pointer = (new_attr.page_id -1)*4096;
+    };
+    uint32_t new_low_p{};
+
+    for(size_t i = pack->offsets.size()-2; i >= 0; i--){
+        //get parent node into memory
+        Syst_Root root;
+        pack->fs->seekg(pack->offsets.at(i));
+        pack->fs->read(reinterpret_cast<char*>(&root),4096);
+
+        if(pack->fsm->has_space(root.page_id)){
+            // step 3: if parent has room, insert at appropriate location. 
+
+            for(size_t i =0; i<511;i++){
+                if(k_p.key < root.arr[i].key){
+                    pack->index = i;
+                    break;
+                }
+                if(root.arr[i].key == 0){
+                    pack->index = i;
+                    break;
+                }
+            };
+
+            for(size_t i = 510;i > pack->index;i--)
+            root.arr[i] = root.arr[i-1];
+
+            root.arr[pack->index] = k_p;
+            if(root.arr[510].key != 0)
+            pack->fsm->set_space(root.page_id,0);
+            pack->fs->seekp(pack->offsets.at(i));
+            pack->fs->write(reinterpret_cast<char*>(&root),4096);
+            return;
+        }else if(!pack->fsm->has_space(root.page_id) && i != 0){
+            //If parent does not have room, split parent and get location of new parent.
+            pack->fsm->calc_free();
+            Syst_Root half_root;
+            half_root.page_id = pack->fsm->page();
+            uint32_t offset_new_index = (half_root.page_id -1 )*4096;
+            uint16_t temp_koi{};
+            
+
+            for(size_t i = 0; i< 511;i++){
+                if(root.arr[i].key > k_p.key){
+                pack->index = i;
+                break;
+                };
+
+                if(i == 510 && root.arr[i].key < k_p.key){
+                pack->index = 510;
+                break;
+                };
+            }
+
+            //split
+            Key_Pointer empty;
+            if(pack->index > 256){
+            for(size_t i = 257; i< 511;i++){
+                half_root.arr[i-257]=root.arr[i];
+                root.arr[i]=empty;
+            }
+            temp_koi = root.arr[256].key;
+            new_low_p = root.arr[256].pointer;
+            half_root.bottom_p = new_low_p;
+            root.arr[256] = {0,0};
+            for(size_t i= 257; i > pack->index-257;i--){
+                half_root.arr[i] = half_root.arr[i-1];
+            }
+            half_root.arr[pack->index] = k_p;
+            }else if(pack->index< 256){
+
+            for(size_t i = 256; i< 511;i++){
+                half_root.arr[i-256]=root.arr[i];
+                root.arr[i]=empty;
+            }
+
+            temp_koi = root.arr[255].key;
+            new_low_p = root.arr[255].pointer;
+            half_root.bottom_p = new_low_p;
+            root.arr[255]={0,0};
+            for(size_t i =255; i > pack->index-255;i--){
+                root.arr[i]=root.arr[i-1];
+            }
+            root.arr[pack->index] = k_p;
+            }else{
+            for(size_t i = 256; i < 511;i++){
+                half_root.arr[i-256] = root.arr[i];
+                root.arr[i]=empty;
+            }
+            temp_koi = key;
+            new_low_p = k_p.pointer;
+            half_root.bottom_p = new_low_p;
+            for(size_t i= 256; i > pack->index-256;i--){
+                half_root.arr[i] = half_root.arr[i-1];
+            }
+            half_root.arr[pack->index] = k_p;
+            };
+            // step 4: send new KOI/position of new index node to the parent node and if room, insert at appropriate location.
+
+            k_p.key = temp_koi;
+            k_p.pointer = offset_new_index;
+
+        }
+    };
+    };
+};
 
 /*
     if(fsm.has_space(pack->rel->page_id)){
