@@ -1,7 +1,7 @@
 #pragma once
-#include <stdint.h>
-#include <string>
-
+#include "Syst_Catalog.h"
+#include "Syst_Root.h"
+#include "../Disk_Space/FSM.h"
 
 /*
 attr_name(string)
@@ -11,6 +11,7 @@ type(char)
 attr_len(int)
 attr_align(char)
 */
+
 typedef struct{
     char rel_name[64];
     char attr_name[64];
@@ -29,8 +30,27 @@ typedef struct
     uint32_t next_p{};
     char padding[4096-(sizeof(rows)+10)];
 }Syst_Attr;
-    
 
+typedef struct{
+    uint16_t index;
+    uint16_t index_first{};
+    uint16_t index_last{};
+    std::vector<Syst_Attr_Row>data;
+    Syst_Attr* attr;
+    std::fstream* fs;
+    std::vector<uint32_t> offsets;
+    std::vector<uint16_t>pg_ids;
+    FSM* fsm;
+    
+}Attr_Info_Pack;
+
+class Catalog_Attr: public Syst_Catalog{
+Attr_Info_Pack pack;
+public:
+Attr_Info_Pack* search_range_attr(uint16_t key,Attr_Info_Pack *pack,uint16_t num,bool has_height = 1);
+void remove_range_atrr(uint16_t key, uint16_t num,Attr_Info_Pack* pack);
+void insert_range_attr(uint16_t key,std::vector<Syst_Attr_Row>rows,Attr_Info_Pack* pack);
+};
 
 
 

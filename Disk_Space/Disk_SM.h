@@ -22,7 +22,7 @@ public:
 
     Disk_SM(std::string);
     
-    ~Disk_SM(){std::cout<<"calling"<<std::endl;fsm.delete_space();};
+    ~Disk_SM(){std::cout<<"calling"<<std::endl;};
 
     
     bool free_page(uint16_t page_num);
