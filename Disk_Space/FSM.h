@@ -17,11 +17,12 @@ const int MAX_PAGES = 130814951;
 // Key_Pointer data[4092/8];
 
 // }FSM_Root;
+
 typedef struct{
     uint32_t num_pages{};
     uint32_t hole{};
-    uint8_t free_space[4088] = {};
-    }FSM_Data_Root;
+    uint8_t free_space[4088] = {0};
+}FSM_Data_Root;
 
 typedef struct{
     uint8_t free_space[4096] = {};
@@ -29,7 +30,7 @@ typedef struct{
 class FSM 
 {
     std::string name;
-    FSM_Data_Root* root;
+    FSM_Data_Root root;
     FSM_Data* data;
     public: 
     bool create_fsm(std::string name);
@@ -39,7 +40,7 @@ class FSM
     void set_space(uint32_t page_num,uint8_t space);
     void flush_fsm(uint32_t page_num);
     uint8_t has_space(uint32_t page_num);
-    uint32_t has_root(){ return root->num_pages;(root->num_pages!=0 && root->num_pages <=2);}
+    uint32_t has_root(){ return root.num_pages;(root.num_pages!=0 && root.num_pages <=2);}
     // uint8_t is_hole(){return data.hole;};
     // void set_hole(uint8_t num){data.hole=num;};
     // uint16_t page(){return data.free_page;};

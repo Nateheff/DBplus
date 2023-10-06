@@ -13,22 +13,22 @@ void Catalog_Rel::create_catalog(){
     
     fs.write(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
     fs.close();
-    
+    std::cout<<"catalog: "<<name<<std::endl;
     fsm.create_fsm(name);
     
 };
 
 void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
     //get root
-    // fsm.get_fsm("catalog_rel_fsm.db");
+    // fsm.get_fsm("catalog_rel");
     // std::cout<<"started"<<std::endl;
     info.fs->close();
     // std::cout<<"started"<<std::endl;
-    if(!info.fs->is_open())
+    if(!info.fs->is_open()){
     info.fs->open("catalog_rel.db",std::ios_base::binary | std::ios_base::out | std::ios_base::in);
     // std::cout<<"open"<<std::endl;
     //search through root
-    
+    };
     
     Syst_Rel rel;
     
@@ -169,13 +169,14 @@ void Catalog_Rel::remove_rel(uint16_t key,Info_Pack* pack){
 void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
 //search normally
     // FSM fsm;
-    // std::string name{"catalog_rel_fsm.db"};
+    // std::string name{"catalog_rel"};
     // fsm.get_fsm(name);
     // std::cout<<"Key: "<<key<<std::endl;
     if(test > 26)
     search_rel(key,1);
     else
     search_rel(key,0);
+    
     // std::cout<<"Page: "<<info.rel.page_id<<std::endl;
 
 //std::cout<<"Searched"<<info.rel.page_id<<std::endl;
@@ -186,8 +187,12 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
 //once you have the page of where the row with the key would fit, see if there's space via the fsm and if there is, move all rows "greater" than it up 1 row space and put the new row in the space created at the correct place. If there's not room, split, and do the b+ tree thing. this will take some effort to figure out how to do.
     
     // std::cout<<"beginning insert: "<<info.rel.page_id<<std::endl;
-    if(!fsm.has_root())
-    fsm.get_fsm(std::string{"catalog_rel_fsm.db"});
+   
+    if(!fsm.has_root()){
+    fsm.get_fsm(std::string{"catalog_rel"});
+    std::cout<<"got fsm"<<std::endl;
+    }
+    
     // std::cout<<"Checking: "<<real<<std::endl;
     //std::cout<<"Got the FSM"<<std::endl;
     //THIS IS BASICALLY JUST THE B+ TREE INSERT IMPLEMENTATION, SO JUST REPLACE THIS WITH B+ TREE INSERT WHEN ITS DONE
@@ -215,6 +220,8 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
         // };
         //std::cout<<"INDEX: "<<info.index<<row.rel_name<<std::endl;
         System_Rel_Row empty;
+        // for(size_t i=0;i<26;i++)
+        //     std::cout<<i<<": "<<info.rel.rows[i].num_attrs<<std::endl;
         for(size_t i = 24;i >= info.index;i--){
             
             
@@ -233,7 +240,8 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
         //     std::cout<<i<<": "<<info.root.arr[i].key<<std::endl;
         // }
         info.rel.rows[info.index] = row;
-        
+        // for(size_t i=0;i<26;i++)
+        //     std::cout<<i<<": "<<info.rel.rows[i].rel_name<<std::endl;
         fsm.set_space(info.rel.page_id,1);
         //  std::cout<<"ATTENTION: "<<info.rel.rows[0].num_attrs<<info.rel.rows[1].num_attrs<<std::endl;
         if(info.rel.rows[25].num_attrs != 0){
@@ -251,9 +259,10 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
         info.fs->seekp(info.rel.page_id*4096);
         
         info.fs->write(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
-       fsm.flush_fsm(info.rel.page_id);
+       fsm.flush_fsm(0);
+       
     //    std::cout<<"WROTE"<<std::endl;
-    info.offsets.clear();
+        info.offsets.clear();
    
     
         return;
@@ -263,6 +272,7 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
         if(info.offsets.size()>=1){
         Syst_Rel half;
         half.page_id = fsm.page();
+        
         // if(half.page_id >=469)
         // std::cout<<"still "<<std::endl;
         // std::cout<<"PAGE: "<<half.page_id;
@@ -367,13 +377,14 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
             }
             info.fs->seekp(0);
             info.fs->write(reinterpret_cast<char*>(&info.root),4096);
-            fsm.flush_fsm(info.root.page_id);
+            fsm.flush_fsm(0);
+            // std::cout<<"flush"<<std::endl;
             info.offsets.clear();
             // std::cout<<"going: "<<info.index_root<<std::endl;
             return;
         }else if(fsm.has_space(info.root.page_id)!=1 && i != 0){
             //If parent does not have room, split parent and get location of new parent.
-            
+            std::cout<<"splitting index"<<std::endl;
             Syst_Root half_root;
             half_root.page_id = fsm.page();
             uint32_t offset_new_index = (half_root.page_id -1 )*4096;
@@ -531,7 +542,7 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
             for(size_t i = 13;i > info.index - 13;i--){
                 half.rows[i] = half.rows[i-1];
         }
-        //std::cout<<"KOI: "<<key_of_interest<<std::endl;
+        // std::cout<<"KOI: "<<key_of_interest<<std::endl;
         //get new root page and send koi and location of new "children" to new root for l & r pointers
         
         
@@ -548,6 +559,7 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
             fsm.set_space(0,1);
             fsm.set_space(1,1);
             fsm.set_space(2,1);
+            
             info.fs->seekp(0);
             info.fs->write(reinterpret_cast<char*>(&new_root),sizeof(new_root));
             info.fs->seekp((info.rel.page_id)*4096);
@@ -557,7 +569,9 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
         info.fs->close();
         info.index = 0;
         info.offsets.clear();
+        
         fsm.flush_fsm(0);
+        
         std::cout<<"split"<<std::endl;
   };
   
