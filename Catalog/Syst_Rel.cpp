@@ -42,70 +42,91 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
         info.fs->seekg(0);
         info.fs->read(reinterpret_cast<char*>(&info.root),sizeof(info.root));
         uint16_t index = info.root.next_index;
-        
-        
+        std::cout<<"Root: "<<info.root.page_id<<" "<<info.root.arr[0].key<<std::endl;
+    // uint16_t count{};
     while(index == 1){
-        std::cout<<"HERE"<<std::endl;
+        // count++;
+        std::cout<<"HERE "<<index<<std::endl;
     for(size_t i = 0; i < 511;i++){
-        if(info.root.arr[i].key == key){
-
-            info.offsets.push_back(info.root.arr[i].pointer);
-            offset = info.root.arr[i].pointer;
+        if(info.root.arr[0].key > key){
+            std::cout<<"3"<<std::endl;
+            offset = info.root.bottom_p;
+            info.offsets.push_back(offset);
             info.fs->seekg(offset);
-            info.fs->read(reinterpret_cast<char*>(&info.root),4096);
+            info.fs->read(reinterpret_cast<char*>(&info.root),sizeof(info.root));
             index = info.root.next_index;
-            
-
+            break;
         } else if(info.root.arr[i].key > key && info.root.arr[i-1].key < key){
+            std::cout<<"2"<<std::endl;
             offset = info.root.arr[i].pointer;
             info.offsets.push_back(offset);
             info.fs->seekg(offset);
-            info.fs->read(reinterpret_cast<char*>(&info.root),4096);
+            info.fs->read(reinterpret_cast<char*>(&info.root),sizeof(info.root));
             index = info.root.next_index;
-            
+            break;
+        } else if(info.root.arr[i].key == key){
+            std::cout<<"1: "<<i<<std::endl;
+            info.offsets.push_back(info.root.arr[i].pointer);
+            offset = info.root.arr[i].pointer;
+            info.fs->seekg(offset);
+            info.fs->read(reinterpret_cast<char*>(&info.root),sizeof(info.root));
+            index = info.root.next_index;
+            break;
+
+        } else if(info.root.arr[i].key < key && info.root.arr[i+1].pointer == 0){
+            std::cout<<"4"<<std::endl;
+            info.offsets.push_back(info.root.arr[i].pointer);
+            offset = info.root.arr[i].pointer;
+            info.fs->seekg(offset);
+            info.fs->read(reinterpret_cast<char*>(&info.root),sizeof(info.root));
+            index = info.root.next_index;
+            break;
         }
+        // if(count > 1)
+        // return;
     }
+    std::cout<<"next_index: "<<index<<" root: "<<info.root.page_id<<std::endl;
     };
     
 
     for(size_t i = 0; i < 511;i++){
         if(info.root.arr[i].key == key){
-            // std::cout<<"equals: "<<i<<std::endl;
+            std::cout<<"equals: "<<i<<std::endl;
             info.index_root = i;
             offset = info.root.arr[i].pointer;
             info.offsets.push_back(offset);
             info.fs->seekg(offset);
-            // std::cout<<"offset: "<<offset<<std::endl;
+            std::cout<<"offset: "<<offset<<std::endl;
             info.fs->read(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
             break;
             
 
         } else if(i ==0 && key < info.root.arr[i].key){
 
-            // std::cout<<"lower"<<std::endl;
+            std::cout<<"lower"<<std::endl;
             info.index_root = i;
             offset = info.root.bottom_p;
             info.offsets.push_back(offset);
             info.fs->seekg(offset);
-            // std::cout<<"offset: "<<offset<<std::endl;
+            std::cout<<"offset: "<<offset<<std::endl;
             info.fs->read(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
             break;
 
         } else if(info.root.arr[i].key > key && info.root.arr[i-1].key < key){
-            // std::cout<<key<<" between: "<<info.root.arr[i-1].key<<" and "<<info.root.arr[i].key<<" at "<<i<<std::endl;
+            std::cout<<key<<" between: "<<info.root.arr[i-1].key<<" and "<<info.root.arr[i].key<<" at "<<i<<std::endl;
             info.index_root = i;
             offset = info.root.arr[i-1].pointer;
-            // std::cout<<"offset: "<<offset<<std::endl;
+            std::cout<<"offset: "<<offset<<std::endl;
             info.offsets.push_back(offset);
             
             info.fs->seekg(offset);
             info.fs->read(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
-            // std::cout<<info.rel.page_id<<std::endl;
-            //std::cout<<info.root.arr[i].key<<std::endl;
+            std::cout<<info.rel.page_id<<std::endl;
+            std::cout<<info.root.arr[i].key<<std::endl;
             break;
         }else if(info.root.arr[i].key < key && info.root.arr[i+1].pointer == 0){
             info.index_root = i+1;
-            // std::cout<<i<<"larger than: "<<info.root.arr[i].key<<std::endl;
+            std::cout<<i<<"larger than: "<<info.root.arr[i].key<<std::endl;
             offset = info.root.arr[i].pointer;
             info.offsets.push_back(offset);
             
@@ -115,7 +136,9 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
             
             break;
         }
+        
     }
+    std::cout<<"Rel: "<<info.rel.page_id<<" "<<info.rel.is_index<<std::endl;
     }else{
         //std::cout<<"No height"<<std::endl;
         info.fs->seekg(0);
@@ -124,7 +147,7 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
         info.rel.page_id = 0;
 
     };
-    //std::cout<<"got the rel"<<info.rel.page_id<<std::endl;
+    // std::cout<<"got the rel"<<info.rel.page_id<<std::endl;
     for(size_t i =0;i<26;i++){
         uint16_t name{};
         
@@ -134,7 +157,7 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
         
         
         if(key <= name || (i == 26 && key > name)||info.rel.rows[i].num_attrs == 0){
-            // std::cout<<"searching "<<i<<" "<<key<<" vs "<<name<<std::endl;
+            std::cout<<"searching "<<i<<" "<<key<<" vs "<<name<<std::endl;
             info.index = i;
             
             return;
@@ -178,6 +201,7 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
     search_rel(key,0);
     
     // std::cout<<"Page: "<<info.rel.page_id<<std::endl;
+    // std::cout<<"Root: "<<info.root.page_id<<std::endl;
 
 //std::cout<<"Searched"<<info.rel.page_id<<std::endl;
     //std::cout<<info.root.arr[0].key<<std::endl;
@@ -372,7 +396,7 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
             // std::cout<<"word "<<info.root.page_id<<" "<<info.index_root<<std::endl;
             info.root.arr[info.index_root] = k_p;
             if(info.root.arr[510].key != 0){
-                std::cout<<"2!"<<info.root.arr[510].key<<std::endl;
+                // std::cout<<"2!"<<info.root.arr[510].key<<std::endl;
             fsm.set_space(info.root.page_id,2);
             }
             info.fs->seekp(0);
@@ -384,7 +408,8 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
             return;
         }else if(fsm.has_space(info.root.page_id)!=1 && i != 0){
             //If parent does not have room, split parent and get location of new parent.
-            std::cout<<"splitting index"<<std::endl;
+            // std::cout<<"splitting index: "<<info.offsets.at(0)<<std::endl;
+
             Syst_Root half_root;
             half_root.page_id = fsm.page();
             uint32_t offset_new_index = (half_root.page_id -1 )*4096;
@@ -445,15 +470,25 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
             Syst_Root half_root;
             
             half_root.page_id = fsm.page();
+            std::cout<<"Half: "<<half_root.page_id<<std::endl;
         //split current info.root
         for(size_t i = 256;i < 511;i++){
             half_root.arr[i-256] = info.root.arr[i];
             info.root.arr[i]=empty;
         }
+
+        for(size_t i = 0;i<257;i++){
+            std::cout<<i<<": "<<info.root.arr[i].key<<std::endl;
+        }
+        for(size_t i = 0;i<257;i++){
+            std::cout<<i<<": "<<half_root.arr[i].key<<std::endl;
+        }
+        
         fsm.set_space(half_root.page_id,1);
 
         // std::cout<<"still"<<half_root.page_id<<std::endl;
         info.root.page_id = fsm.page();
+        std::cout<<"Old root: "<<info.root.page_id<<std::endl;
         fsm.set_space(info.root.page_id,1);
         //get new info.root page and send koi and location of new "children" to new info.root for l & r pointers
         Syst_Root new_root;
@@ -472,7 +507,7 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
         //     }
 
         // }
-
+        std::cout<<"INDeX: "<<info.index_root<<std::endl;
         if(info.index_root > 256){
             temp_koi = half_root.arr[0].key;
             for(size_t i= 256; i > info.index_root - 256;i--){
@@ -492,10 +527,16 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
             }
             half_root.arr[info.index_root] = k_p;
             };
+
+
             //switch the current 0 index page and the info.root page  so the info.root is always at index 0
-            k_p.pointer = half_root.page_id;
+            k_p.pointer = half_root.page_id * 4096;
+            std::cout<<"Pointer OI: "<<k_p.pointer<<std::endl;
             new_root.page_id = 0;
-            new_root.bottom_p = (info.root.page_id) * 4096;
+            new_root.bottom_p = info.root.page_id * 4096;
+            std::cout<<"Bottom P: "<<new_root.bottom_p<<std::endl;
+            info.root.next_index = 0;
+            half_root.next_index = 0;
             new_root.next_index = 1;
             new_root.arr[0]=k_p;
             fsm.set_space(0,1);
@@ -505,7 +546,9 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
             info.fs->write(reinterpret_cast<char*>(&half_root),4096);
             info.fs->seekg((info.root.page_id)*4096);
             info.fs->write(reinterpret_cast<char*>(&info.root),4096);
-            
+            fsm.flush_fsm(0);
+            std::cout<<"it worked? "<<new_root.bottom_p<<" "<<new_root.page_id<<new_root.arr[0].pointer<<std::endl;
+            return;
         }; 
         // step 5: repeat until opening in index or at top level (root)
         std::cout<<"nowhere"<<std::endl;

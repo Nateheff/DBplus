@@ -124,7 +124,7 @@ void FSM::set_space(uint32_t page_num,uint8_t space){
         
         }
     }
-    if(root.num_pages >= 500)
+    if(root.num_pages >= 511)
     std::cout<<"NUM Pages: "<<root.num_pages<<std::endl;
     
 };
