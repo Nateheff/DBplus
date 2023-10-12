@@ -75,7 +75,7 @@ void FSM::get_fsm(std::string name_val){
 
 void FSM::set_space(uint32_t page_num,uint8_t space){
     if(page_num > root.num_pages){
-        std::cout<<"INVALID PAGE NUM"<<std::endl;
+        std::cout<<"INVALID PAGE NUM: "<<page_num<<" "<<(int)space<<std::endl;
         return;
     }
 
@@ -124,7 +124,7 @@ void FSM::set_space(uint32_t page_num,uint8_t space){
         
         }
     }
-    if(root.num_pages >= 511)
+    if(root.num_pages >= 1600)
     std::cout<<"NUM Pages: "<<root.num_pages<<std::endl;
     
 };
@@ -145,10 +145,11 @@ void FSM::flush_fsm(uint32_t page_num){
     fs.close();
 }
 
-uint8_t FSM::has_space(uint32_t page_num){
+uint8_t FSM::has_space(uint32_t page_num,uint16_t check){
     //std::cout<<"Here: "<<page_num<<std::endl;
     if(page_num > 4088){
-        std::cout<<"wrong2"<<std::endl;
+        std::cout<<"wrong2: "<<page_num<<" b "<<check<<std::endl;
+        return 0;
     uint32_t offset = ((((page_num)-4088)/4096)+1)*4096;
     std::fstream fs;
     fs.seekp(offset);
@@ -161,7 +162,7 @@ uint8_t FSM::has_space(uint32_t page_num){
 }
 
 uint32_t FSM::page() {
-    // if(rootroot.num_pages > 470)
+    // if(root.num_pages > 600)
     // std::cout<<root.num_pages<<std::endl;
     if(!root.hole)
     return root.num_pages; 

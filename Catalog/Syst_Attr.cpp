@@ -161,7 +161,7 @@ void Catalog_Attr::insert_range_attr(uint16_t key,std::vector<Syst_Attr_Row>rows
     while(rows.size() > 0){
     for(size_t i = 0;i<rows.size();i++){
             uint16_t final_i{};
-        while(pack->fsm->has_space(pack->attr->page_id)){
+        while(pack->fsm->has_space(pack->attr->page_id,0)){
 
             for(size_t i = 31;i>pack->index_first;i--){
                 pack->attr->rows[i] = pack->attr->rows[i-1]; 
@@ -235,7 +235,7 @@ void Catalog_Attr::insert_range_attr(uint16_t key,std::vector<Syst_Attr_Row>rows
         pack->fs->seekg(pack->offsets.at(i));
         pack->fs->read(reinterpret_cast<char*>(&root),4096);
 
-        if(pack->fsm->has_space(root.page_id)){
+        if(pack->fsm->has_space(root.page_id,0)){
             // step 3: if parent has room, insert at appropriate location. 
 
             for(size_t i =0; i<511;i++){
@@ -258,7 +258,7 @@ void Catalog_Attr::insert_range_attr(uint16_t key,std::vector<Syst_Attr_Row>rows
             pack->fs->seekp(pack->offsets.at(i));
             pack->fs->write(reinterpret_cast<char*>(&root),4096);
             return;
-        }else if(!pack->fsm->has_space(root.page_id) && i != 0){
+        }else if(!pack->fsm->has_space(root.page_id,0) && i != 0){
             //If parent does not have room, split parent and get location of new parent.
             
             Syst_Root half_root;
