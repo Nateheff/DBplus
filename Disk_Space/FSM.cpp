@@ -20,7 +20,7 @@ bool FSM::create_fsm(std::string name_val){
     // root = &root_empty;
     set_space(0,1);
     fs.write(reinterpret_cast<char*>(&root),sizeof(root));
-    // std::cout<<"wrote: "<<fs.tellp()<<std::endl;
+    std::cout<<"wrote"<<std::endl;
     std::cout<<"made"<<std::endl;
     fs.close();
 
@@ -58,7 +58,7 @@ void FSM::get_fsm(std::string name_val){
     // if(fs.is_open() && fs.good())
     // std::cout<<"early"<<std::endl;
     fs.read(reinterpret_cast<char*>(&root),sizeof(root));
-
+std::cout<<"read"<<std::endl;
     if(fs.gcount()==0 && !fs.fail()){
         std::cout<<"EMPTY"<<std::endl;
         
@@ -124,7 +124,7 @@ void FSM::set_space(uint32_t page_num,uint8_t space){
         
         }
     }
-    if(root.num_pages >= 1600)
+    if(root.num_pages >= 4000)
     std::cout<<"NUM Pages: "<<root.num_pages<<std::endl;
     
 };

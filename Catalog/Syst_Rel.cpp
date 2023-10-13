@@ -12,6 +12,7 @@ void Catalog_Rel::create_catalog(){
     }
     
     fs.write(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
+    std::cout<<"write"<<std::endl;
     fs.close();
     // std::cout<<"catalog: "<<name<<std::endl;
     fsm.create_fsm(name);
@@ -19,8 +20,7 @@ void Catalog_Rel::create_catalog(){
 };
 
 void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
-    //get root
-    // fsm.get_fsm("catalog_rel");
+    
     // std::cout<<"started"<<std::endl;
     info.fs->close();
     // std::cout<<"started"<<std::endl;
@@ -41,12 +41,13 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
         
         info.fs->seekg(0);
         info.fs->read(reinterpret_cast<char*>(&info.root),sizeof(info.root));
+        
         uint16_t index = info.root.next_index;
         info.offsets.push_back(0);
         // std::cout<<"Root: "<<info.root.page_id<<" "<<info.root.arr[0].key<<" "<<(int)info.root.next_index<<std::endl;
-    // uint16_t count{};
+    
     while(index == 1){
-        // count++;
+       
         // std::cout<<"HERE "<<index<<std::endl;
     for(size_t i = 0; i < 511;i++){
         if(info.root.arr[0].key > key){
@@ -55,6 +56,7 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
             info.offsets.push_back(offset);
             info.fs->seekg(offset);
             info.fs->read(reinterpret_cast<char*>(&info.root),sizeof(info.root));
+            
             index = info.root.next_index;
             break;
         } else if(info.root.arr[i].key > key && info.root.arr[i-1].key < key){
@@ -63,29 +65,35 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
             info.offsets.push_back(offset);
             info.fs->seekg(offset);
             info.fs->read(reinterpret_cast<char*>(&info.root),sizeof(info.root));
+            
             index = info.root.next_index;
             break;
         } else if(info.root.arr[i].key == key){
             // std::cout<<"1: "<<i<<std::endl;
-            std::cout<<info.root.page_id<<std::endl;
+            
             info.offsets.push_back(info.root.arr[i].pointer);
             offset = info.root.arr[i].pointer;
             info.fs->seekg(offset);
             info.fs->read(reinterpret_cast<char*>(&info.root),sizeof(info.root));
+            
             index = info.root.next_index;
             break;
 
         } else if(info.root.arr[i].key < key && info.root.arr[i+1].pointer == 0){
             // std::cout<<"4"<<std::endl;
             info.offsets.push_back(info.root.arr[i].pointer);
+
             offset = info.root.arr[i].pointer;
+            // std::cout<<"offseT: "<<offset<<" "<<info.root.arr[i].key<<std::endl;
             info.fs->seekg(offset);
             info.fs->read(reinterpret_cast<char*>(&info.root),sizeof(info.root));
+            
+            // std::cout<<"RooT: "<<info.root.page_id<<" "<<(int)info.root.next_index<<" "<<info.fs->gcount()<<std::endl;
             index = info.root.next_index;
+            
             break;
         }
-        // if(count > 1)
-        // return;
+       
     }
     // std::cout<<"next_index: "<<index<<" root: "<<info.root.page_id<<std::endl;
     };
@@ -96,10 +104,11 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
             // std::cout<<"equals: "<<i<<std::endl;
             info.index_root = i;
             offset = info.root.arr[i].pointer;
-            // info.offsets.push_back(offset);
+            
             info.fs->seekg(offset);
             // std::cout<<"offset: "<<offset<<std::endl;
             info.fs->read(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
+            
             break;
             
 
@@ -108,10 +117,11 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
             // std::cout<<"lower"<<std::endl;
             info.index_root = i;
             offset = info.root.bottom_p;
-            // info.offsets.push_back(offset);
+            
             info.fs->seekg(offset);
             // std::cout<<"offset: "<<offset<<std::endl;
             info.fs->read(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
+            
             break;
 
         } else if(info.root.arr[i].key > key && info.root.arr[i-1].key < key){
@@ -119,10 +129,11 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
             info.index_root = i;
             offset = info.root.arr[i-1].pointer;
             // std::cout<<"offset: "<<offset<<std::endl;
-            // info.offsets.push_back(offset);
+            
             
             info.fs->seekg(offset);
             info.fs->read(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
+            
             // std::cout<<info.rel.page_id<<std::endl;
             // std::cout<<info.root.arr[i].key<<std::endl;
             break;
@@ -130,11 +141,12 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
             info.index_root = i+1;
             // std::cout<<i<<"larger than: "<<info.root.arr[i].key<<std::endl;
             offset = info.root.arr[i].pointer;
-            // info.offsets.push_back(offset);
+            
             
             info.fs->seekg(offset);
             
             info.fs->read(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
+            
             
             break;
         }
@@ -160,7 +172,7 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
         }
         // std::cout<<"name: "<<name<<" key: "<<key<<std::endl;
         
-        if(key <= name || (i == 26 && key > name)||info.rel.rows[i].num_attrs == 0){
+        if(key <= name || (i == 25 && key > name)||info.rel.rows[i].num_attrs == 0){
             // std::cout<<"searching "<<i<<" "<<key<<" vs "<<name<<std::endl;
             info.index = i;
             
@@ -171,23 +183,23 @@ void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
     
     
     };
-void Catalog_Rel::remove_rel(uint16_t key,Info_Pack* pack){
+void Catalog_Rel::remove_rel(uint16_t key){
     //search like you did in search
-    search_rel(key,pack);
+    search_rel(key);
     //once you have the correct page and relation row, delete the row from the array of relation rows. Update the fsm and any other things you need to telling them that space is open. maybe try to move all the rows "above" the one you delete down to have the free space at the end which will make free space easier to track
     System_Rel_Row empty;
-    pack->rel.rows[pack->index] = empty;
-    for(size_t i = pack->index;i<=25;i++){
-        pack->rel.rows[i] = pack->rel.rows[i+1];
-    };
-    pack->fs->seekp(pack->offsets.at(pack->offsets.size()-1));
-    pack->fs->write(reinterpret_cast<char*>(&pack->rel),4096);
-    pack->fs->close();
+    // pack->rel.rows[pack->index] = empty;
+    // for(size_t i = pack->index;i<=25;i++){
+    //     pack->rel.rows[i] = pack->rel.rows[i+1];
+    // };
+    // pack->fs->seekp(pack->offsets.at(pack->offsets.size()-1));
+    // pack->fs->write(reinterpret_cast<char*>(&pack->rel),4096);
+    // pack->fs->close();
     
     std::string name{"catalog_rel"};
     fsm.get_fsm(name);
-    fsm.set_space(pack->rel.page_id,1);
-    fsm.flush_fsm(pack->rel.page_id);
+    // fsm.set_space(pack->rel.page_id,1);
+    // fsm.flush_fsm(pack->rel.page_id);
 
 };
 
@@ -195,22 +207,20 @@ void Catalog_Rel::remove_rel(uint16_t key,Info_Pack* pack){
 
 void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
 //search normally
-    // FSM fsm;
-    // std::string name{"catalog_rel"};
-    // fsm.get_fsm(name);
+    
     // std::cout<<"Key: "<<key<<std::endl;
     if(test > 26)
     search_rel(key,1);
     else
     search_rel(key,0);
-    // if(test > 8984)
-    std::cout<<"Offsets: "<<info.offsets.size()<<std::endl;
-    std::cout<<"Page: "<<info.rel.page_id<<std::endl;
-    std::cout<<"Root: "<<info.root.page_id<<std::endl;
+    
+    // std::cout<<"Offsets: "<<info.offsets.size()<<std::endl;
+    // std::cout<<"Page: "<<info.rel.page_id<<std::endl;
+    // std::cout<<"Root: "<<info.root.page_id<<std::endl;
 
 //std::cout<<"Searched"<<info.rel.page_id<<std::endl;
     //std::cout<<info.root.arr[0].key<<std::endl;
-    // const uint32_t real = info.rel.page_id;
+    
     //std::cout<<"still";
     
 //once you have the page of where the row with the key would fit, see if there's space via the fsm and if there is, move all rows "greater" than it up 1 row space and put the new row in the space created at the correct place. If there's not room, split, and do the b+ tree thing. this will take some effort to figure out how to do.
@@ -232,21 +242,7 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
     // std::cout<<"Checking: "<<info.rel.page_id<<std::endl;
     if(fsm.has_space(info.rel.page_id,test)==1){
         // std::cout<<"Has space"<<std::endl;
-        //std::cout<<"same?: "<<info.index<<std::endl;
-        // for(size_t i =0;i<26;i++){
-        //     uint16_t name = calc_name(info.rel.rows[i].rel_name);
-        //     // for(size_t j = 0; j<65;j++)
-        //     //     name += pack->rel->rows[i].rel_name[j];
-            // std::cout<<i<<"NAME: "<<name<<" KEY: "<<key<<std::endl;
-            
-            
-        //     if(key <= name || info.rel.rows[i].num_attrs == 0){
-        //     info.index = i;
-            
-        //     break;  
-        //     }
-
-        // };
+        
         //std::cout<<"INDEX: "<<info.index<<row.rel_name<<std::endl;
         System_Rel_Row empty;
         // for(size_t i=0;i<26;i++)
@@ -259,15 +255,11 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
             if(i == 0)
             break;
         }
-        // std::cout<<"INDY: "<<info.index<<std::endl;
-        // if(test == 81 || test == 89 || test == 90 || test ==27 || test == 62 || test == 77||test == 29 || test == 94)
+        
         // for(size_t i=0;i<26;i++)
         //     std::cout<<i<<": "<<info.rel.rows[i].num_attrs<<std::endl;
         // std::cout<<"ROW: "<<row.num_attrs<<std::endl;
-        // if(test == 99 || test == 50 || test == 27 || test == 57||test == 59)
-        // for(size_t i = 0;i<7;i++){
-        //     std::cout<<i<<": "<<info.root.arr[i].key<<std::endl;
-        // }
+        // 
         info.rel.rows[info.index] = row;
         // for(size_t i=0;i<26;i++)
         //     std::cout<<i<<": "<<info.rel.rows[i].rel_name<<std::endl;
@@ -280,17 +272,17 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
         
          //write back
         //  std::cout<<"THIS: "<<info.offsets.size()<<std::endl;
-        // if(info.offsets.size()>1){
-        // // std::cout<<"going here: "<<info.offsets.at(info.offsets.size()-1)<<std::endl;
-        // info.fs->seekp();
+        // 
         
-        // }else
+        
+       
         info.fs->seekp(info.rel.page_id*4096);
         
         info.fs->write(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
+        
        fsm.flush_fsm(0);
        
-    //    std::cout<<"WROTE"<<std::endl;
+    //    
         info.offsets.clear();
    
     
@@ -307,28 +299,7 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
         // std::cout<<"PAGE: "<<half.page_id;
         new_page_offset = (half.page_id) * 4096;
         // std::cout<<"OFF: "<<new_page_offset<<std::endl;
-        
-        // std::cout<<"First: "<<info.index<<std::endl;
-        // for(size_t i =0;i<25;i++){
-        //     uint16_t name{};
-        //     for(size_t j = 0; j<65;j++)
-        //         name += info.rel.rows[i].rel_name[j];
-            
-        //     if(key == name){
-        //         info.index = i;
-        //         break;
-        //     } 
-        //     if(key < name){
-        //     info.index = i;
-        //     break;  
-        //     }
-        //     if(key > name && i == 26)
-        //     info.index = 24;
-            
-        // };
-        
-        
-        
+    
         System_Rel_Row empty;
         for(size_t i = 13; i<26;i++){
             half.rows[i-13]=info.rel.rows[i];
@@ -370,6 +341,7 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
         fsm.set_space(info.rel.page_id,1);
         info.fs->seekp(info.rel.page_id * 4096);
         info.fs->write(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
+        
         info.fs->seekp(new_page_offset);
         info.fs->write(reinterpret_cast<char*>(&half),sizeof(half));
         
@@ -380,7 +352,7 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
     // step 2: send new KOI/position of new to parent node.
     Key_Pointer k_p{key_of_interest,new_page_offset};
     // if(test > 8384)
-  std::cout<<"made it here: "<<info.offsets.size()<<info.root.page_id<<std::endl;
+//   std::cout<<"made it here: "<<info.offsets.size()<<info.root.page_id<<std::endl;
   if(info.offsets.size() >= 1){
     for(size_t i = info.offsets.size()-1; i >= 0; i--){
         // std::cout<<"here"<<std::endl;
@@ -390,7 +362,7 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
         // info.fs->read(reinterpret_cast<char*>(&root),4096);
         // std::cout<<info.root.page_id<<" "<<fsm.has_space(info.root.page_id)<<std::endl;
         if(fsm.has_space(info.root.page_id,2)==1){
-            std::cout<<"space: "<<k_p.key<<" "<<k_p.pointer<<std::endl;
+            // std::cout<<"space: "<<k_p.key<<" "<<k_p.pointer<<std::endl;
             // step 3: if parent has room, insert at appropriate location. 
             
             
@@ -421,27 +393,28 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
             };
             for(size_t i = 510;i > info.index_root;i--)
             info.root.arr[i] = info.root.arr[i-1];
-            std::cout<<"word "<<info.root.page_id<<" "<<info.index_root<<std::endl;
+            // std::cout<<"word "<<info.root.page_id<<" "<<info.index_root<<std::endl;
             info.root.arr[info.index_root] = k_p;
             if(info.root.arr[510].key != 0){
-                std::cout<<"2!"<<info.root.arr[510].key<<std::endl;
+                std::cout<<"2!"<<info.root.arr[510].key<<" "<<info.root.page_id<<std::endl;
             fsm.set_space(info.root.page_id,2);
             }
             info.fs->seekp(info.root.page_id*4096);
             info.fs->write(reinterpret_cast<char*>(&info.root),4096);
+            
             fsm.flush_fsm(0);
-            std::cout<<"flush"<<std::endl;
+            // std::cout<<"flush"<<std::endl;
             info.offsets.clear();
             // std::cout<<"going: "<<info.index_root<<std::endl;
             return;
         }else if(fsm.has_space(info.root.page_id,3)!=1 && i != 0){
             //If parent does not have room, split parent and get location of new parent.
-            std::cout<<"splitting index: "<<info.root.page_id<<std::endl;
+            std::cout<<"splitting index: "<<info.root.page_id<<" "<<info.index_root<<std::endl;
 
             Syst_Root half_root;
             half_root.page_id = fsm.page();
-            std::cout<<"New page: "<<half_root.page_id<<std::endl;
-            uint32_t offset_new_index = (half_root.page_id)*4096;
+            // std::cout<<"New page: "<<half_root.page_id<<std::endl;
+            uint32_t offset_new_index = half_root.page_id*4096;
             uint16_t temp_koi{};
             
 
@@ -475,9 +448,10 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
             
             info.root.arr[i]=empty;
             }
-            // temp_koi = info.root.arr[255].key;
+
             for(size_t i =256; i > info.index;i--){
                 info.root.arr[i]=info.root.arr[i-1];
+                // info.root.arr[i-1]=empty;
             }
             info.root.arr[info.index_root] = k_p;
         }else{
@@ -498,25 +472,32 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
             half_root.arr[info.index_root] = k_p;
             };
             // step 4: send new KOI/position of new index node to the parent node and if room, insert at appropriate location.
-            std::cout<<"New Stuff: "<<temp_koi<<" "<<offset_new_index<<" "<<half_root.page_id<<" "<<half_root.bottom_p<<std::endl;
+            // std::cout<<"New Stuff: "<<temp_koi<<" "<<offset_new_index<<" "<<half_root.page_id<<" "<<half_root.bottom_p<<std::endl;
             k_p.key = temp_koi;
             k_p.pointer = offset_new_index;
-            for(size_t i = 0; i<256;i++)
-            std::cout<<i<<": "<<half_root.arr[i].key<<std::endl;
-            for(size_t i = 0; i < 256;i++)
-            std::cout<<i<<": "<<info.root.arr[i].key<<std::endl;
-            std::cout<<i<<" ATTENTION: "<<info.offsets.at(i)<<" "<<info.offsets.at(i-1)<<std::endl;
+            // for(size_t i = 0; i<256;i++)
+            // std::cout<<i<<": "<<half_root.arr[i].key<<std::endl;
+            // for(size_t i = 0; i < 256;i++)
+            // std::cout<<i<<": "<<info.root.arr[i].key<<std::endl;
+            // std::cout<<i<<" ATTENTION: "<<info.offsets.at(i)<<" "<<info.offsets.at(i-1)<<std::endl;
+            fsm.set_space(info.root.page_id,1);
+            fsm.set_space(half_root.page_id,1);
+            info.fs->seekp(info.root.page_id*4096);
+            info.fs->write(reinterpret_cast<char*>(&info.root),sizeof(info.root));
+            info.fs->seekp(half_root.page_id*4096);
+            info.fs->write(reinterpret_cast<char*>(&half_root),sizeof(half_root));
             info.fs->seekg(info.offsets.at(i-1));
             info.fs->read(reinterpret_cast<char*>(&info.root),sizeof(info.root));
-            info.index_root = 4097;
-            std::cout<<"DONEE"<<std::endl;
+            
+            
+            // std::cout<<"DONEE"<<std::endl;
         }else if(fsm.has_space(info.root.page_id,4)!=1 && i == 0){
             std::cout<<"SPLTTING ROOT: "<<i<<" "<<info.offsets.size()<<std::endl;
             Key_Pointer empty;
             Syst_Root half_root;
             
             half_root.page_id = fsm.page();
-            std::cout<<"Half: "<<half_root.page_id<<std::endl;
+            // std::cout<<"Half: "<<half_root.page_id<<std::endl;
         //split current info.root
         //if i > 255, the koi goes to i=256 else, i = 255
         
@@ -534,18 +515,8 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
         uint16_t temp_koi{};
         uint32_t temp_p{};
 
-        // for(size_t i = 0;i<511;i++){
-        //     if(info.root.arr[i].key > key){
-        //     info.index = i;
-        //     break;
-        //     };
 
-        //     if(i==510&&info.root.arr[i].key < key){
-        //         info.index = 510;
-        //         break;
-        //     }
 
-        // }
         // std::cout<<"INDeX: "<<info.index_root<<std::endl;
         if(info.index_root > 256){
             std::cout<<"more"<<std::endl;

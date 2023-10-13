@@ -49,7 +49,7 @@ Info_Pack info;
 FSM fsm;
 
 void search_rel(uint16_t key,bool has_height);
-void remove_rel(uint16_t key,Info_Pack* pack);
+void remove_rel(uint16_t key);
 void insert_rel(uint16_t key, System_Rel_Row row,size_t test);
 void create_catalog();
 ~Catalog_Rel(){info.fs->close(); std::cout<<"closing"<<std::endl;};
