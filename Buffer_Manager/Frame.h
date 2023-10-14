@@ -1,5 +1,5 @@
 
-
+#pragma once
 #include "../Nodes/Node.h"
 
 class Frame{

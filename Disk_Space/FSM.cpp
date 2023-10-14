@@ -20,8 +20,7 @@ bool FSM::create_fsm(std::string name_val){
     // root = &root_empty;
     set_space(0,1);
     fs.write(reinterpret_cast<char*>(&root),sizeof(root));
-    std::cout<<"wrote"<<std::endl;
-    std::cout<<"made"<<std::endl;
+    
     fs.close();
 
 };
@@ -58,7 +57,7 @@ void FSM::get_fsm(std::string name_val){
     // if(fs.is_open() && fs.good())
     // std::cout<<"early"<<std::endl;
     fs.read(reinterpret_cast<char*>(&root),sizeof(root));
-std::cout<<"read"<<std::endl;
+
     if(fs.gcount()==0 && !fs.fail()){
         std::cout<<"EMPTY"<<std::endl;
         
@@ -136,7 +135,7 @@ void FSM::flush_fsm(uint32_t page_num){
     // std::cout<<root.num_pages<<" "<<root.hole<<" "<<(int)root.free_space[3]<<std::endl;
     fs.write(reinterpret_cast<char*>(&root),sizeof(root));
     // std::cout<<fs.tellp()<<std::endl;
-    if(page_num != 0){
+    if(page_num > 4088){
         std::cout<<"wrong"<<std::endl;
     uint32_t offset = ((((page_num)-4088)/4096)+1)*4096;
     fs.seekg(offset);

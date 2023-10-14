@@ -12,13 +12,14 @@ void Catalog_Rel::create_catalog(){
     }
     
     fs.write(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
-    std::cout<<"write"<<std::endl;
+    
     fs.close();
-    // std::cout<<"catalog: "<<name<<std::endl;
+    std::cout<<"catalog: "<<name<<std::endl;
     fsm.create_fsm(name);
     
 };
 
+/*
 void Catalog_Rel::search_rel(uint16_t key,bool has_height=1){
     
     // std::cout<<"started"<<std::endl;
@@ -667,3 +668,4 @@ void Catalog_Rel::insert_rel(uint16_t key, System_Rel_Row row,size_t test){
 // step 6: if need to split root, get new root page, send koi and locations of children to new root. save location of new root in specialized file with root locations of each index.
     // fsm.flush_fsm(std::string{"catalog_rel"});
 };
+*/

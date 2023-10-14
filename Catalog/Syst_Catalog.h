@@ -12,6 +12,6 @@
 class Syst_Catalog{
 
     public:
-    uint16_t calc_name(char* arr);
+    
     void create_catalog(std::string type);
 };

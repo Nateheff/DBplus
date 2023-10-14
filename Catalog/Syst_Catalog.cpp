@@ -24,13 +24,7 @@ void Syst_Catalog::create_catalog(std::string type){
     
 
 }
-uint16_t Syst_Catalog::calc_name(char* arr){
-    uint16_t name{};
-    for(size_t i = 0;i<64;i++)
-    name += arr[i];
-    
-    return name;
-}
+
 
 
 
