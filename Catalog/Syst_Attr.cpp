@@ -1,5 +1,5 @@
 #include "Syst_Attr.h"
-
+/*
 Attr_Info_Pack* Catalog_Attr::search_range_attr(uint16_t key,Attr_Info_Pack *pack,uint16_t num,bool has_height = 1){
     //get first index of key
     //get root
@@ -331,3 +331,4 @@ void Catalog_Attr::insert_range_attr(uint16_t key,std::vector<Syst_Attr_Row>rows
     };
     };
 };
+*/

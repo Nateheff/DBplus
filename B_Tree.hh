@@ -55,8 +55,8 @@ void B_Tree<T,S>::search(uint16_t key,uint16_t num_rows,bool has_height){
         info.offsets.push_back(0);
         // std::cout<<"Root: "<<info.root.page_id<<" "<<info.root.arr[0].key<<" "<<(int)info.root.next_index<<std::endl;
         // std::cout<<"Bottom: "<<info.root.bottom_p<<std::endl;
-    for(size_t i = 0;i<15;i++)
-    std::cout<<i<<": "<<"Key: "<<info.root.arr[i].key<<" Pointer: "<<info.root.arr[i].pointer<<std::endl;
+    // for(size_t i = 0;i<15;i++)
+    // std::cout<<i<<": "<<"Key: "<<info.root.arr[i].key<<" Pointer: "<<info.root.arr[i].pointer<<std::endl;
     
     while(index == 1){
        
@@ -116,7 +116,7 @@ void B_Tree<T,S>::search(uint16_t key,uint16_t num_rows,bool has_height){
     // std::cout<<"Index ID: "<<info.root.page_id<<std::endl;
     for(size_t i = 0; i < 511;i++){
         if(info.root.arr[i].key == key){
-            std::cout<<"equals: "<<i<<std::endl;
+            // std::cout<<"equals: "<<i<<std::endl;
             info.index_root = i;
             offset = info.root.arr[i].pointer;
             
@@ -129,7 +129,7 @@ void B_Tree<T,S>::search(uint16_t key,uint16_t num_rows,bool has_height){
 
         } else if(i ==0 && key < info.root.arr[i].key){
             // std::cout<<info.root.page_id<<" "<<info.root.arr[0].key<<" "<<info.root.arr[0].pointer<<std::endl;
-            std::cout<<"lower"<<std::endl;
+            // std::cout<<"lower"<<std::endl;
             info.index_root = i;
             offset = info.root.bottom_p;
             
@@ -140,7 +140,7 @@ void B_Tree<T,S>::search(uint16_t key,uint16_t num_rows,bool has_height){
             break;
 
         } else if(info.root.arr[i].key > key && info.root.arr[i-1].key < key){
-            std::cout<<key<<" between: "<<info.root.arr[i-1].key<<" and "<<info.root.arr[i].key<<" at "<<i<<std::endl;
+            // std::cout<<key<<" between: "<<info.root.arr[i-1].key<<" and "<<info.root.arr[i].key<<" at "<<i<<std::endl;
             info.index_root = i;
             offset = info.root.arr[i-1].pointer;
             // std::cout<<"offset: "<<offset<<std::endl;
@@ -154,7 +154,7 @@ void B_Tree<T,S>::search(uint16_t key,uint16_t num_rows,bool has_height){
             break;
         }else if(info.root.arr[i].key < key && info.root.arr[i+1].pointer == 0){
             info.index_root = i+1;
-            std::cout<<i<<"larger than: "<<info.root.arr[i].key<<std::endl;
+            // std::cout<<i<<"larger than: "<<info.root.arr[i].key<<std::endl;
             offset = info.root.arr[i].pointer;
             
             
@@ -185,10 +185,10 @@ void B_Tree<T,S>::search(uint16_t key,uint16_t num_rows,bool has_height){
         for(size_t j = 0; j<64;j++){
         name += info.rel.rows[i].index[j];
         }
-        std::cout<<"name: "<<name<<" key: "<<key<<std::endl;
+        // std::cout<<"name: "<<name<<" key: "<<key<<std::endl;
         
         if(key <= name || (i == num_rows-1 && key > name)||info.rel.rows[i].check == 0){
-            std::cout<<"searching "<<i<<" "<<key<<" vs "<<name<<std::endl;
+            // std::cout<<"searching "<<i<<" "<<key<<" vs "<<name<<std::endl;
             info.index = i;
             
             return;
@@ -202,28 +202,25 @@ void B_Tree<T,S>::search(uint16_t key,uint16_t num_rows,bool has_height){
 template<typename T,typename S>
 void B_Tree<T,S>::remove(uint16_t key, uint16_t num_rows, bool has_height){
     //search like you did in search
-    std::cout<<"here"<<std::endl;
+    
     search(key,num_rows,1);
-    std::cout<<"Searched"<<std::endl;
-    if(!fsm.has_root()){
+    
+    if(!fsm.has_root())
     fsm.get_fsm(file);
-    std::cout<<"got the fsm"<<std::endl;
-    }
-    std::cout<<"Info: "<<info.rel.page_id<<" "<<info.rel.rows[info.index].index<<std::endl;
-    for(size_t i = 0;i<num_rows:i++)
-    std::cout<<i<<": "<<info.rel.rows[i].index<<std::endl;
+    
+    
+    
     //once you have the correct page and relation row, delete the row from the array of relation rows. Update the fsm and any other things you need to telling them that space is open. maybe try to move all the rows "above" the one you delete down to have the free space at the end which will make free space easier to track
     S empty;
-    info.rel.rows[row.index] = empty;
-    for(size_t i = row.index; i < num_rows;i++){
+    info.rel.rows[info.index] = empty;
+    for(size_t i = info.index; i < num_rows;i++){
         info.rel.rows[i] = info.rel.rows[i+1];
     }
-    for(size_t i = 0;i<num_rows:i++)
-    std::cout<<i<<": "<<info.rel.rows[i].index<<std::endl;
-    if(info.rel.rows[0].check == 0){
+    
+    if(info.rel.rows[0].check == 0)
         fsm.set_space(info.rel.page_id,0);
-        std::cout<<"huh"<<std::endl;
-    }else
+        
+    else
     fsm.set_space(info.rel.page_id,1);
 
     fsm.flush_fsm(info.rel.page_id);
@@ -364,6 +361,8 @@ void B_Tree<T,S>::insert(uint16_t key, S row,uint16_t num_rows,size_t test){
             }
             half.rows[info.index -(num_rows/2)] = row;
         };
+        half.bottom_p = info.rel.bottom_p;
+        info.rel.bottom_p = half.page_id*4096;
         fsm.set_space(half.page_id,1);
         fsm.set_space(info.rel.page_id,1);
         info.fs->seekp(info.rel.page_id * 4096);
@@ -395,10 +394,10 @@ void B_Tree<T,S>::insert(uint16_t key, S row,uint16_t num_rows,size_t test){
             // std::cout<<"ROOT: "<<info.root.page_id<<std::endl;
             // std::cout<<info.root.arr[i].key<<": "<<info.root.arr[i].pointer<<std::endl;
             if(info.index_root >= 4096){
-                std::cout<<"space: "<<k_p.key<<" "<<k_p.pointer<<std::endl;
+                // std::cout<<"space: "<<k_p.key<<" "<<k_p.pointer<<std::endl;
             // step 3: if parent has room, insert at appropriate location. 
             
-            std::cout<<"ROOT: "<<info.root.page_id<<std::endl;
+            // std::cout<<"ROOT: "<<info.root.page_id<<std::endl;
             for(size_t i = 0; i < 511;i++){
                 if(info.root.arr[i].key == key){
             // std::cout<<"equals: "<<i<<std::endl;
@@ -668,13 +667,13 @@ void B_Tree<T,S>::insert(uint16_t key, S row,uint16_t num_rows,size_t test){
         //get new root page and send koi and location of new "children" to new root for l & r pointers
         
         
-
+        
         
         new_root.arr[0] = {key_of_interest,8192};
         new_root.next_index=0;
         info.rel.page_id = 1;
         half.page_id = 2;
-
+        info.rel.bottom_p = half.page_id*4096;
         
             //switch the current 0 index page and the root page  so the root is always at index 0
             
@@ -700,3 +699,63 @@ void B_Tree<T,S>::insert(uint16_t key, S row,uint16_t num_rows,size_t test){
 // step 6: if need to split root, get new root page, send koi and locations of children to new root. save location of new root in specialized file with root locations of each index.
     // fsm.flush_fsm(std::string{"catalog_rel"});
 };
+
+template<typename T,typename S>
+void B_Tree<T,S>::search_range(uint16_t key,uint16_t key_last,uint16_t num_rows,bool has_height){
+    uint16_t index_last{num_rows};
+    if(has_height){
+    //if height 
+    
+    //get first index
+    search(key,num_rows,has_height);
+    if(key == key_last)
+    return;
+    bool found = false;
+    while(!found){
+        // std::cout<<info.rel.page_id<<std::endl;
+    for(size_t i = info.index; i<num_rows;i++){
+        // std::cout<<calc_name(info.rel.rows[i].index)<<std::endl;
+        if(calc_name(info.rel.rows[i].index) == key_last || calc_name(info.rel.rows[i+1].index) > key_last){
+            index_last = i;
+            break;
+        }
+    };
+    if(index_last < num_rows){
+        // std::cout<<"found: "<<index_last<<std::endl;
+        for(size_t i = info.index; i <= index_last;i++){
+            rows.push_back(info.rel.rows[i]);
+        }
+        found = true;
+    }else{
+        for(size_t i = info.index;i<num_rows;i++){
+        rows.push_back(info.rel.rows[i]);
+        if(info.rel.rows[i+1].check == 0)
+        break;
+        }
+        
+        info.fs->seekg(info.rel.bottom_p);
+        info.fs->read(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
+        info.index = 0;
+    };
+    }
+    //if the insert will not fit on that page 
+    //get the next leaf page
+    //see if it will fit on that page and keep all pages in memory
+    //return index of first, page of first, index of last, page of last, everything you need
+    }else{
+        //if no height:
+        for(size_t i = info.index;i<num_rows;i++){
+            if(calc_name(info.rel.rows[i].index) == key_last || calc_name(info.rel.rows[i+1].index) > key_last){
+            rows.push_back(info.rel.rows[i]);
+            index_last = i;
+            return;
+            };
+            rows.push_back(info.rel.rows[i]);
+        }
+        
+
+    }
+    
+    return;
+}
+

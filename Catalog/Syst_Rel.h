@@ -17,7 +17,6 @@ row_size(int)
 typedef struct{
     char index[64]={};
     char rel_file[64]={};
-    char* row_type;
     uint16_t num_pages{};
     uint32_t num_rows{};
     uint16_t check{};
