@@ -1,5 +1,5 @@
 #include "Node.h"
-
+/*
 void Node::set_checksum(uint16_t huh= 0){
     page_header.checksum = huh;
 };//we'll make our way around to this...
@@ -38,3 +38,4 @@ void Node::print_data(){
     std::cout<<"\n"<<std::endl;
 }
 
+*/

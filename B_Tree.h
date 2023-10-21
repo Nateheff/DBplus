@@ -2,10 +2,11 @@
 
 #include "./Disk_Space/FSM.h"
 #include "./Disk_Space/Disk_SM.h"
-#include "./Buffer_Manager/Frame.h"
-#include "./Buffer_Manager/Buffer_PM.h"
-#include "./Catalog/Syst_Root.h"
 
+#include "./Catalog/Syst_Root.h"
+#include "./Catalog/Syst_Index.h"
+#include "./Catalog/Syst_Attr.h"
+#include "./Catalog/Syst_Rel.h"
 
 #include <cstring>
 #include <fstream>
@@ -18,30 +19,47 @@ struct Info_Pack{
     uint16_t index_root{};
     Syst_Root root{};
     T rel{};
-    std::fstream* fs;
+    // std::fstream* fs;
     std::vector<uint32_t> offsets;
     
 
 };
 
+template<typename T>
+struct Frame_t{
+  T page;
+  bool dirty{};
+  uint16_t pin_count{};
+};
+//T is the leaf page type and S is the row type
 template<typename T,typename S>
 class B_Tree
 {
   std::string file;
-
+  FSM fsm;  
   public:
+
     B_Tree<T,S>(std::string file_name):file{file_name}{};
-    ~B_Tree<T,S>(){info.fs->close();std::cout<<"closed"<<std::endl;}
+    B_Tree<T,S>(std::string file_name, bool has_height):file{file_name},height{has_height}{};
+    ~B_Tree<T,S>(){};
     Info_Pack<T> info{};
-    
+    bool height{};
+    bool dirty{};
+    // std::fstream fs;
+    std::vector<Frame_t<T>>buffer_pool{100};
     std::vector<S>rows;
-    FSM fsm;  
-    void search(uint16_t key,uint16_t num_rows,bool has_height);
-    void remove(uint16_t key, uint16_t num_rows, bool has_height);
-    void insert(uint16_t key, S row,uint16_t num_rows,size_t test);
+    System_Rel_Row *rel{};
+    // Syst_Index_Row* ind{};
     
-    void search_range(uint16_t key_first,uint16_t key_last,uint16_t num_rows,bool has_height);
-    uint16_t calc_name(char* arr);
+    std::vector<Syst_Attr_Row*>attrs{};
+    
+    
+    void search_catalog(uint16_t key,uint16_t num_rows);
+    void remove_catalog(uint16_t key, uint16_t num_rows);
+    void insert_catalog(uint16_t key, S row,uint16_t num_rows);
+    void search_range_catalog(uint16_t key_first,uint16_t key_last,uint16_t num_rows);
+
+    uint16_t calc_name(const char* arr);
 
 };
 #include "B_Tree.hh"

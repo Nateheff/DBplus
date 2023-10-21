@@ -1,8 +1,9 @@
 #pragma once
-#include "Syst_Catalog.h"
+
 #include "Syst_Root.h"
 #include "../Disk_Space/FSM.h"
 #include <cstring>
+#include <vector>
 /*
 rel_name(string)
 rel_file(string)
@@ -12,24 +13,24 @@ num_rows(int)
 num_attrs(int)
 kind(char(index,normal,etc.))
 row_size(int)
-
 */
-typedef struct{
-    char index[64]={};
-    char rel_file[64]={};
+
+ struct System_Rel_Row{
+    char index[63]={};
+    char rel_file[63]={};
     uint16_t num_pages{};
     uint32_t num_rows{};
-    uint16_t check{};
+    uint16_t check{};//num_attrs
     char kind;
     uint16_t row_size{};
-    }System_Rel_Row;
+    };
 
 struct Syst_Rel{
     uint32_t page_id{};
     uint8_t is_index{};
     uint32_t bottom_p{};
     System_Rel_Row rows[4089/sizeof(System_Rel_Row)]; //array of them
-    char padding [4096 - (sizeof(rows)+20)]{};
+    char padding [24]{};
 };
 typedef struct {
     uint16_t index{};
@@ -42,16 +43,9 @@ typedef struct {
 
 }Info_Pack_Rel;
 
-class Catalog_Rel:public Syst_Catalog{
+class Catalog_Rel{
     public:
 Info_Pack_Rel info;
 FSM fsm;
-/*
-void search_rel(uint16_t key,bool has_height);
-void remove_rel(uint16_t key);
-void insert_rel(uint16_t key, System_Rel_Row row,size_t test);
-
-~Catalog_Rel(){info.fs->close(); std::cout<<"closing"<<std::endl;};
-*/
 void create_catalog();
 };

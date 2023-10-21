@@ -2,21 +2,45 @@
 
 void Catalog_Rel::create_catalog(){
     std::string name = {"catalog_rel"};
-    std::ofstream fs;
-    fs.open(name+".db",std::ios_base::binary);
-    System_Rel_Row empty;
+    std::cout<<"5"<<std::endl;
+    std::fstream fs;
+    fs.open(name+".db",std::ios_base::binary|std::ios_base::out);
+    Syst_Rel root{};
 
-    
-    for(size_t i =0; i<26;i++){
-        info.rel.rows[i] = empty;
-    }
-    
-    fs.write(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
+    System_Rel_Row rel{};
+    System_Rel_Row attr{};
+    System_Rel_Row ind{};
+
+    rel.check = 7;
+    strcpy(rel.index,"catalog_rel");
+    rel.num_pages = 1;
+    rel.num_rows = 3;
+    strcpy(rel.rel_file,"catalog_rel.db");
+    rel.row_size = sizeof(System_Rel_Row);
+
+    ind.check = 7;
+    strcpy(ind.index,"catalog_ind");
+    ind.num_pages = 1;
+    ind.num_rows = 3;
+    strcpy(ind.rel_file,"catalog_ind.db");
+    ind.row_size = 80;
+
+    attr.check = 5;
+    strcpy(attr.index,"catalog_attr");
+    attr.num_pages = 1;
+    attr.num_rows = 19;
+    strcpy(attr.rel_file,"catalog_attr.db");
+    attr.row_size= 130;
+
+    root.rows[0] = ind;
+    root.rows[1] = rel;
+    root.rows[2] = attr;
+    fs.write(reinterpret_cast<char*>(&root),sizeof(root));
     
     fs.close();
     std::cout<<"catalog: "<<name<<std::endl;
     fsm.create_fsm(name);
-    
+    return;
 };
 
 /*

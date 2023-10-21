@@ -13,8 +13,9 @@ bool FSM::create_fsm(std::string name_val){
     // fs.close();
     // delete [] data.free_space;
     name = name_val+"_fsm.db";
+
     std::fstream fs;
-    //std::cout<<name<<std::endl;
+    std::cout<<name<<std::endl;
     fs.open(name,std::ios_base::binary|std::ios_base::out);
     // FSM_Data_Root root_empty;
     // root = &root_empty;
@@ -144,10 +145,10 @@ void FSM::flush_fsm(uint32_t page_num){
     fs.close();
 }
 
-uint8_t FSM::has_space(uint32_t page_num,uint16_t check){
+uint8_t FSM::has_space(uint32_t page_num){
     //std::cout<<"Here: "<<page_num<<std::endl;
     if(page_num > 4088){
-        std::cout<<"wrong2: "<<page_num<<" b "<<check<<std::endl;
+        std::cout<<"wrong2: "<<page_num<<std::endl;
         return 0;
     uint32_t offset = ((((page_num)-4088)/4096)+1)*4096;
     std::fstream fs;

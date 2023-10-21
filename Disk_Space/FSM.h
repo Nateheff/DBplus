@@ -39,7 +39,7 @@ class FSM
     uint32_t page();
     void set_space(uint32_t page_num,uint8_t space);
     void flush_fsm(uint32_t page_num);
-    uint8_t has_space(uint32_t page_num,uint16_t check);
+    uint8_t has_space(uint32_t page_num);
     uint32_t has_root(){ return root.num_pages;(root.num_pages!=0 && root.num_pages <=2);}
     // uint8_t is_hole(){return data.hole;};
     // void set_hole(uint8_t num){data.hole=num;};

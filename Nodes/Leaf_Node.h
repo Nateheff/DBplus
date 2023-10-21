@@ -1,52 +1,27 @@
 #pragma once
-#include "Serializable.hpp"
-#include "Internal_Leaf_Node.h"
-
-#include <any>
-#include <iostream>
+#include <stdint.h>
 #include <tuple>
-#include <memory>
-/*
- * We Need:
- * #rows per block (512 (block size)/row size), #blocks(db size/ 512(block size))
- * 
- **/
- 
+#include <vector>
+#include <fstream>
 
+#include "../B_Tree.h"
+#include "../B_Tree.hh"
+#include "../Catalog/Syst_Attr.h"
+#include "../Catalog/Syst_Rel.h"
 
+typedef struct{
+    char data[4092] = {0};
+    uint32_t bottom_p{};
+}Leaf_Data;
 
-using namespace Serialize;
-
-class Leaf_Node: public Serializable<Leaf_Node>
-{    Internal_Leaf_Node* parent_ptr;
-    const uint16_t max_size = 4096;
-   
-    
-    struct Record{
+class Leaf_Node{
+    std::string file;
+    B_Tree<Syst_Attr,Syst_Attr_Row> tree_attr{"catalog_attr"};
+    B_Tree<Syst_Rel,System_Rel_Row> tree_rel{"catalog_rel"};
+    public:
+    Leaf_Node(std::string file_name):file{file_name}{};
+    void Get_Table();
 };
-    std::vector<Record>table;
-    Leaf_Node* next_ptr;
-    
-public:
-
-    void Get_Types(){
-        
-    }
-    
-    template<typename ...Args>
-    void Add_Table(const Args...params){
-        Record rec{params...};
-        
-        int test;
-        auto tup = std::make_tuple(test);
-        table.emplace_back(rec);
-    }
-    
-    Leaf_Node()=default;
-    ~Leaf_Node()=default;
-};
-
-
 
 
 

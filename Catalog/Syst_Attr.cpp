@@ -1,4 +1,125 @@
 #include "Syst_Attr.h"
+#include "../Disk_Space/FSM.h"
+
+void Catalog_Attr::create_catalog(){
+    std::cout<<"6"<<std::endl;
+    std::string name = {"catalog_attr"};
+    std::vector<Syst_Attr_Row>vec{};
+    for(size_t i = 0;i<19;i++){
+        Syst_Attr_Row empty{};
+        vec.push_back(empty);
+    }
+    for(size_t i = 0; i<7;i++){
+        strcpy(vec.at(i).index,"catalog_ind");
+        vec.at(i).position = i+1;
+    }
+    //ind attributes
+   
+    strcpy(vec.at(0).attr_name,"index");
+    vec.at(0).check = 64;
+    vec.at(0).type = 's';
+    
+    strcpy(vec.at(1).attr_name,"ind_height");
+    vec.at(1).check = 1;
+    vec.at(1).type = 'i';
+
+    strcpy(vec.at(2).attr_name,"key_type");
+    vec.at(2).check = 1;
+    vec.at(2).type = 'c';
+
+    strcpy(vec.at(3).attr_name,"check");
+    vec.at(3).check = 2;
+    vec.at(3).type = 'i';
+
+    strcpy(vec.at(4).attr_name,"ind_min");
+    vec.at(4).check = 4;
+    vec.at(4).type = 'i';
+
+    strcpy(vec.at(5).attr_name, "ind_max");
+    vec.at(5).check = 4;
+    vec.at(5).type = 'i';
+
+    strcpy(vec.at(6).attr_name, "num_keys");
+    vec.at(6).check = 4;
+    vec.at(6).type = 'i';
+
+    //rel attributes
+    for(size_t i = 7; i<14;i++){
+        strcpy(vec.at(i).index,"catalog_rel");
+        vec.at(i).position = i-6;
+    }
+
+    strcpy(vec.at(7).attr_name,"index");
+    vec.at(7).check = 64;
+    vec.at(7).type = 's';
+
+    strcpy(vec.at(8).attr_name,"rel_file");
+    vec.at(8).check = 64;
+    vec.at(8).type = 's';
+
+    strcpy(vec.at(9).attr_name,"num_pages");
+    vec.at(9).check = 2;
+    vec.at(9).type = 'i';
+
+    strcpy(vec.at(10).attr_name,"num_rows");
+    vec.at(10).check = 4;
+    vec.at(10).type = 'i';
+
+    strcpy(vec.at(11).attr_name,"check");
+    vec.at(11).check = 2;
+    vec.at(11).type = 'i';
+
+    strcpy(vec.at(12).attr_name,"kind");
+    vec.at(12).check = 1;
+    vec.at(12).type = 'c';
+
+    strcpy(vec.at(13).attr_name,"row_size");
+    vec.at(13).check = 2;
+    vec.at(13).type = 'i';
+    //attr attributes
+    for(size_t i = 14; i< 19;i++){
+        strcpy(vec.at(i).index,"catalog_attr");
+        vec.at(i).position = i-13;
+    }
+    strcpy(vec.at(14).attr_name,"index");
+    vec.at(14).check = 64;
+    vec.at(14).type = 's';
+
+    strcpy(vec.at(14).attr_name,"attr_name");
+    vec.at(14).check = 64;
+    vec.at(14).type = 's';
+
+    strcpy(vec.at(15).attr_name,"position");
+    vec.at(15).check = 2;
+    vec.at(15).type = 'i';
+
+    strcpy(vec.at(16).attr_name, "type");
+    vec.at(16).check = 1;
+    vec.at(16).type = 'c';
+
+    strcpy(vec.at(17).attr_name,"check");
+    vec.at(17).check = 1;
+    vec.at(17).type = 'i';
+
+    Syst_Attr root{};
+    for(size_t i = 0;i<19;i++){
+        root.rows[i] = vec.at(i);
+    }
+    std::fstream fs;
+    fs.open(name+".db",std::ios_base::binary|std::ios_base::out);
+    fs.write(reinterpret_cast<char*>(&root),sizeof(root));
+    FSM fsm;
+    fsm.create_fsm(name);
+    return;
+}
+// typedef struct{
+//     char index[63]={}; //rel_name
+//     char attr_name[63]={};
+//     uint16_t position{};
+//     char type;
+//     uint8_t check{}; //attr_length(bytes)
+//     }Syst_Attr_Row;
+
 /*
 Attr_Info_Pack* Catalog_Attr::search_range_attr(uint16_t key,Attr_Info_Pack *pack,uint16_t num,bool has_height = 1){
     //get first index of key
