@@ -17,20 +17,20 @@ void Catalog_Rel::create_catalog(){
     rel.num_rows = 3;
     strcpy(rel.rel_file,"catalog_rel.db");
     rel.row_size = sizeof(System_Rel_Row);
-
+    
     ind.check = 7;
     strcpy(ind.index,"catalog_ind");
     ind.num_pages = 1;
     ind.num_rows = 3;
     strcpy(ind.rel_file,"catalog_ind.db");
-    ind.row_size = 80;
+    ind.row_size = 84;
 
     attr.check = 5;
     strcpy(attr.index,"catalog_attr");
     attr.num_pages = 1;
-    attr.num_rows = 19;
+    attr.num_rows = 20;
     strcpy(attr.rel_file,"catalog_attr.db");
-    attr.row_size= 130;
+    attr.row_size= 132;
 
     root.rows[0] = ind;
     root.rows[1] = rel;

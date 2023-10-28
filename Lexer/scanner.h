@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 #include "list.h"
-#include "list.cpp"
+
 /*
 Takes in the string as scan buf, then pushes the characters to term.
 */

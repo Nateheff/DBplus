@@ -1,11 +1,37 @@
-#ifndef NODE_HPP
-#define NODE_HPP
+#pragma once
 #include <stdint.h>
 #include <vector>
 #include <iostream>
 #include <algorithm>
+// #include "../Catalog/Syst_Root.h"
+#include "../Catalog/Syst_Attr.h"
 
 const uint16_t MAX_PAGE = 4096;
+
+struct Tuple_Attr{
+    Syst_Attr_Row meta;
+    char* data;
+};
+
+std::vector<Tuple_Attr>create_tuple(std::vector<Syst_Attr_Row>*tuple_info,char*data,uint16_t size);
+
+template<typename T>
+T get_type(char*data, char type, int size){
+    switch(type){
+        case('i'):
+        T integer = atoi(data);
+        return integer;
+        case('d'||'f'):{
+            T doub = atof(data);
+            return doub;
+            
+        }
+        case('b'):
+        T bl = atoi(data);
+        return bl;
+
+    };
+}
 
 class Node
 {
@@ -35,4 +61,4 @@ class Node
 
 };
 
-#endif // NODE_HPP
+

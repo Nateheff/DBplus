@@ -1,4 +1,27 @@
 #include "Node.h"
+
+std::vector<Tuple_Attr> create_tuple(std::vector<Syst_Attr_Row>*tuple_info,char*data,uint16_t size){
+    std::cout<<"allocated"<<std::endl;
+    std::vector<Tuple_Attr>vec;
+    
+    uint16_t pos{};
+    for(auto info:*tuple_info){
+        
+        char value[(int)info.check];
+        for(size_t i =pos;i<=pos+info.check;i++){
+            value[i]=data[i];
+        }
+        pos+=info.check;
+        Tuple_Attr tup{info,value};
+        vec.push_back(tup);
+    }
+    return vec;
+};
+
+
+
+
+
 /*
 void Node::set_checksum(uint16_t huh= 0){
     page_header.checksum = huh;

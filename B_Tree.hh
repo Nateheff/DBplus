@@ -166,26 +166,26 @@ void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
         std::cout<<"No height "<<" "<<fs.tellg()<<std::endl;
         
         fs.seekg(0);
-        std::cout<<"pre "<<fs.fail()<<std::endl;
+        // std::cout<<"pre "<<fs.fail()<<std::endl;
         fs.read(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
         std::cout<<"post "<<fs.gcount()<<std::endl;
         info.rel.page_id = 0;
 
     };
     
-    std::cout<<"got the rel"<<info.rel.page_id<<std::endl;
+    // std::cout<<"got the rel"<<info.rel.page_id<<std::endl;
     for(size_t i =0;i<num_rows;i++){
         uint16_t name{};
         std::cout<<i<<": "<<info.rel.rows[i].index<<std::endl;
-            for(size_t j = 0; j<64;j++){
+            for(size_t j = 0; j<63;j++){
             name += info.rel.rows[i].index[j];
-        
+            
             }
-             std::cout<<"name: "<<name<<" key: "<<key<<std::endl;
+            //  std::cout<<"name: "<<name<<" key: "<<key<<std::endl;
             if(key <= name || (i == num_rows-1 && key > name)||info.rel.rows[i].check == 0){
             
                 info.index = i;
-            
+                
                 return;
         }
         
@@ -738,7 +738,7 @@ void B_Tree<T,S>::search_range_catalog(uint16_t key,uint16_t key_last,uint16_t n
         }
     };
     if(index_last < num_rows){
-        std::cout<<"found: "<<index_last<<std::endl;
+        // std::cout<<"found: "<<index_last<<std::endl;
         for(size_t i = info.index; i <= index_last;i++){
             rows.push_back(info.rel.rows[i]);
         }
@@ -763,12 +763,12 @@ void B_Tree<T,S>::search_range_catalog(uint16_t key,uint16_t key_last,uint16_t n
         //if no height:
         
         for(size_t i = info.index;i<num_rows;i++){
-            std::cout<<calc_name(info.rel.rows[i+1].index)<<std::endl;
-            if(calc_name(info.rel.rows[i].index) == key_last || calc_name(info.rel.rows[i+1].index) > key_last){
+            // std::cout<<calc_name(info.rel.rows[i].index)<<info.rel.rows[i].type<<std::endl;
+            if(calc_name(info.rel.rows[i+1].index) > key_last){
             rows.push_back(info.rel.rows[i]);
             index_last = i;
             return;
-            };
+            }else if(calc_name(info.rel.rows[i].index)!=0)
             rows.push_back(info.rel.rows[i]);
         }
         

@@ -5,7 +5,7 @@ void Catalog_Attr::create_catalog(){
     std::cout<<"6"<<std::endl;
     std::string name = {"catalog_attr"};
     std::vector<Syst_Attr_Row>vec{};
-    for(size_t i = 0;i<19;i++){
+    for(size_t i = 0;i<20;i++){
         Syst_Attr_Row empty{};
         vec.push_back(empty);
     }
@@ -29,7 +29,7 @@ void Catalog_Attr::create_catalog(){
 
     strcpy(vec.at(3).attr_name,"check");
     vec.at(3).check = 2;
-    vec.at(3).type = 'i';
+    vec.at(3).type = 's';
 
     strcpy(vec.at(4).attr_name,"ind_min");
     vec.at(4).check = 4;
@@ -43,67 +43,74 @@ void Catalog_Attr::create_catalog(){
     vec.at(6).check = 4;
     vec.at(6).type = 'i';
 
+    strcpy(vec.at(7).attr_name,"ind_start");
+    vec.at(7).check = 4;
+    vec.at(7).type = 'i';
+    
+
     //rel attributes
-    for(size_t i = 7; i<14;i++){
+    for(size_t i = 8; i<15;i++){
         strcpy(vec.at(i).index,"catalog_rel");
-        vec.at(i).position = i-6;
+        vec.at(i).position = i-7;
     }
 
-    strcpy(vec.at(7).attr_name,"index");
-    vec.at(7).check = 64;
-    vec.at(7).type = 's';
-
-    strcpy(vec.at(8).attr_name,"rel_file");
+    strcpy(vec.at(8).attr_name,"index");
     vec.at(8).check = 64;
     vec.at(8).type = 's';
 
-    strcpy(vec.at(9).attr_name,"num_pages");
-    vec.at(9).check = 2;
-    vec.at(9).type = 'i';
+    strcpy(vec.at(9).attr_name,"rel_file");
+    vec.at(9).check = 64;
+    vec.at(9).type = 's';
 
-    strcpy(vec.at(10).attr_name,"num_rows");
-    vec.at(10).check = 4;
-    vec.at(10).type = 'i';
+    strcpy(vec.at(10).attr_name,"num_pages");
+    vec.at(10).check = 2;
+    vec.at(10).type = 's';
 
-    strcpy(vec.at(11).attr_name,"check");
-    vec.at(11).check = 2;
+    strcpy(vec.at(11).attr_name,"num_rows");
+    vec.at(11).check = 4;
     vec.at(11).type = 'i';
 
-    strcpy(vec.at(12).attr_name,"kind");
-    vec.at(12).check = 1;
-    vec.at(12).type = 'c';
+    strcpy(vec.at(12).attr_name,"check");
+    vec.at(12).check = 2;
+    vec.at(12).type = 's';
 
-    strcpy(vec.at(13).attr_name,"row_size");
-    vec.at(13).check = 2;
-    vec.at(13).type = 'i';
+    strcpy(vec.at(13).attr_name,"kind");
+    vec.at(13).check = 1;
+    vec.at(13).type = 'c';
+
+    strcpy(vec.at(14).attr_name,"row_size");
+    vec.at(14).check = 2;
+    vec.at(14).type = 's';
     //attr attributes
-    for(size_t i = 14; i< 19;i++){
+    for(size_t i = 15; i< 20;i++){
         strcpy(vec.at(i).index,"catalog_attr");
-        vec.at(i).position = i-13;
+        vec.at(i).position = i-14;
     }
-    strcpy(vec.at(14).attr_name,"index");
-    vec.at(14).check = 64;
-    vec.at(14).type = 's';
+    strcpy(vec.at(15).attr_name,"index");
+    vec.at(15).check = 64;
+    vec.at(15).type = 's';
 
-    strcpy(vec.at(14).attr_name,"attr_name");
-    vec.at(14).check = 64;
-    vec.at(14).type = 's';
+    strcpy(vec.at(16).attr_name,"attr_name");
+    vec.at(16).check = 64;
+    vec.at(16).type = 's';
 
-    strcpy(vec.at(15).attr_name,"position");
-    vec.at(15).check = 2;
-    vec.at(15).type = 'i';
+    strcpy(vec.at(17).attr_name,"position");
+    vec.at(17).check = 2;
+    vec.at(17).type = 's';
 
-    strcpy(vec.at(16).attr_name, "type");
-    vec.at(16).check = 1;
-    vec.at(16).type = 'c';
+    strcpy(vec.at(18).attr_name, "type");
+    vec.at(18).check = 1;
+    vec.at(18).type = 'c';
 
-    strcpy(vec.at(17).attr_name,"check");
-    vec.at(17).check = 1;
-    vec.at(17).type = 'i';
+    strcpy(vec.at(19).attr_name,"check");
+    vec.at(19).check = 1;
+    vec.at(19).type = 'i';
 
     Syst_Attr root{};
-    for(size_t i = 0;i<19;i++){
+    for(size_t i = 0;i<20;i++){
+        
         root.rows[i] = vec.at(i);
+        
     }
     std::fstream fs;
     fs.open(name+".db",std::ios_base::binary|std::ios_base::out);

@@ -1,24 +1,22 @@
-#include <iostream>
-#include <stdint.h>
-#include <map>
-#include <vector>
+#include "Construct.h"
 
-bool receiver(std::vector<uint16_t> full_tok,std::vector<std::string> identifiers){
+bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> identifiers,Keyword_List*list){
+    std::cout<<full_tok.size()<<" "<<identifiers.size()<<std::endl;
     for(size_t i = 0; i < full_tok.size();i++){
         switch(full_tok.at(i)){
             case(2): //create
             {
                 uint8_t mode {};
                 if(full_tok.at(i+1)==3){//database
-                    //create_db(indentifer.at(0));
+                    create_db(identifiers.at(0));
                     std::cout<<"Creating database!"<<std::endl;
                 }
                 else if(full_tok.at(i+1)==11){//table
                 std::string table_name = identifiers.at(0);
-                if(full_tok.at(i+2)!=23)//(
+                if(full_tok.at(full_tok.size()-1)!=24)//(
                 return false;
                 std::cout<<"creating table!"<<std::endl;
-                //create_table(table_name,full_tok,identifiers,full_tok.size()-3,identifiers.size()-1);
+                create_table(table_name,full_tok,identifiers,full_tok.size()-3,identifiers.size()-1,list);
                 }else
                 return false;
                 break;

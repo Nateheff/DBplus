@@ -10,6 +10,10 @@
 #include "Catalog/Syst_Root.h"
 #include "Catalog/Syst_Rel.h"
 #include "B_Tree.h"
+#include "Nodes/Node.h"
+#include "Lexer/scanner.h"
+#include "Parser/Construct.h"
+#include "Commands/Commands.h"
 
 class Run{
     public:

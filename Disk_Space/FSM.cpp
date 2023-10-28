@@ -19,10 +19,12 @@ bool FSM::create_fsm(std::string name_val){
     fs.open(name,std::ios_base::binary|std::ios_base::out);
     // FSM_Data_Root root_empty;
     // root = &root_empty;
+    root.num_pages = 1;
     set_space(0,1);
     fs.write(reinterpret_cast<char*>(&root),sizeof(root));
     
     fs.close();
+    return true;
 
 };
 
@@ -46,7 +48,7 @@ void FSM::new_page(){
     
 }
 
-void FSM::get_fsm(std::string name_val){
+bool FSM::get_fsm(std::string name_val){
     
     std::fstream fs;
     //std::cout<<name<<std::endl;
@@ -54,11 +56,16 @@ void FSM::get_fsm(std::string name_val){
     // std::cout<<name<<std::endl;
     // FSM_Data_Root empty;
     // root= &empty;
-    fs.open(name,std::ios_base::binary | std::ios_base::in);
+    int x = -1;
+    try{
+    fs.open(name,std::ios_base::binary | std::ios_base::in|std::ios_base::out);
     // if(fs.is_open() && fs.good())
     // std::cout<<"early"<<std::endl;
     fs.read(reinterpret_cast<char*>(&root),sizeof(root));
-
+    throw x;
+    }catch(int x){
+        return false;
+    }
     if(fs.gcount()==0 && !fs.fail()){
         std::cout<<"EMPTY"<<std::endl;
         
@@ -69,7 +76,7 @@ void FSM::get_fsm(std::string name_val){
         // std::cout<<"Read: "<<fs.tellg()<<std::endl;
     }
     fs.close();
-  
+  return true;
     
 }
 

@@ -16,8 +16,8 @@ row_size(int)
 */
 
  struct System_Rel_Row{
-    char index[63]={};
-    char rel_file[63]={};
+    char index[64]={};
+    char rel_file[64]={};
     uint16_t num_pages{};
     uint32_t num_rows{};
     uint16_t check{};//num_attrs

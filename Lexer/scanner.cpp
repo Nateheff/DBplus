@@ -4,13 +4,19 @@
 #include <algorithm>
 
 bool Scanner::scanner_run(){
+    // std::cout<<scan_buf.length()<<std::endl;
     for(size_t i = 0; i < scan_buf.length();i++){ 
         
-        if(scan_buf.at(i) != ' '&&scan_buf.at(i)!=scan_buf.back()){
+        if(scan_buf.at(i) != ' '&& scan_buf.at(i)!=scan_buf.back()){
+            if(op_set.find(std::string{scan_buf.at(i)}) != op_set.end()){
+                std::cout<<"Op: "<<scan_buf.at(i)<<" ";
+                full_tok.push_back(op_set[std::string{scan_buf.at(i)}]);
+            }else
             term += scan_buf.at(i);
             
+            
         }else{
-            if(get_kw_tok(term) > kw_list->num_kw  && op_set.find(term)==op_set.end()){
+            if(get_kw_tok(term) > kw_list->num_kw  && op_set.find(term)==op_set.end() && term.length()>0){
                 
                 std::cout<<"ID: "<<term<<" ";
                 identifiers.push_back(term);
@@ -21,11 +27,13 @@ bool Scanner::scanner_run(){
                 std::cout<<"Command: "<<term<<" ";
                 full_tok.push_back(get_kw_tok(term));
                 term.clear();
-            }else if(op_set.find(term) != op_set.end()){
-                std::cout<<"Op: "<<term<<" ";
-                full_tok.push_back(op_set[term]);
-                term.clear();
-            }else 
+            // }else if(op_set.find(term) != op_set.end()){
+            //     std::cout<<"Op: "<<term<<" ";
+            //     full_tok.push_back(op_set[term]);
+            //     term.clear();
+            }else if(scan_buf.at(i)==' ')
+            continue;
+            else
             return false;
         };
 
