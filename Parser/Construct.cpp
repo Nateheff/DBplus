@@ -1,6 +1,6 @@
 #include "Construct.h"
 
-bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> identifiers,Keyword_List*list){
+bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> identifiers,Keyword_List* list,Run* obj){
     std::cout<<full_tok.size()<<" "<<identifiers.size()<<std::endl;
     for(size_t i = 0; i < full_tok.size();i++){
         switch(full_tok.at(i)){
@@ -16,7 +16,7 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 if(full_tok.at(full_tok.size()-1)!=24)//(
                 return false;
                 std::cout<<"creating table!"<<std::endl;
-                create_table(table_name,full_tok,identifiers,full_tok.size()-3,identifiers.size()-1,list);
+                create_table(table_name,full_tok,identifiers,full_tok.size()-3,identifiers.size()-1,list,obj);
                 }else
                 return false;
                 break;

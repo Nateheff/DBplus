@@ -11,6 +11,8 @@
 #include <cstring>
 #include <set>
 
+#include "Commands/Commands.h"
+#include "Parser/Construct.h"
 #include "run.h"
 
 
@@ -52,7 +54,7 @@ int main()
     std::cout<<"ran"<<std::endl;
     test.print_query();
     std::cout<<"printed"<<std::endl;
-    receiver_main(test.full_tok,test.identifiers,&res_list);
+    receiver_main(test.full_tok,test.identifiers,&res_list,&obj);
     
 
     

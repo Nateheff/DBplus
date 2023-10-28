@@ -3,8 +3,16 @@
 #include <string>
 #include <stdint.h>
 #include <fstream>
+#include <iostream>
 
+#include "../Lexer/list.h"
+#include "../Disk_Space/FSM.h"
+#include "../Catalog/Syst_Attr.h"
+#include "../Catalog/Syst_Index.h"
+#include "../Catalog/Syst_Root.h"
+#include "../Catalog/Syst_Rel.h"
 #include "../run.h"
+class Run;
 
 struct type_size{
     uint16_t size{};
