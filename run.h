@@ -10,6 +10,7 @@
 #include "Catalog/Syst_Root.h"
 #include "Catalog/Syst_Rel.h"
 #include "B_Tree.h"
+#include "B_Tree.hh"
 #include "Nodes/Node.h"
 #include "Lexer/scanner.h"
 

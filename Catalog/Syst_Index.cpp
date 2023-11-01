@@ -27,7 +27,7 @@ void Catalog_Index::create_catalog(B_Tree<Syst_Index,Syst_Index_Row>* tree_ind){
     
     rel.check = 1;
     strcpy(rel.index,"catalog_rel");
-    attr.key_type = 's';
+    rel.key_type = 's';
 
 std::cout<<ind_ind<<" "<<ind_rel<<" "<<ind_attr<<std::endl;
     root.rows[0] = ind;

@@ -13,7 +13,7 @@ bool FSM::create_fsm(std::string name_val){
     // fs.close();
     // delete [] data.free_space;
     name = name_val+"_fsm.db";
-
+    
     std::fstream fs;
     std::cout<<name<<std::endl;
     fs.open(name,std::ios_base::binary|std::ios_base::out);

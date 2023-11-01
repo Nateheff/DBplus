@@ -42,7 +42,7 @@ void create_table(std::string table_name, std::vector<uint16_t>full_tok, std::ve
     }
     std::cout<<ft_size<<std::endl;
     std::cout<<id_size<<std::endl;
-
+    
 
     FSM fsm;
     /*
@@ -81,6 +81,7 @@ for(size_t i =0;i<id_size;i++){
 if(fsm.page()>1){
     ind.ind_start = fsm.page()*4096;
 }
+strcpy(ind.index,table_name.c_str());
 ind.check = 1;
 ind.ind_height = 0;
 ind.ind_max = 0;

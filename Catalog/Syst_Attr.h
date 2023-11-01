@@ -29,9 +29,8 @@ typedef struct
     uint32_t page_id{};
     uint8_t is_index{};
     uint32_t bottom_p{};
-    Syst_Attr_Row rows[4089/sizeof(Syst_Attr_Row)];
-    
-    char padding[52]={};
+    Syst_Attr_Row rows[4087/sizeof(Syst_Attr_Row)];
+    char padding[123]={};
 }Syst_Attr;
 
 typedef struct{

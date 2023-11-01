@@ -29,10 +29,11 @@ struct Syst_Rel{
     uint32_t page_id{};
     uint8_t is_index{};
     uint32_t bottom_p{};
-    System_Rel_Row rows[4089/sizeof(System_Rel_Row)]; //array of them
-    char padding [24]{};
+    System_Rel_Row rows[4096/sizeof(System_Rel_Row)]; //array of them
+    char padding [51]{};
 };
 typedef struct {
+    
     uint16_t index{};
     uint16_t index_root{};
     Syst_Root root;

@@ -9,7 +9,7 @@ void Catalog_Attr::create_catalog(){
         Syst_Attr_Row empty{};
         vec.push_back(empty);
     }
-    for(size_t i = 0; i<7;i++){
+    for(size_t i = 0; i<8;i++){
         strcpy(vec.at(i).index,"catalog_ind");
         vec.at(i).position = i+1;
     }

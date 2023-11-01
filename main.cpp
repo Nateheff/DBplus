@@ -42,7 +42,7 @@ int main()
 {
     Run obj;
     obj.run();
-
+    std::cout<<"flush"<<std::endl;
     Keyword_List res_list = {{{"bool",0},{"char",1},{"create",2},{"database",3},{"float",4},{"from",5},{"insert",6},{"int",7},{"key",8},{"primary",9},{"select",10},{"table",11},{"varchar",12},{"where",13},{"between",14},{"drop",15},{"delete",16},{"update",17},{"short",18}},19,9};
     std::unordered_map<std::string,uint16_t>operators{{"*",19},{">",20},{"<",21},{"/",22},{"(",23},{")",24},{"=",25},{"+",26},{"-",27},{"<=",28},{">=",29},{"<>",30},{",",31}};
     std::string query;
@@ -51,7 +51,7 @@ int main()
     
     Scanner test(query,&res_list,operators);
     test.scanner_run();
-    std::cout<<"ran"<<std::endl;
+    std::cout<<"ran s"<<std::endl;
     test.print_query();
     std::cout<<"printed"<<std::endl;
     receiver_main(test.full_tok,test.identifiers,&res_list,&obj);

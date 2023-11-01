@@ -35,8 +35,8 @@ struct Syst_Index
     uint32_t page_id{};
     uint8_t is_index{};
     uint32_t bottom_p{};
-    Syst_Index_Row rows[4087/(sizeof(Syst_Index_Row))];//array of them
-    char padding[4]{};
+    Syst_Index_Row rows[4096/(sizeof(Syst_Index_Row))];//array of them
+    char padding[51]{};
     
 };
 

@@ -16,7 +16,7 @@ uint16_t B_Tree<T,S>::calc_name(const char* arr){
 template<typename T,typename S>
 void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
     
-    std::cout<<"started "<<height<<std::endl;
+    std::cout<<"started "<<height<<" "<<file<<std::endl;
     // fs.clear();
     // std::cout<<"started"<<std::endl;
     
@@ -168,7 +168,7 @@ void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
         fs.seekg(0);
         // std::cout<<"pre "<<fs.fail()<<std::endl;
         fs.read(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
-        std::cout<<"post "<<fs.gcount()<<std::endl;
+        std::cout<<"post "<<fs.gcount()<<" "<<sizeof(info.rel)<<std::endl;
         info.rel.page_id = 0;
 
     };
@@ -181,9 +181,9 @@ void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
             name += info.rel.rows[i].index[j];
             
             }
-            //  std::cout<<"name: "<<name<<" key: "<<key<<std::endl;
+             std::cout<<"name: "<<name<<" key: "<<key<<std::endl;
             if(key <= name || (i == num_rows-1 && key > name)||info.rel.rows[i].check == 0){
-            
+            std::cout<<"found "<<i<<std::endl;
                 info.index = i;
                 
                 return;
@@ -227,7 +227,7 @@ template<typename T,typename S>
 void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
 //search normally
     
-    // std::cout<<"Key: "<<key<<std::endl;
+    std::cout<<"Key: "<<key<<std::endl;
     // if(test > num_rows)
     // search(key,num_rows,ind_type);
     // else
@@ -266,8 +266,8 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
         
         std::cout<<"INDEX: "<<info.index<<row.index<<std::endl;
         S empty;
-        // for(size_t i=0;i<26;i++)
-        //     std::cout<<i<<": "<<info.rel.rows[i].check<<std::endl;
+        for(size_t i=0;i<24;i++)
+            std::cout<<i<<": "<<info.rel.rows[i].index<<std::endl;
         for(size_t i = num_rows-2;i >= info.index;i--){
             
             
@@ -277,8 +277,8 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
             break;
         }
         
-        // for(size_t i=0;i<26;i++)
-        //     std::cout<<i<<": "<<info.rel.rows[i].check<<std::endl;
+        for(size_t i=0;i<26;i++)
+            std::cout<<i<<"b: "<<info.rel.rows[i].index<<std::endl;
         // std::cout<<"ROW: "<<row.check<<std::endl;
         // 
         info.rel.rows[info.index] = row;

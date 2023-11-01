@@ -30,7 +30,7 @@ typedef struct{
 class FSM 
 {
     std::string name;
-    FSM_Data_Root root;
+    FSM_Data_Root root{};
     FSM_Data* data;
     public: 
     bool create_fsm(std::string name);
