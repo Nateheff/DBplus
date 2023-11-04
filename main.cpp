@@ -14,6 +14,8 @@
 #include "Commands/Commands.h"
 #include "Parser/Construct.h"
 #include "run.h"
+#include "B_Tree.h"
+#include "B_Tree.hh"
 
 
 #define SIZE_NAME_COLUMN 10
@@ -42,20 +44,27 @@ int main()
 {
     Run obj;
     obj.run();
-    std::cout<<"flush"<<std::endl;
-    Keyword_List res_list = {{{"bool",0},{"char",1},{"create",2},{"database",3},{"float",4},{"from",5},{"insert",6},{"int",7},{"key",8},{"primary",9},{"select",10},{"table",11},{"varchar",12},{"where",13},{"between",14},{"drop",15},{"delete",16},{"update",17},{"short",18}},19,9};
-    std::unordered_map<std::string,uint16_t>operators{{"*",19},{">",20},{"<",21},{"/",22},{"(",23},{")",24},{"=",25},{"+",26},{"-",27},{"<=",28},{">=",29},{"<>",30},{",",31}};
+    // std::cout<<"flush"<<std::endl;
+    obj.tree_rel.search_catalog(1141,28);
+    obj.tree_ind.rel = obj.tree_rel.info.rel.rows[obj.tree_rel.info.index];
+    obj.tree_rel.search_catalog(1149,28);
+    obj.tree_rel.rel = obj.tree_rel.info.rel.rows[obj.tree_rel.info.index];
+    obj.tree_rel.search_catalog(1269,28);
+    obj.tree_attr.rel = obj.tree_rel.info.rel.rows[obj.tree_rel.info.index];
+    Keyword_List res_list = {{{"bool",0},{"char",1},{"create",2},{"database",3},{"float",4},{"from",5},{"insert",6},{"int",7},{"key",8},{"primary",9},{"select",10},{"table",11},{"varchar",12},{"where",13},{"between",14},{"drop",15},{"delete",16},{"update",17},{"short",18},{"open",19}},20,9};
+    std::unordered_map<std::string,uint16_t>operators{{"*",20},{">",21},{"<",22},{"/",23},{"(",24},{")",25},{"=",26},{"+",27},{"-",28},{"<=",29},{">=",30},{"<>",31},{",",32}};
     std::string query;
+    while(true){
     std::cout<<"Enter Command to begin: ";
     std::getline(std::cin,query);
     
     Scanner test(query,&res_list,operators);
     test.scanner_run();
-    std::cout<<"ran s"<<std::endl;
+    // std::cout<<"ran s"<<std::endl;
     test.print_query();
     std::cout<<"printed"<<std::endl;
     receiver_main(test.full_tok,test.identifiers,&res_list,&obj);
-    
+    };
 
     
 

@@ -33,9 +33,22 @@ T get_type(char*data, char type, int size){
     };
 }
 
+struct Row{
+        uint32_t index{};
+        std::string data{};
+        
+};
+
+struct Curr_Node{
+    uint32_t page_id{};
+    uint32_t bottom_p{};
+    bool is_index{};
+    Row data[4087/sizeof(Row)]={};
+};
+
 class Node
 {
-    
+uint16_t a = sizeof(Curr_Node);
 //     typedef struct Page_Header{
 //         uint16_t checksum{};
 //         uint16_t free_lp{};

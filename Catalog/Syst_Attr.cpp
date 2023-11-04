@@ -1,5 +1,5 @@
 #include "Syst_Attr.h"
-#include "../Disk_Space/FSM.h"
+
 
 void Catalog_Attr::create_catalog(){
     std::cout<<"6"<<std::endl;

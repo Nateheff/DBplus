@@ -16,7 +16,7 @@ uint16_t B_Tree<T,S>::calc_name(const char* arr){
 template<typename T,typename S>
 void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
     
-    std::cout<<"started "<<height<<" "<<file<<std::endl;
+    // std::cout<<"start "<<height<<" "<<file<<std::endl;
     // fs.clear();
     // std::cout<<"started"<<std::endl;
     
@@ -27,12 +27,12 @@ void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
     
    
     fs.open(file+".db",std::ios_base::binary | std::ios_base::out | std::ios_base::in);
-    // std::cout<<"open "<<file+".db"<<std::endl;
+    std::cout<<"open "<<file+".db"<<std::endl;
     //search through root
     
     
     
-    // std::cout<<fs.is_open()<<std::endl;
+    std::cout<<fs.is_open()<<std::endl;
     //get pointer
     
     uint32_t offset{};
@@ -166,7 +166,7 @@ void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
         std::cout<<"No height "<<" "<<fs.tellg()<<std::endl;
         
         fs.seekg(0);
-        // std::cout<<"pre "<<fs.fail()<<std::endl;
+        std::cout<<"pre "<<fs.fail()<<std::endl;
         fs.read(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
         std::cout<<"post "<<fs.gcount()<<" "<<sizeof(info.rel)<<std::endl;
         info.rel.page_id = 0;
@@ -181,7 +181,7 @@ void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
             name += info.rel.rows[i].index[j];
             
             }
-             std::cout<<"name: "<<name<<" key: "<<key<<std::endl;
+            //  std::cout<<"name: "<<name<<" key: "<<key<<std::endl;
             if(key <= name || (i == num_rows-1 && key > name)||info.rel.rows[i].check == 0){
             std::cout<<"found "<<i<<std::endl;
                 info.index = i;
@@ -227,7 +227,7 @@ template<typename T,typename S>
 void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
 //search normally
     
-    std::cout<<"Key: "<<key<<std::endl;
+    // std::cout<<"Key: "<<key<<std::endl;
     // if(test > num_rows)
     // search(key,num_rows,ind_type);
     // else
@@ -262,12 +262,12 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
     
     // std::cout<<"Checking: "<<info.rel.page_id<<std::endl;
     if(fsm.has_space(info.rel.page_id)==1){
-        std::cout<<"Has space"<<std::endl;
+        // std::cout<<"Has space"<<std::endl;
         
         std::cout<<"INDEX: "<<info.index<<row.index<<std::endl;
         S empty;
-        for(size_t i=0;i<24;i++)
-            std::cout<<i<<": "<<info.rel.rows[i].index<<std::endl;
+        // for(size_t i=0;i<24;i++)
+        //     std::cout<<i<<": "<<info.rel.rows[i].index<<std::endl;
         for(size_t i = num_rows-2;i >= info.index;i--){
             
             
@@ -277,13 +277,13 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
             break;
         }
         
-        for(size_t i=0;i<26;i++)
-            std::cout<<i<<"b: "<<info.rel.rows[i].index<<std::endl;
+        // for(size_t i=0;i<26;i++)
+        //     std::cout<<i<<"b: "<<info.rel.rows[i].index<<std::endl;
         // std::cout<<"ROW: "<<row.check<<std::endl;
         // 
         info.rel.rows[info.index] = row;
-        for(size_t i=0;i<26;i++)
-            std::cout<<i<<": "<<info.rel.rows[i].index<<std::endl;
+        // for(size_t i=0;i<26;i++)
+        //     std::cout<<i<<": "<<info.rel.rows[i].index<<std::endl;
         fsm.set_space(info.rel.page_id,1);
         //  std::cout<<"ATTENTION: "<<info.rel.rows[0].check<<info.rel.rows[1].check<<std::endl;
         if(info.rel.rows[num_rows-1].check != 0){
@@ -308,9 +308,9 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
    
     
         return;
-    }else{
+    }else if(fsm.has_space(info.rel.page_id) != 1 && info.rel.page_id != 0){
          //step 1: split leaf, get positon of new leaf.
-        // std::cout<<"words: "<<info.offsets.size()<<std::endl;
+        std::cout<<"words: "<<info.offsets.size()<<std::endl;
         if(info.offsets.size()>=1){
         T half;
         half.page_id = fsm.page();
@@ -370,8 +370,8 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
         
         fs.seekp(new_page_offset);
         fs.write(reinterpret_cast<char*>(&half),sizeof(half));
-        rel->num_pages++;
-        rel->num_rows = (half.page_id * num_rows)*.66;
+        rel.num_pages++;
+        rel.num_rows = (half.page_id * num_rows)*.66;
         
         }
         
@@ -379,10 +379,10 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
     // step 2: send new KOI/position of new to parent node.
     Key_Pointer k_p{key_of_interest,new_page_offset};
     // if(test > 8384)
-//   std::cout<<"made it here: "<<info.offsets.size()<<info.root.page_id<<std::endl;
+  std::cout<<"made it here: "<<info.offsets.size()<<info.root.page_id<<std::endl;
   if(info.offsets.size() >= 1){
     for(size_t i = info.offsets.size()-1; i >= 0; i--){
-        // std::cout<<"here"<<std::endl;
+        std::cout<<"beginning deep"<<std::endl;
         //get parent node into memory
         // Syst_Root root;
         // fs.seekg(info.offsets.at(i));
@@ -395,7 +395,7 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
             // std::cout<<"ROOT: "<<info.root.page_id<<std::endl;
             // std::cout<<info.root.arr[i].key<<": "<<info.root.arr[i].pointer<<std::endl;
             if(info.index_root >= 4096){
-                // std::cout<<"space: "<<k_p.key<<" "<<k_p.pointer<<std::endl;
+                std::cout<<"space: "<<k_p.key<<" "<<k_p.pointer<<std::endl;
             // step 3: if parent has room, insert at appropriate location. 
             
             // std::cout<<"ROOT: "<<info.root.page_id<<std::endl;
@@ -430,8 +430,10 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
             fsm.set_space(info.root.page_id,2);
             }
             fs.seekp(info.root.page_id*4096);
-            fs.write(reinterpret_cast<char*>(&info.root),4096);
-            
+            fs.write(reinterpret_cast<char*>(&info.root),sizeof(info.root));
+            // for(size_t i = 0; i<10;i++){
+                // std::cout<<i<<": "<<info.root.arr[i].key<<std::endl;
+            // }
             fsm.flush_fsm(0);
             // std::cout<<"flush"<<std::endl;
             info.offsets.clear();
@@ -539,9 +541,9 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
         
         fsm.set_space(half_root.page_id,1);
 
-        // std::cout<<"still"<<half_root.page_id<<std::endl;
+        std::cout<<"still"<<half_root.page_id<<std::endl;
         info.root.page_id = fsm.page();
-        // std::cout<<"Old root: "<<info.root.page_id<<std::endl;
+        std::cout<<"Old root: "<<info.root.page_id<<std::endl;
         fsm.set_space(info.root.page_id,1);
         //get new info.root page and send koi and location of new "children" to new info.root for l & r pointers
         Syst_Root new_root;
@@ -550,7 +552,7 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
 
 
 
-        // std::cout<<"INDeX: "<<info.index_root<<std::endl;
+        std::cout<<"INDeX: "<<info.index_root<<std::endl;
         if(info.index_root > 256){
             std::cout<<"more"<<std::endl;
             temp_koi = info.root.arr[256].key;
@@ -601,30 +603,30 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
             }
             half_root.arr[info.index_root] = k_p;
             };
-        //     for(size_t i = 0;i<257;i++){
-        //     std::cout<<i<<": "<<info.root.arr[i].key<<std::endl;
-        // }
-        // for(size_t i = 0;i<257;i++){
-        //     std::cout<<i<<": "<<half_root.arr[i].key<<std::endl;
-        // }
+            for(size_t i = 0;i<257;i++){
+            std::cout<<i<<": "<<info.root.arr[i].key<<std::endl;
+        }
+        for(size_t i = 0;i<257;i++){
+            std::cout<<i<<": "<<half_root.arr[i].key<<std::endl;
+        }
             k_p.key = temp_koi;
             //switch the current 0 index page and the info.root page  so the info.root is always at index 0
             k_p.pointer = half_root.page_id * 4096;
-            // std::cout<<"Pointer OI: "<<k_p.pointer<<std::endl;
+            std::cout<<"Pointer OI: "<<k_p.pointer<<std::endl;
             new_root.page_id = 0;
             new_root.bottom_p = info.root.page_id * 4096;
-            // std::cout<<"Bottom P: "<<new_root.bottom_p<<std::endl;
+            std::cout<<"Bottom P: "<<new_root.bottom_p<<std::endl;
             // info.root.next_index = 0;
             half_root.next_index = info.root.next_index;
             new_root.next_index = 1;
             new_root.arr[0]=k_p;
             fsm.set_space(0,1);
             fs.seekp(0);
-            fs.write(reinterpret_cast<char*>(&new_root),4096);
+            fs.write(reinterpret_cast<char*>(&new_root),sizeof(new_root));
             fs.seekp((half_root.page_id)*4096);
-            fs.write(reinterpret_cast<char*>(&half_root),4096);
+            fs.write(reinterpret_cast<char*>(&half_root),sizeof(half_root));
             fs.seekg((info.root.page_id)*4096);
-            fs.write(reinterpret_cast<char*>(&info.root),4096);
+            fs.write(reinterpret_cast<char*>(&info.root),sizeof(info.root));
             fsm.flush_fsm(0);
         
             std::cout<<"it worked? "<<new_root.bottom_p<<" "<<new_root.arr[0].pointer<<" "<<half_root.bottom_p<<" "<<info.root.bottom_p<<std::endl;
@@ -635,6 +637,7 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
         std::cout<<"nowhere"<<std::endl;
     };
   }else{
+    // std::cout<<"started split"<<std::endl;
     Key_Pointer empty;
             Syst_Root new_root;
             T half;
@@ -681,13 +684,19 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
         info.rel.page_id = 1;
         half.page_id = 2;
         info.rel.bottom_p = half.page_id*4096;
-        
+        // std::cout<<"Info: "<<half.page_id<<" "<<info.rel.page_id<<std::endl;
             //switch the current 0 index page and the root page  so the root is always at index 0
-            
+            // for(size_t i = 0; i<10;i++){
+                // std::cout<<i<<": "<<new_root.arr[i].key<<std::endl;
+            // }
+            // for(size_t i = 0; i<num_rows;i++)
+            // std::cout<<i<<": "<<info.rel.rows[i].index<<std::endl;
+            // for(size_t i = 0; i<num_rows;i++)
+            // std::cout<<i<<": "<<half.rows[i].index<<std::endl;
             fsm.set_space(0,1);
             fsm.set_space(1,1);
             fsm.set_space(2,1);
-            
+            // std::cout<<"still"<<std::endl;
             fs.seekp(0);
             fs.write(reinterpret_cast<char*>(&new_root),sizeof(new_root));
             fs.seekp((info.rel.page_id)*4096);
@@ -695,12 +704,14 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
             fs.seekp((half.page_id)*4096);
             fs.write(reinterpret_cast<char*>(&half),sizeof(half));
         fs.close();
+        // std::cout<<"even still"<<std::endl;
         info.index = 0;
         info.offsets.clear();
+        // std::cout<<"clear?"<<std::endl;
         height = 1;
-        
-        rel->num_pages++;
-        
+        // std::cout<<"height?"<<std::endl;
+        rel.num_pages++;
+        // std::cout<<"pre flush"<<std::endl;
         fsm.flush_fsm(0);
         
         std::cout<<"split"<<std::endl;
@@ -708,13 +719,14 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
   
 // step 6: if need to split root, get new root page, send koi and locations of children to new root. save location of new root in specialized file with root locations of each index.
     // fsm.flush_fsm(std::string{"catalog_rel"});
-    rel->num_rows++;
+    rel.num_rows++;
     
 };
 
 template<typename T,typename S>
 void B_Tree<T,S>::search_range_catalog(uint16_t key,uint16_t key_last,uint16_t num_rows){
     uint16_t index_last{num_rows};
+    std::cout<<"range"<<std::endl;
     search_catalog(key,num_rows);
     if(height){
     //if height 

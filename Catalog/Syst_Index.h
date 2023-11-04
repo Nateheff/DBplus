@@ -4,8 +4,10 @@
 #include <fstream>
 #include "Syst_Root.h"
 
+#include <iostream>
+
 #include <cstring>
-#include "../B_Tree.h"
+
 
 /*
 ind_name(string)
@@ -44,9 +46,9 @@ class Catalog_Index{
     
 public:
 bool height{};
-void create_catalog(B_Tree<Syst_Index,Syst_Index_Row>* tree_ind);
+void create_catalog();
 void has_height();
-
+uint16_t calc_name(const char* arr);
 };
 
 

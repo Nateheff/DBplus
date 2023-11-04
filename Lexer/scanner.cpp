@@ -11,6 +11,7 @@ bool Scanner::scanner_run(){
             if(op_set.find(std::string{scan_buf.at(i)}) != op_set.end()){
                 std::cout<<"Op: "<<scan_buf.at(i)<<" ";
                 full_tok.push_back(op_set[std::string{scan_buf.at(i)}]);
+                
             }else
             term += scan_buf.at(i);
             

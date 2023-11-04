@@ -1,6 +1,15 @@
 #include "Syst_Index.h"
+#include "../Disk_Space/FSM.h"
 
-void Catalog_Index::create_catalog(B_Tree<Syst_Index,Syst_Index_Row>* tree_ind){
+uint16_t Catalog_Index::calc_name(const char* arr){
+    uint16_t name{};
+    for(size_t i = 0;i<strlen(arr);i++)
+    name += arr[i];
+    
+    return name;
+}
+
+void Catalog_Index::create_catalog(){
     std::string name = {"catalog_ind"};
     
     
@@ -10,9 +19,9 @@ void Catalog_Index::create_catalog(B_Tree<Syst_Index,Syst_Index_Row>* tree_ind){
     Syst_Index_Row ind{};
     Syst_Index_Row attr{};
     Syst_Index_Row rel{};
-    uint16_t ind_ind = tree_ind->calc_name(name.c_str());
-    uint16_t ind_rel = tree_ind->calc_name("catalog_rel");
-    uint16_t ind_attr = tree_ind->calc_name("catalog_attr");
+    uint16_t ind_ind = calc_name(name.c_str());
+    uint16_t ind_rel = calc_name("catalog_rel");
+    uint16_t ind_attr = calc_name("catalog_attr");
     std::cout<<"1 "<<std::endl;
     ind.check = 1;
     strcpy(ind.index,"catalog_ind");

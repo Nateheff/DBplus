@@ -1,4 +1,5 @@
 #include "Commands.h"
+#include "../Disk_Space/FSM.h"
 
 type_size attr_info(uint16_t token){
     switch(token){
@@ -40,8 +41,8 @@ void create_table(std::string table_name, std::vector<uint16_t>full_tok, std::ve
     for(size_t i = 0;i<identifiers.size();i++){
         std::cout<<i<<": "<<identifiers.at(i)<<std::endl;
     }
-    std::cout<<ft_size<<std::endl;
-    std::cout<<id_size<<std::endl;
+    // std::cout<<ft_size<<std::endl;
+    // std::cout<<id_size<<std::endl;
     
 
     FSM fsm;

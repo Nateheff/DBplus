@@ -1,21 +1,21 @@
 #pragma once
-#include "Lexer/scanner.h"
-#include "Lexer/list.h"
+// #include "Lexer/scanner.h"
+// #include "Lexer/list.h"
 // #include "Parser/Construct.cpp"
-#include "Disk_Space/Disk_SM.h"
-#include "Disk_Space/FSM.h"
+// #include "Disk_Space/Disk_SM.h"
+// #include "Disk_Space/FSM.h"
 
 #include "Catalog/Syst_Attr.h"
 #include "Catalog/Syst_Index.h"
 #include "Catalog/Syst_Root.h"
 #include "Catalog/Syst_Rel.h"
 #include "B_Tree.h"
-#include "B_Tree.hh"
-#include "Nodes/Node.h"
+// #include "B_Tree.hh"
+// #include "Nodes/Node.h"
 #include "Lexer/scanner.h"
 
 
-#include "Disk_Space/FSM.h"
+// #include "Disk_Space/FSM.h"
 
 class Run{
     public:
