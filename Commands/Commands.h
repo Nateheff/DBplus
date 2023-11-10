@@ -14,6 +14,7 @@
 
 // #include "../B_Tree.h"
 // #include "../B_Tree.hh"
+// #include "../B+_Tree.h"
 #include "../run.h"
 
 
@@ -29,3 +30,4 @@ void select(std::string table_name, Run* obj, std::vector<std::string>identifier
 void select(std::string table_name, Run* obj, std::vector<std::string>identifiers,std::string attr, uint16_t op,std::string value);
 void select_all(std::string table_name, Run* obj);
 void select_all(std::string table_name,Run*obj,std::string attr,uint16_t op,std::string value);
+void insert(std::string table_name,std::vector<std::string>identifiers,Run* obj);

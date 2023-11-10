@@ -1,5 +1,6 @@
 #include "Commands.h"
 #include "../Disk_Space/FSM.h"
+#include "../B+_Tree.h"
 
 type_size attr_info(uint16_t token){
     switch(token){
@@ -67,9 +68,9 @@ for(size_t i = 3;i<full_tok.size();i++){
     infos.push_back(b);
     };
 }
-uint16_t r_s{};
+uint16_t r_s{4};
 for(size_t i =0;i<id_size;i++){
-    strcpy(attrs.at(i).index,file.c_str());
+    strcpy(attrs.at(i).index,table_name.c_str());
     strcpy(attrs.at(i).attr_name,identifiers.at(i).c_str());
     attrs.at(i).position = i;
     type_size info = infos.at(i);
@@ -100,6 +101,12 @@ rel.num_pages = 1;
 rel.num_rows = 0;
 rel.row_size = r_s;
 obj->tree_rel.insert_catalog(key,rel,28);
-
+Bp_Tree tree{};
+Curr_Node empty{};
+// empty.indexes.resize(r_s);
+// empty.data.resize(4083-(empty.indexes.size()*4));
+std::fstream fs;
+fs.write(reinterpret_cast<char*>(&empty),sizeof(empty));
+fs.close();
 
 };

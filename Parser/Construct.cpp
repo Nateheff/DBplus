@@ -1,8 +1,10 @@
 #include "Construct.h"
 #include "../Commands/Commands.h"
 #include "../Disk_Space/FSM.h"
+#include "../B+_Tree.h"
 
 bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> identifiers,Keyword_List* list,Run* obj){
+    
     std::cout<<full_tok.size()<<" "<<identifiers.size()<<std::endl;
     // for(size_t i = 0; i < full_tok.size();i++){
         switch(full_tok.at(0)){
@@ -28,12 +30,12 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
             case(6): //insert
             {
                 std::string table_name = identifiers.at(0);
-                if(full_tok.at(1)!= 24)
+                if(full_tok.at(1)!= 19 || full_tok.at(2)!=24)
                 return false;
-                std::cout<<"inserting"<<std::endl;
-                //if(!insert(table_name,identifiers))
-                //return false;
-                break;
+                std::cout<<"inserting "<<table_name<<std::endl;
+                insert(table_name,identifiers,obj);
+                return true;
+                
             }
             case(10)://select
             {

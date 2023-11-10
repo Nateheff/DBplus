@@ -2,7 +2,7 @@
 #include <memory>
 #include <fstream>
 #include <bitset>
-
+/*
 Disk_SM::Disk_SM(std::string file_name){
     
     std::fstream fs;
@@ -108,3 +108,4 @@ bool Disk_SM::read_page(uint16_t page_num,Node* maybe){
 
 }
 
+*/

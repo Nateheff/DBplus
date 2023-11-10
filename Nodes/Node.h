@@ -3,18 +3,42 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-// #include "../Catalog/Syst_Root.h"
-#include "../Catalog/Syst_Attr.h"
+// class Run;
+#include "../run.h"
+
 
 const uint16_t MAX_PAGE = 4096;
+
+struct Row{
+    uint32_t index{};
+    std::vector<char> data{};
+};
+
+struct Curr_Node{
+    uint32_t page_id{};
+    uint32_t bottom_p{};
+    bool is_index{};
+    char data[4087]={};
+    // std::vector<uint32_t>indexes;
+    // std::string data{};
+};
+
+
+
+struct T_Node{
+    uint32_t page_id{};
+    uint32_t bottom_p{};
+    bool is_index{};
+    Row data[4096/sizeof(Row)]={};
+};
 
 struct Tuple_Attr{
     Syst_Attr_Row meta;
     char* data;
 };
 
-std::vector<Tuple_Attr>create_tuple(std::vector<Syst_Attr_Row>*tuple_info,char*data,uint16_t size);
-
+void create_tuple(std::string table_name, Run* obj, Row* row,std::vector<std::string>identifiers);
+// void fill_tuple(std::vector<Syst_Attr_Row>*tuple_info,char*data,uint16_t size)
 template<typename T>
 T get_type(char*data, char type, int size){
     switch(type){
@@ -33,18 +57,7 @@ T get_type(char*data, char type, int size){
     };
 }
 
-struct Row{
-        uint32_t index{};
-        std::string data{};
-        
-};
 
-struct Curr_Node{
-    uint32_t page_id{};
-    uint32_t bottom_p{};
-    bool is_index{};
-    Row data[4087/sizeof(Row)]={};
-};
 
 class Node
 {

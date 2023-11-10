@@ -51,7 +51,7 @@ class B_Tree
     bool dirty{};
     // std::fstream fs;
     
-    std::vector<S>rows;
+    std::vector<S>rows{};
     System_Rel_Row rel{};
     Syst_Index_Row ind;
     

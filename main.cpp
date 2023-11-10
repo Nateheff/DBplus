@@ -16,6 +16,7 @@
 #include "run.h"
 #include "B_Tree.h"
 #include "B_Tree.hh"
+#include "Lexer/scanner.h"
 
 
 #define SIZE_NAME_COLUMN 10
@@ -51,7 +52,7 @@ int main()
     obj.tree_rel.rel = obj.tree_rel.info.rel.rows[obj.tree_rel.info.index];
     obj.tree_rel.search_catalog(1269,28);
     obj.tree_attr.rel = obj.tree_rel.info.rel.rows[obj.tree_rel.info.index];
-    Keyword_List res_list = {{{"bool",0},{"char",1},{"create",2},{"database",3},{"float",4},{"from",5},{"insert",6},{"int",7},{"key",8},{"primary",9},{"select",10},{"table",11},{"varchar",12},{"where",13},{"between",14},{"drop",15},{"delete",16},{"update",17},{"short",18},{"open",19}},20,9};
+    Keyword_List res_list = {{{"bool",0},{"char",1},{"create",2},{"database",3},{"float",4},{"from",5},{"insert",6},{"int",7},{"key",8},{"primary",9},{"select",10},{"table",11},{"varchar",12},{"where",13},{"between",14},{"drop",15},{"delete",16},{"update",17},{"short",18},{"into",19}},20,9};
     std::unordered_map<std::string,uint16_t>operators{{"*",20},{">",21},{"<",22},{"/",23},{"(",24},{")",25},{"=",26},{"+",27},{"-",28},{"<=",29},{">=",30},{"<>",31},{",",32}};
     std::string query;
     while(true){

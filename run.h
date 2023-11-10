@@ -10,9 +10,11 @@
 #include "Catalog/Syst_Root.h"
 #include "Catalog/Syst_Rel.h"
 #include "B_Tree.h"
+#include <iterator>
+
 // #include "B_Tree.hh"
-// #include "Nodes/Node.h"
-#include "Lexer/scanner.h"
+
+// #include "Lexer/scanner.h"
 
 
 // #include "Disk_Space/FSM.h"
@@ -25,7 +27,7 @@ class Run{
         B_Tree<Syst_Index,Syst_Index_Row>tree_ind{std::string{"catalog_ind"}};
         B_Tree<Syst_Attr,Syst_Attr_Row>tree_attr{std::string{"catalog_attr"}};
         B_Tree<Syst_Rel,System_Rel_Row>tree_rel{std::string{"catalog_rel"}};
-    
+       
     
     bool run();
     ~Run();

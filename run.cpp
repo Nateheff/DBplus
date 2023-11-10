@@ -15,7 +15,7 @@ bool Run::run(){
     catalog_rel.create_catalog(); 
     
     catalog_ind.has_height();
-    std::cout<<"got height"<<catalog_ind.height<<std::endl;
+    // std::cout<<"got height"<<catalog_ind.height<<std::endl;
     
     
     tree_ind.height = catalog_ind.height;
@@ -29,8 +29,9 @@ bool Run::run(){
     return true;
     
 }
+/*
 
-
+*/
 Run::~Run(){
     std::fstream fs;
     if(tree_ind.dirty && tree_rel.dirty){

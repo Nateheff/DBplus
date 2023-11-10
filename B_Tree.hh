@@ -5,8 +5,9 @@ template<typename T,typename S>
 uint16_t B_Tree<T,S>::calc_name(const char* arr){
     uint16_t name{};
     for(size_t i = 0;i<strlen(arr);i++)
-    name += arr[i];
+    name += arr[i]=='\0' ? 0:arr[i];
     
+    std::cout<<arr<<std::endl;
     return name;
 }
 
@@ -725,9 +726,11 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
 
 template<typename T,typename S>
 void B_Tree<T,S>::search_range_catalog(uint16_t key,uint16_t key_last,uint16_t num_rows){
+    rows.clear();
     uint16_t index_last{num_rows};
-    std::cout<<"range"<<std::endl;
+    std::cout<<"range "<<key<<std::endl;
     search_catalog(key,num_rows);
+    // std::cout<<"past search"<<std::endl;
     if(height){
     //if height 
     std::fstream fs;
@@ -773,10 +776,11 @@ void B_Tree<T,S>::search_range_catalog(uint16_t key,uint16_t key_last,uint16_t n
     //return index of first, page of first, index of last, page of last, everything you need
     }else{
         //if no height:
-        
+        // std::cout<<"no height"<<std::endl;
         for(size_t i = info.index;i<num_rows;i++){
-            // std::cout<<calc_name(info.rel.rows[i].index)<<info.rel.rows[i].type<<std::endl;
+            // std::cout<<i<<": "<<calc_name(info.rel.rows[i].index)<<info.rel.rows[i].index<<calc_name(info.rel.rows[i+1].index)<<std::endl;
             if(calc_name(info.rel.rows[i+1].index) > key_last){
+                // std::cout<<i<<": out"<<std::endl;
             rows.push_back(info.rel.rows[i]);
             index_last = i;
             return;
