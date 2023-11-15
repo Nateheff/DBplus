@@ -16,7 +16,7 @@ struct Info{
     // std::fstream* fs;
     std::vector<uint32_t> offsets;
     System_Rel_Row relation{};
-    Syst_Index_Row ind{};
+    Syst_Index_Row* ind{};
     
 
 };

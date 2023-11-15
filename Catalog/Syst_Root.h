@@ -4,7 +4,7 @@
 
 
 typedef struct{
-        uint16_t key{};
+        uint32_t key{};
         uint32_t pointer{};
 }Key_Pointer;
 

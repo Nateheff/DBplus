@@ -47,12 +47,9 @@ void create_table(std::string table_name, std::vector<uint16_t>full_tok, std::ve
     
 
     FSM fsm;
-    /*
-    if(!fsm.get_fsm(table_name)){
-        std::cout<<"No fsm, db never created!"<<std::endl;
-        return;
-    };
-   */ 
+    
+    fsm.create_fsm(table_name);
+   
 
     
 
@@ -81,6 +78,7 @@ for(size_t i =0;i<id_size;i++){
 }
 
 if(fsm.page()>1){
+    std::cout<<"WRONG"<<std::endl;
     ind.ind_start = fsm.page()*4096;
 }
 strcpy(ind.index,table_name.c_str());
@@ -103,10 +101,13 @@ rel.row_size = r_s;
 obj->tree_rel.insert_catalog(key,rel,28);
 Bp_Tree tree{};
 Curr_Node empty{};
+
 // empty.indexes.resize(r_s);
 // empty.data.resize(4083-(empty.indexes.size()*4));
 std::fstream fs;
+fs.open(file,std::ios_base::binary|std::ios_base::out);
 fs.write(reinterpret_cast<char*>(&empty),sizeof(empty));
+
 fs.close();
 
 };

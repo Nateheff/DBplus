@@ -30,5 +30,7 @@ class Run{
        
     
     bool run();
+    void begin();
+    void flush();
     ~Run();
 };

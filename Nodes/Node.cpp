@@ -4,28 +4,28 @@
 #include "../Catalog/Syst_Rel.h"
 
 void create_tuple(std::string table_name,Run* obj,Row* row,std::vector<std::string>identifiers){
-    std::cout<<"CREATING TUPLE"<<std::endl;
+    // std::cout<<"CREATING TUPLE"<<std::endl;
     
    uint16_t key =obj->tree_attr.calc_name(table_name.c_str());
     obj->tree_rel.search_catalog(key,28);
-    std::cout<<"searched rel "<<key<<std::endl;
+    // std::cout<<"searched rel "<<key<<std::endl;
     obj->tree_ind.search_catalog(key,48);
-    std::cout<<"searched ind"<<std::endl;
+    // std::cout<<"searched ind"<<std::endl;
     obj->tree_attr.search_range_catalog(key,key,30);
-    std::cout<<"searched attr"<<std::endl;
+    // std::cout<<"searched attr"<<std::endl;
     System_Rel_Row rel = obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];
     Syst_Index_Row ind = obj->tree_ind.info.rel.rows[obj->tree_ind.info.index];
     row->data.resize(rel.row_size);
     // for(auto& d:row->data){
-    std::cout<<identifiers.at(1)<<std::endl;
-    std::cout<<obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1).type<<std::endl;
+    // std::cout<<identifiers.at(1)<<std::endl;
+    // std::cout<<obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1).type<<std::endl;
     // }
     switch(obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1).type){
         case 's':
         case 'i':
         case 'b':
         {
-        std::cout<<"int/short/bool"<<std::endl;
+        // std::cout<<"int/short/bool"<<std::endl;
         row->index = atoi(identifiers.at(1).c_str());
         break;
         }
@@ -46,19 +46,19 @@ void create_tuple(std::string table_name,Run* obj,Row* row,std::vector<std::stri
         }
     }
     char* test;
-    std::cout<<row->index<<std::endl;
+    // std::cout<<row->index<<std::endl;
     memcpy(row->data.data(),&row->index,4);
-    std::cout<<row->index<<std::endl;
-    uint16_t pos{};
-;
+    // std::cout<<row->index<<std::endl;
+    uint16_t pos{sizeof(row->index)};
+    
     
     for(size_t i = 0; i<obj->tree_attr.rows.size();i++){
 
-        std::cout<<"in loop "<<(int)obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1-i).check<<" "<<obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1-i).type<<std::endl;
+        // std::cout<<"in loop "<<(int)obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1-i).check<<" "<<obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1-i).type<<std::endl;
         
-        
-        pos= strlen(row->data.data());
-       std::cout<<pos<<" "<<row->data.data()<<" "<<row->data.size()<<" "<<identifiers.at(i+1)<<std::endl;
+        // std::cout<<"at "<<obj->tree_attr.rows.size()-1-i<<std::endl;
+        // pos += obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1-i).check;
+    //    std::cout<<pos<<" "<<row->data.data()<<" "<<row->data.size()<<" "<<identifiers.at(i+1)<<std::endl;
 
     if(identifiers.at(i+1).length()==0){
 
@@ -68,77 +68,90 @@ void create_tuple(std::string table_name,Run* obj,Row* row,std::vector<std::stri
             {
                 bool d{};
                 memcpy(&row->data.data()[pos],&d,1);
-
+                break;
             }
             case('c'):
             {
                 char d{};
                 memcpy(&row->data.data()[pos],&d,1);
+                break;
             }
             case('f'):
             {
                 float d{};
                 memcpy(&row->data.data()[pos],&d,4);
+                break;
             }
             case('i'):
             {
                 uint32_t d{};
                 memcpy(&row->data.data()[pos],&d,4);
+                break;
             }
             case('v'):
             {
                 char d[64];
                 memcpy(&row->data.data()[pos],&d,64);
+                break;
             }
             case('s'):
             {
                 uint16_t d{};
                 memcpy(&row->data.data()[pos],&d,2);
+                break;
             }
         }
         
     }else{
-        std::cout<<"length"<<std::endl;
-        switch(obj->tree_attr.rows.at(i).type){
+        // std::cout<<"length"<<std::endl;
+        switch(obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1-i).type){
             case('b'):
             {
                 bool d{atoi(identifiers.at(i+1).c_str())};
                 memcpy(&row->data.data()[pos],&d,1);
+                break;
                 
             }
             case('c'):
             {
                 char d{identifiers.at(i+1).at(0)};
                 memcpy(&row->data.data()[pos],&d,1);
+                break;
             }
             case('f'):
             {
+                // std::cout<<"float"<<std::endl;
                 float d{atof(identifiers.at(i+1).c_str())};
                 memcpy(&row->data.data()[pos],&d,4);
+                break;
             }
             case('i'):
             {
-                std::cout<<"int"<<std::endl;
+                // std::cout<<"int"<<std::endl;
                 uint32_t d{atoi(identifiers.at(i+1).c_str())};
                 memcpy(&row->data.data()[pos],&d,4);
-                std::cout<<"success"<<std::endl;
+                // std::cout<<"success"<<std::endl;
+                break;
             }
             case('v'):
             {
                 char d[64];
                 strcpy(d,identifiers.at(i+1).c_str());
                 memcpy(&row->data.data()[pos],&d,64);
+                break;
             }
             case('s'):
             {
                 uint16_t d{atoi(identifiers.at(i+1).c_str())};
                 memcpy(&row->data.data()[pos],&d,2);
+                break;
             }
         }
-        
+        pos += obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1-i).check;
     }
     
     } 
+    // std::cout<<row->index<<std::endl;
     return;
 };
 

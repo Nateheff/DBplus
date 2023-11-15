@@ -24,11 +24,11 @@ void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
         
     std::fstream fs;
     
-    std::cout<<"null "<<fs.is_open()<<std::endl;
+    // std::cout<<"null "<<fs.is_open()<<std::endl;
     
    
     fs.open(file+".db",std::ios_base::binary | std::ios_base::out | std::ios_base::in);
-    std::cout<<"open "<<file+".db"<<std::endl;
+    // std::cout<<"open "<<file+".db"<<std::endl;
     //search through root
     
     
@@ -40,7 +40,7 @@ void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
     
     if(height){
         
-        std::cout<<"height"<<std::endl;
+        // std::cout<<"height"<<std::endl;
         fs.seekg(0);
         fs.read(reinterpret_cast<char*>(&info.root),sizeof(info.root));
         
@@ -164,12 +164,12 @@ void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
     // std::cout<<"Rel: "<<info.rel.page_id<<" "<<info.rel.is_index<<std::endl;
     
     }else{
-        std::cout<<"No height "<<" "<<fs.tellg()<<std::endl;
+        // std::cout<<"No height "<<" "<<fs.tellg()<<std::endl;
         
         fs.seekg(0);
-        std::cout<<"pre "<<fs.fail()<<std::endl;
+        // std::cout<<"pre "<<fs.fail()<<std::endl;
         fs.read(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
-        std::cout<<"post "<<fs.gcount()<<" "<<sizeof(info.rel)<<std::endl;
+        // std::cout<<"post "<<fs.gcount()<<" "<<sizeof(info.rel)<<std::endl;
         info.rel.page_id = 0;
 
     };
@@ -177,14 +177,14 @@ void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
     // std::cout<<"got the rel"<<info.rel.page_id<<std::endl;
     for(size_t i =0;i<num_rows;i++){
         uint16_t name{};
-        std::cout<<i<<": "<<info.rel.rows[i].index<<std::endl;
+        // std::cout<<i<<": "<<info.rel.rows[i].index<<std::endl;
             for(size_t j = 0; j<63;j++){
             name += info.rel.rows[i].index[j];
             
             }
             //  std::cout<<"name: "<<name<<" key: "<<key<<std::endl;
             if(key <= name || (i == num_rows-1 && key > name)||info.rel.rows[i].check == 0){
-            std::cout<<"found "<<i<<std::endl;
+            // std::cout<<"found "<<i<<std::endl;
                 info.index = i;
                 
                 return;
@@ -265,10 +265,11 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
     if(fsm.has_space(info.rel.page_id)==1){
         // std::cout<<"Has space"<<std::endl;
         
-        std::cout<<"INDEX: "<<info.index<<row.index<<std::endl;
+        // std::cout<<"INDEX: "<<info.index<<row.index<<std::endl;
         S empty;
         // for(size_t i=0;i<24;i++)
         //     std::cout<<i<<": "<<info.rel.rows[i].index<<std::endl;
+        // std::cout<<"pre loop"<<std::endl;
         for(size_t i = num_rows-2;i >= info.index;i--){
             
             
@@ -663,7 +664,7 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
             info.rel.rows[info.index] = row;
             }else if(info.index > num_rows/2){
                
-            key_of_interest = calc_name(info.rel.rows[0].index);
+            key_of_interest = calc_name(half.rows[0].index);
             
             for(size_t i = num_rows/2;i > info.index - (num_rows/2);i--){
                 half.rows[i] = half.rows[i-1];
@@ -673,6 +674,7 @@ void B_Tree<T,S>::insert_catalog(uint16_t key, S row,uint16_t num_rows){
             key_of_interest = key;
             for(size_t i = num_rows/2;i > info.index - (num_rows/2);i--){
                 half.rows[i] = half.rows[i-1];
+            half.rows[0]=row;
         }
         // std::cout<<"KOI: "<<key_of_interest<<std::endl;
         //get new root page and send koi and location of new "children" to new root for l & r pointers
@@ -728,7 +730,7 @@ template<typename T,typename S>
 void B_Tree<T,S>::search_range_catalog(uint16_t key,uint16_t key_last,uint16_t num_rows){
     rows.clear();
     uint16_t index_last{num_rows};
-    std::cout<<"range "<<key<<std::endl;
+    // std::cout<<"range "<<key<<std::endl;
     search_catalog(key,num_rows);
     // std::cout<<"past search"<<std::endl;
     if(height){
