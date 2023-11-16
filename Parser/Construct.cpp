@@ -51,7 +51,7 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                     table_name = identifiers.at(0);
                     if(full_tok.size()==3){
                         std::cout<<"all simple"<<std::endl;
-                    select_all(table_name,obj);
+                    select(table_name,obj,identifiers);
                     return true;
                     }
                     else if(full_tok.at(3)==13){
@@ -63,10 +63,10 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 
                 if(full_tok.at(1)!=20){
                 std::vector<std::string>ids;
-                    if(full_tok.size()>2 && full_tok.at(2)==13){
+                    if(full_tok.size()>2 && full_tok.at(3)==26){
                         table_name = identifiers.at(identifiers.size()-3);
                         
-                        select(table_name,obj,identifiers,identifiers.at(identifiers.size()-2),full_tok.at(3),identifiers.at(identifiers.size()-1));
+                        select_all(table_name,obj,identifiers.at(identifiers.size()-2),full_tok.at(3),identifiers.at(identifiers.size()-1));
                         return true;
                     }
                     else if(full_tok.size()==2){
@@ -117,13 +117,13 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
             }
             case(15):
             {
-                if(full_tok.at(1)==3)
-                //drop(true,indentifiers.at(0)) FOR DATABSE
+                if(full_tok.at(1)==3){
+                drop_db(identifiers.at(0),obj); //FOR DATABSE
                 std::cout<<"dropping db"<<std::endl;
-                else if(full_tok.at(1)==11)
-                //drop(false,identifiers.at(0)) FOR TABLE
+                }else if(full_tok.at(1)==11){
+                drop_table(identifiers.at(0),obj); //FOR TABLE
                 std::cout<<"dropping table"<<std::endl;
-                else
+                }else
                 return false;
             }
             case(16):
@@ -133,7 +133,7 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
 
                 std::string table_name = identifiers.at(0);
                 if(full_tok.size()==2){
-                //delete(true,table_name) DELETE ALL )true/false) for db/table
+                //delete_all(true,table_name) DELETE ALL )true/false) for db/table
                 std::cout<<"clearing table"<<std::endl;
                 break;
                 };

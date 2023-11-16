@@ -38,6 +38,7 @@ struct Tuple_Attr{
 };
 
 void create_tuple(std::string table_name, Run* obj, Row* row,std::vector<std::string>identifiers);
+float create_tuple_f(std::string table_name,Run* obj,Row* row,std::vector<std::string>identifiers);
 // void fill_tuple(std::vector<Syst_Attr_Row>*tuple_info,char*data,uint16_t size)
 template<typename T>
 T get_type(char*data, char type, int size){

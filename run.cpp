@@ -78,6 +78,8 @@ void Run::flush(){
         fs.write(reinterpret_cast<char*>(&tree_rel.info.rel),sizeof(Syst_Rel));
         fs.close();
     }
+    tree_rel.dirty = false;
+    tree_ind.dirty = false;
 }
 Run::~Run(){
     std::fstream fs;

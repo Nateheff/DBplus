@@ -50,15 +50,29 @@ void create_table(std::string table_name, std::vector<uint16_t>full_tok, std::ve
     
     fsm.create_fsm(table_name);
    
-
-    
-
-std::string file = table_name+".db";
-uint16_t key = obj->tree_attr.calc_name(table_name.c_str());
 std::vector<Syst_Attr_Row>attrs{id_size};
 Syst_Index_Row ind{};
 System_Rel_Row rel{};
 std::vector<type_size>infos;
+
+std::string file = table_name+".db";
+Curr_Node empty{};
+    std::fstream fs;
+fs.open(file,std::ios_base::binary|std::ios_base::out|std::ios_base::ate);
+if(fs.tellp()>0){
+fs.write(reinterpret_cast<char*>(&empty),sizeof(empty));
+std::cout<<"first rel"<<std::endl;
+}else{
+    fs.close();
+    fs.open(file,std::ios_base::binary|std::ios_base::out|std::ios_base::in|std::ios_base::ate);
+    fs.write(reinterpret_cast<char*>(&empty),sizeof(empty));
+    ind.ind_start = fs.tellp();
+    std::cout<<"many "<<ind.ind_start<<std::endl;
+}
+fs.close();
+
+uint16_t key = obj->tree_attr.calc_name(table_name.c_str());
+
 for(size_t i = 3;i<full_tok.size();i++){
     type_size b = attr_info(full_tok.at(i));
     if(b.size != 0){
@@ -100,14 +114,8 @@ rel.num_rows = 0;
 rel.row_size = r_s;
 obj->tree_rel.insert_catalog(key,rel,28);
 Bp_Tree tree{};
-Curr_Node empty{};
 
-// empty.indexes.resize(r_s);
-// empty.data.resize(4083-(empty.indexes.size()*4));
-std::fstream fs;
-fs.open(file,std::ios_base::binary|std::ios_base::out);
-fs.write(reinterpret_cast<char*>(&empty),sizeof(empty));
 
-fs.close();
+
 
 };
