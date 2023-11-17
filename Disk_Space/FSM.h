@@ -25,7 +25,7 @@ typedef struct{
 }FSM_Data_Root;
 
 typedef struct{
-    uint8_t free_space[4096] = {};
+    bool free_space[4096] = {};
 }FSM_Data;
 class FSM 
 {

@@ -99,6 +99,8 @@ void FSM::set_space(uint32_t page_num,uint8_t space){
         if(space == 0){
             if(page_num==root.num_pages -1)
                 root.num_pages--;
+            else if(page_num < root.num_pages && page_num > root.hole)
+                return;
             else
                 root.hole = page_num;
         }else if(space == 1){
@@ -117,6 +119,8 @@ void FSM::set_space(uint32_t page_num,uint8_t space){
         if(space == 0){
             if(page_num==root.num_pages -1)
                 root.num_pages--;
+            else if(page_num < root.num_pages && page_num > root.hole)
+                return;
             else
                 root.hole = page_num;
         }else if(space == 1){
@@ -171,11 +175,35 @@ uint8_t FSM::has_space(uint32_t page_num){
 uint32_t FSM::page() {
     // if(root.num_pages > 600)
     // std::cout<<root.num_pages<<std::endl;
-    if(!root.hole)
+    if(!root.hole || root.hole >= root.num_pages)
     return root.num_pages; 
     else { 
         std::cout<<"HOLE!"<<std::endl;
-        return root.hole;
+        if((root.hole - 1)==root.num_pages){
+            uint32_t hole = root.hole;
+            root.hole= 0;
+            return hole;
+        }
+        
+        if(root.hole > 4088){
+            std::fstream fs;
+            uint32_t offset = ((((root.hole)-4088)/4096)+1)*4096;
+        fs.seekp(offset);
+        fs.read(reinterpret_cast<char*>(data),sizeof(*data));
+        fs.close();
+        root.hole-=4088;
+        if(data->free_space[(root.hole-((root.hole/4096)*4096))+1] == 0){
+            uint32_t hole = root.hole;
+            root.hole++;
+            return hole;
+        }
+        }else{
+            if(root.free_space[root.hole+1]==0){
+                uint32_t hole = root.hole;
+            root.hole++;
+            return hole;
+            }
+        }
     };
     
     };

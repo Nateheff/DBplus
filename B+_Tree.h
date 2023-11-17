@@ -34,8 +34,8 @@ class Bp_Tree{
     void search(float key, uint16_t num_rows, uint16_t row_size);
     void insert(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj, Row row);
     void insert(float key, uint16_t num_rows,uint16_t row_size, Run* obj, Row row);
-    void delete_row(uint32_t key, uint16_t num_rows,uint16_t row_size,Run* obj);
-    void delete_row(float key,uint16_t num_rows, uint16_t row_size, Run* obj);
+    void delete_row(Run* obj);
+    // void delete_row(float key,uint16_t num_rows, uint16_t row_size, Run* obj);
     void search_range(uint32_t key_first,uint32_t key_last,uint16_t num_rows);
     void search_range(float key_first,float key_last,uint16_t num_rows);
     float update(float key, uint16_t num_rows,uint16_t row_size, Run* obj, Row row);

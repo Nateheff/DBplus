@@ -4,12 +4,12 @@
 
 void delete_row(std::string table_name,std::vector<std::string>identifiers,Run* obj, uint16_t op, std::string value){
     Bp_Tree tree{};
-    Row row{};
+    
    
    uint32_t key{};
     tree.info.relation = obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];
     tree.info.ind = &obj->tree_ind.info.rel.rows[obj->tree_rel.info.index];
-    row.data.resize(tree.info.relation.row_size);
+    
     switch(tree.info.ind->key_type){
         case 's':
         case 'i':
@@ -72,34 +72,7 @@ void delete_row(std::string table_name,std::vector<std::string>identifiers,Run* 
         }
     }
     
-    std::fstream fs;
-    fs.open(tree.info.relation.rel_file, std::ios_base::binary|std::ios_base::in|std::ios_base::out);
-
-    for(size_t j = tree.info.index;j<tree.info.pages.at(0).num_rows+tree.info.index;j++){
-            memcpy(&tree.info.pages.at(0).page.data[j*tree.info.relation.row_size],row.data.data(),tree.info.relation.row_size);
-            fs.seekp(tree.info.pages.at(0).page.page_id*4096+tree.info.ind->ind_start);
-            fs.write(reinterpret_cast<char*>(&tree.info.pages.at(0).page),sizeof(tree.info.pages.at(0).page));
-    }
-
-    if(tree.info.pages.size()>1){
-
-    for(size_t i = 1; i<tree.info.pages.size();i++){
-        for(size_t j = 0;j<tree.info.pages.at(i).num_rows;j++){
-            memcpy(&tree.info.pages.at(i).page.data[j*tree.info.relation.row_size],row.data.data(),tree.info.relation.row_size);
-        }
-        fs.seekp(tree.info.pages.at(i).page.page_id*4096+tree.info.ind->ind_start);
-        fs.write(reinterpret_cast<char*>(&tree.info.pages.at(i).page),sizeof(tree.info.pages.at(i).page));
-    }
-
-    
-
-    }
-    T_Node* page = &tree.info.pages.at(tree.info.pages.size()-1);
-    for(size_t i = 0;i<num_rows;i++){
-        memcpy(&page->page.data[i*tree.info.relation.row_size],&page->page.data[(i+page->num_rows)*tree.info.relation.row_size],tree.info.relation.row_size);
-    }
-    fs.seekp(page->page.page_id*4096+tree.info.ind->ind_start);
-    fs.write(reinterpret_cast<char*>(&page->page),sizeof(page->page));
+    tree.delete_row(obj);
     // tree.delete_row(key,4087/tree.info.relation.row_size,tree.info.relation.row_size,obj);
 }
 
@@ -116,7 +89,43 @@ void delete_row_f(std::string table_name,std::vector<std::string>identifiers,Run
     }
     key = atof(identifiers.at(2).c_str());
 
-    tree.delete_row(key,4087/tree.info.relation.row_size,tree.info.relation.row_size,obj);
+    uint16_t num_rows = 4087/tree.info.relation.row_size;
+    switch(op){
+        case(21)://>
+        {
+           tree.get_range(key+1,__FLT32_MAX__,num_rows);
+           break; 
+        }
+        case(22)://<
+        {
+            tree.get_range(0.0,key-1,num_rows);
+            break;
+        }
+        case(26)://=
+        {
+            tree.get_range(key,key,num_rows);
+            break;
+        }
+        case(29)://<=
+        {
+            tree.get_range(0.0,key,num_rows);
+            break;
+            
+        }
+        case(30)://>=
+        {
+            tree.get_range(key,__FLT32_MAX__,num_rows); 
+           break;
+        }
+        case(14):
+        {
+            std::cout<<"between"<<std::endl;
+            tree.get_range(key,atof(identifiers.at(identifiers.size()-1).c_str()),num_rows);
+            break;
+        }
+    }
+
+    tree.delete_row(obj);
 }
 
 
@@ -131,9 +140,11 @@ void delete_all(std::string table_name,Run* obj){
     Syst_Index_Row* ind = &obj->tree_ind.info.rel.rows[obj->tree_ind.info.index];
     System_Rel_Row* rel = &obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];
     std::fstream fs;
-    
-
-    if(ind->ind_start == 0 && ind->key_type !='f'){
+    if(ind->key_type == 'f'){
+    delete_all_f(table_name,obj);
+    return;
+    }
+    if(ind->ind_start == 0){
         
         fs.open(rel->rel_file,std::ios_base::binary|std::ios_base::out);
         Curr_Node empty{};
@@ -145,8 +156,7 @@ void delete_all(std::string table_name,Run* obj){
         fs.seekp(ind->ind_start);
         fs.write(reinterpret_cast<char*>(&dump),sizeof(dump));
         
-    }else
-    delete_all_f(table_name,obj);
+    }
     *ind = em;
     *rel = empty;
     obj->tree_rel.dirty = true;
@@ -165,8 +175,10 @@ void delete_all_f(std::string table_name,Run* obj){
     Syst_Index_Row* ind = &obj->tree_ind.info.rel.rows[obj->tree_ind.info.index];
     System_Rel_Row* rel = &obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];
     std::fstream fs;
-    
-
+    if(ind->key_type != 'f'){
+    delete_all(table_name,obj);
+    return;
+    }
     if(ind->ind_start == 0){
         
         fs.open(rel->rel_file,std::ios_base::binary|std::ios_base::out);
