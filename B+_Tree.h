@@ -11,6 +11,7 @@
 struct Info{
     uint16_t index{};
     uint16_t index_root{};
+    uint16_t index_last{};
     Syst_Root root{};
     Curr_Node leaf{};
     // std::fstream* fs;
@@ -18,7 +19,7 @@ struct Info{
     std::vector<Row>rows{};
     System_Rel_Row relation{};
     Syst_Index_Row* ind{};
-    
+    std::vector<T_Node>pages;
 
 };
 
@@ -28,6 +29,7 @@ class Bp_Tree{
     public:
     Info info{};
     Syst_Root_f root_f{};
+
     void search(uint32_t key,uint16_t num_rows,uint16_t row_size);
     void search(float key, uint16_t num_rows, uint16_t row_size);
     void insert(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj, Row row);
@@ -38,6 +40,9 @@ class Bp_Tree{
     void search_range(float key_first,float key_last,uint16_t num_rows);
     float update(float key, uint16_t num_rows,uint16_t row_size, Run* obj, Row row);
     void update(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj, Row row);
+    void get_range(uint32_t key_first,uint32_t key_last,uint16_t num_rows);
+    void get_range(float key_first,float key_last,uint16_t num_rows);
+
     // void write_page(Curr_Node* node,std::string file,uint32_t offset = 0);
  
 };

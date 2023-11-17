@@ -156,7 +156,7 @@ void create_tuple(std::string table_name,Run* obj,Row* row,std::vector<std::stri
 };
 
 float create_tuple_f(std::string table_name,Run* obj,Row* row,std::vector<std::string>identifiers){
-    // std::cout<<"CREATING TUPLE"<<std::endl;
+    std::cout<<"CREATING FLOAT TUPLE"<<std::endl;
     
    uint16_t key =obj->tree_attr.calc_name(table_name.c_str());
     obj->tree_rel.search_catalog(key,28);
@@ -169,13 +169,14 @@ float create_tuple_f(std::string table_name,Run* obj,Row* row,std::vector<std::s
     Syst_Index_Row ind = obj->tree_ind.info.rel.rows[obj->tree_ind.info.index];
     row->data.resize(rel.row_size);
     // for(auto& d:row->data){
-    // std::cout<<identifiers.at(1)<<std::endl;
+    std::cout<<"A "<<identifiers.at(1)<<std::endl;
     // std::cout<<obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1).type<<std::endl;
     // }
     float index{};
-    index = atof(identifiers.at(1).c_str());
-    char* test;
-    // std::cout<<row->index<<std::endl;
+    index = (float)atof(identifiers.at(1).c_str());
+    float test{32432.5436445};
+    // char* test;
+    std::cout<<index<<" "<<test<<std::endl;
     memcpy(row->data.data(),&index,4);
     // std::cout<<row->index<<std::endl;
     uint16_t pos{4};

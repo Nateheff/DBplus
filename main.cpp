@@ -79,12 +79,12 @@ int main()
     obj.tree_rel.rel = obj.tree_rel.info.rel.rows[obj.tree_rel.info.index];
     obj.tree_rel.search_catalog(1269,28);
     obj.tree_attr.rel = obj.tree_rel.info.rel.rows[obj.tree_rel.info.index];
-    Keyword_List res_list = {{{"bool",0},{"char",1},{"create",2},{"database",3},{"float",4},{"from",5},{"insert",6},{"int",7},{"key",8},{"primary",9},{"select",10},{"table",11},{"varchar",12},{"where",13},{"between",14},{"drop",15},{"delete",16},{"update",17},{"short",18},{"into",19}},20,9};
+    Keyword_List res_list = {{{"bool",0},{"char",1},{"create",2},{"database",3},{"float",4},{"from",5},{"insert",6},{"int",7},{"and",8},{"set",9},{"select",10},{"table",11},{"varchar",12},{"where",13},{"between",14},{"drop",15},{"delete",16},{"update",17},{"short",18},{"into",19}},20,9};
     std::unordered_map<std::string,uint16_t>operators{{"*",20},{">",21},{"<",22},{"/",23},{"(",24},{")",25},{"=",26},{"+",27},{"-",28},{"<=",29},{">=",30},{"<>",31},{",",32}};
     std::string query={"create table faces ( int a, float b, float c, short d )"};
-    // while(true){
-    // std::cout<<"Enter Command to begin: ";
-    // std::getline(std::cin,query);
+    while(true){
+    std::cout<<"Enter Command to begin: ";
+    std::getline(std::cin,query);
     
     Scanner test(query,&res_list,operators);
     test.scanner_run();
@@ -92,19 +92,19 @@ int main()
     test.print_query();
     // std::cout<<"printed"<<std::endl;
     receiver_main(test.full_tok,test.identifiers,&res_list,&obj);
-    // };
-    
-    for(size_t i = 0; i< 49990; i+= 6){
-        // if(i>300)
-        // std::cout<<i<<std::endl;
-        std::vector<std::string>ids;
-        ids.push_back("faces");
-        ids.push_back(vec.at(i));
-        ids.push_back(vec.at(i+1)+"."+vec.at(i+2));
-        ids.push_back(vec.at(i+3)+"."+vec.at(i+4));
-        ids.push_back(vec.at(i+5));
-        insert("faces",ids,&obj);
-    }
+    };
+    std::cout<<"WORKED"<<std::endl;
+    // for(size_t i = 0; i< 49990; i+= 6){
+    //     // if(i>300)
+    //     // std::cout<<i<<std::endl;
+    //     std::vector<std::string>ids;
+    //     ids.push_back("faces");
+    //     ids.push_back(vec.at(i));
+    //     ids.push_back(vec.at(i+1)+"."+vec.at(i+2));
+    //     ids.push_back(vec.at(i+3)+"."+vec.at(i+4));
+    //     ids.push_back(vec.at(i+5));
+    //     insert("faces",ids,&obj);
+    // }
 
 
 

@@ -56,7 +56,10 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                     }
                     else if(full_tok.at(3)==13){
                         std::cout<<"all where"<<std::endl;
+                        if(full_tok.at(full_tok.size()-1)!=8)
                         select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2));
+                        else
+                        select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2),identifiers.at(3));
                         return true;
                     }
                 }
@@ -66,7 +69,10 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                     if(full_tok.size()>2 && full_tok.at(3)==26){
                         table_name = identifiers.at(identifiers.size()-3);
                         
-                        select_all(table_name,obj,identifiers.at(identifiers.size()-2),full_tok.at(3),identifiers.at(identifiers.size()-1));
+                        if(full_tok.at(full_tok.size()-1)!=8)
+                        select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2));
+                        else
+                        select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2),identifiers.at(3));
                         return true;
                     }
                     else if(full_tok.size()==2){
@@ -133,7 +139,7 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
 
                 std::string table_name = identifiers.at(0);
                 if(full_tok.size()==2){
-                //delete_all(true,table_name) DELETE ALL )true/false) for db/table
+                delete_all(table_name,obj); //DELETE ALL )true/false) for db/table
                 std::cout<<"clearing table"<<std::endl;
                 break;
                 };
@@ -141,39 +147,38 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 if(full_tok.at(2)!=13)
                 return false;
 
-                std::string column_name = identifiers.at(1);
-                uint16_t delete_op = full_tok.at(3);
+                
                 std::cout<<"deleting what you said where you said"<<std::endl;
-                //delete(table_name,column_name,delete_op,indentifiers);
+                delete_row(table_name,identifiers,obj,full_tok.at(full_tok.size()-1),identifiers.at(identifiers.size()-1));
 
                 break;
 
             }
             case(17):
             {
-                std::string table_name = identifiers.at(0);
-                std::string column_name = identifiers.at(1);
-                std::string new_val = identifiers.at(2);
-                if(full_tok.size()==2)
+                if(full_tok.at(1)!=9)
+                return false;
+                
+                if(full_tok.at(full_tok.size()-2)!=13){
                 //update(table_name,column_name,new_val);
                 std::cout<<"updating all rows"<<std::endl;
-
-                if(full_tok.at(2)!=13)
-                return false;
-
-                if(identifiers.size() <=5){
-                    std::string key_column = identifiers.at(3);
-                    std::string key_val = identifiers.at(4);
-                    std::cout<<"updating key value said where you said!"<<std::endl;
-                    //update(table_name,column_name,new_val,key_column,key_val);
-                }else{
-                    std::string column_check = identifiers.at(3);
-                    std::string column_val = identifiers.at(4);
-                    std::string key_column = identifiers.at(5);
-                    std::string key_val = identifiers.at(6);
-                    std::cout<<"updating what you said where you said!"<<std::endl;
-                    //update(table_name,column_name,new_val,key_column,key_val,column_check,column_val);
-                };
+                return true;
+                }
+                
+                update(identifiers.at(0),obj,identifiers,full_tok.at(full_tok.size()-1),identifiers.at(identifiers.size()-1));
+                // if(identifiers.size() <=5){
+                //     std::string key_column = identifiers.at(3);
+                //     std::string key_val = identifiers.at(4);
+                //     std::cout<<"updating key value said where you said!"<<std::endl;
+                //     //update(table_name,column_name,new_val,key_column,key_val);
+                // }else{
+                //     std::string column_check = identifiers.at(3);
+                //     std::string column_val = identifiers.at(4);
+                //     std::string key_column = identifiers.at(5);
+                //     std::string key_val = identifiers.at(6);
+                //     std::cout<<"updating what you said where you said!"<<std::endl;
+                //     //update(table_name,column_name,new_val,key_column,key_val,column_check,column_val);
+                // };
                 break;
                 
             }

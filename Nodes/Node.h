@@ -26,10 +26,9 @@ struct Curr_Node{
 
 
 struct T_Node{
-    uint32_t page_id{};
-    uint32_t bottom_p{};
-    bool is_index{};
-    Row data[4096/sizeof(Row)]={};
+    Curr_Node page{};
+    uint16_t num_rows{};
+
 };
 
 struct Tuple_Attr{

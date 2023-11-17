@@ -29,7 +29,7 @@ std::vector<Row> select(std::string table_name, Run* obj, std::vector<std::strin
     
 }
 
-std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint16_t op,std::string value)
+std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint16_t op,std::string value,std::string v_2)
 {
     std::cout<<"select all where "<<attr<<" "<<op<<" "<<value<<std::endl;
     Bp_Tree tree{};
@@ -103,6 +103,12 @@ std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint
             tree.search_range(index,UINT32_MAX,num_rows); 
            return tree.info.rows;
         }
+        case(14):
+        {
+            std::cout<<"between"<<std::endl;
+            tree.search_range(index,atoi(v_2.c_str()),num_rows);
+            return tree.info.rows;
+        }
     }
     }else{
         ind = atof(value.c_str());
@@ -135,6 +141,14 @@ std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint
             tree.search_range(ind,__FLT32_MAX__,num_rows); 
            return tree.info.rows;
         }
+        case(14):
+        {
+            std::cout<<"between"<<std::endl;
+            tree.search_range(ind,atof(v_2.c_str()),num_rows);
+            return tree.info.rows;
+
+        }
     }
     }
+    
 };
