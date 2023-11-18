@@ -33,7 +33,7 @@ void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
     
     
     
-    std::cout<<fs.is_open()<<std::endl;
+    // std::cout<<fs.is_open()<<std::endl;
     //get pointer
     
     uint32_t offset{};

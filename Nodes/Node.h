@@ -24,17 +24,13 @@ struct Curr_Node{
 };
 
 
-
-struct T_Node{
-    Curr_Node page{};
-    uint16_t num_rows{};
-
-};
-
 struct Tuple_Attr{
     Syst_Attr_Row meta;
     char* data;
 };
+
+void edit_row(Curr_Node* node,std::vector<uint16_t>positions,std::vector<char>types, std::vector<std::string>values, uint16_t num_rows, uint16_t row_size, Run* obj);
+std::vector<Row> edit_rows(Curr_Node* node,std::vector<uint16_t>positions,std::vector<char>types, std::vector<std::string>values, uint16_t num_rows, uint16_t row_size, Run* obj);
 
 void create_tuple(std::string table_name, Run* obj, Row* row,std::vector<std::string>identifiers);
 float create_tuple_f(std::string table_name,Run* obj,Row* row,std::vector<std::string>identifiers);

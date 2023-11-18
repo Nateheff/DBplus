@@ -134,8 +134,7 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
             }
             case(16):
             {
-                if(full_tok.at(1)!=5)
-                return false;
+                
 
                 std::string table_name = identifiers.at(0);
                 if(full_tok.size()==2){
@@ -143,13 +142,13 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 std::cout<<"clearing table"<<std::endl;
                 break;
                 };
-
-                if(full_tok.at(2)!=13)
+                if(full_tok.at(1)!=5 || full_tok.at(2)!=13)
                 return false;
+                
 
                 
                 std::cout<<"deleting what you said where you said"<<std::endl;
-                delete_row(table_name,identifiers,obj,full_tok.at(full_tok.size()-1),identifiers.at(identifiers.size()-1));
+                delete_row(table_name,identifiers,obj,full_tok.at(3),identifiers.at(identifiers.size()-1));
 
                 break;
 
@@ -160,7 +159,7 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 return false;
                 
                 if(full_tok.at(full_tok.size()-2)!=13){
-                //update(table_name,column_name,new_val);
+                update_all(identifiers.at(0),obj,identifiers);
                 std::cout<<"updating all rows"<<std::endl;
                 return true;
                 }

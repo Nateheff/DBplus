@@ -19,7 +19,7 @@ struct Info{
     std::vector<Row>rows{};
     System_Rel_Row relation{};
     Syst_Index_Row* ind{};
-    std::vector<T_Node>pages;
+    
 
 };
 
@@ -34,15 +34,16 @@ class Bp_Tree{
     void search(float key, uint16_t num_rows, uint16_t row_size);
     void insert(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj, Row row);
     void insert(float key, uint16_t num_rows,uint16_t row_size, Run* obj, Row row);
-    void delete_row(Run* obj);
+    void delete_row(Run* obj, uint16_t index_first,uint16_t index_last);
     // void delete_row(float key,uint16_t num_rows, uint16_t row_size, Run* obj);
     void search_range(uint32_t key_first,uint32_t key_last,uint16_t num_rows);
     void search_range(float key_first,float key_last,uint16_t num_rows);
-    float update(float key, uint16_t num_rows,uint16_t row_size, Run* obj, Row row);
-    void update(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj, Row row);
-    void get_range(uint32_t key_first,uint32_t key_last,uint16_t num_rows);
-    void get_range(float key_first,float key_last,uint16_t num_rows);
-
+    void delete_range(uint32_t key_first,uint32_t key_last,uint16_t num_rows,Row row);
+    void delete_range(float key_first,float key_last,uint16_t num_rows,Row row);
+    void update_range(uint32_t key_first,uint32_t key_last,uint16_t num_rows,std::vector<uint16_t>positions,std::vector<char>types, Run* obj, std::vector<std::string>values);
+    void update_range(float key_first,float key_last,uint16_t num_rows,std::vector<uint16_t>positions,std::vector<char>types, Run* obj, std::vector<std::string>values);
+    void update_index_range(uint32_t key_first,uint32_t key_last,uint16_t num_rows,std::vector<uint16_t>positions,std::vector<char>types, Run* obj, std::vector<std::string>values);
+    void update_index_range(float key_first,float key_last,uint16_t num_rows,std::vector<uint16_t>positions,std::vector<char>types, Run* obj, std::vector<std::string>values);
     // void write_page(Curr_Node* node,std::string file,uint32_t offset = 0);
  
 };

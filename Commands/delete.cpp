@@ -4,12 +4,12 @@
 
 void delete_row(std::string table_name,std::vector<std::string>identifiers,Run* obj, uint16_t op, std::string value){
     Bp_Tree tree{};
-    
+    Row row{};
    
    uint32_t key{};
     tree.info.relation = obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];
     tree.info.ind = &obj->tree_ind.info.rel.rows[obj->tree_rel.info.index];
-    
+    row.data.resize(tree.info.relation.row_size);
     switch(tree.info.ind->key_type){
         case 's':
         case 'i':
@@ -40,39 +40,39 @@ void delete_row(std::string table_name,std::vector<std::string>identifiers,Run* 
     switch(op){
         case(21)://>
         {
-           tree.get_range(key+1,UINT32_MAX,num_rows);
+           tree.delete_range(key+1,UINT32_MAX,num_rows,row);
            break; 
         }
         case(22)://<
         {
-            tree.get_range(0,key-1,num_rows);
+            tree.delete_range(0,key-1,num_rows,row);
             break;
         }
         case(26)://=
         {
-            tree.get_range(key,key,num_rows);
+            tree.delete_range(key,key,num_rows,row);
             break;
         }
         case(29)://<=
         {
-            tree.get_range(0,key,num_rows);
+            tree.delete_range(0,key,num_rows,row);
             break;
             
         }
         case(30)://>=
         {
-            tree.get_range(key,UINT32_MAX,num_rows); 
+            tree.delete_range(key,UINT32_MAX,num_rows,row); 
            break;
         }
         case(14):
         {
             std::cout<<"between"<<std::endl;
-            tree.get_range(key,atoi(identifiers.at(identifiers.size()-1).c_str()),num_rows);
+            tree.delete_range(key,atoi(identifiers.at(identifiers.size()-1).c_str()),num_rows,row);
             break;
         }
     }
     
-    tree.delete_row(obj);
+    // tree.delete_row(obj,tree.info.index,tree.info.index_last);
     // tree.delete_row(key,4087/tree.info.relation.row_size,tree.info.relation.row_size,obj);
 }
 
@@ -88,44 +88,46 @@ void delete_row_f(std::string table_name,std::vector<std::string>identifiers,Run
     return;
     }
     key = atof(identifiers.at(2).c_str());
-
+    row.data.resize(tree.info.relation.row_size);
     uint16_t num_rows = 4087/tree.info.relation.row_size;
+    std::cout<<op<<std::endl;
     switch(op){
         case(21)://>
         {
-           tree.get_range(key+1,__FLT32_MAX__,num_rows);
+           tree.delete_range(key+__FLT32_MIN__,__FLT32_MAX__,num_rows,row);
            break; 
         }
         case(22)://<
         {
-            tree.get_range(0.0,key-1,num_rows);
+            tree.delete_range(0.0,key-__FLT16_MIN__,num_rows,row);
             break;
         }
         case(26)://=
         {
-            tree.get_range(key,key,num_rows);
+            tree.delete_range(key,key,num_rows,row);
             break;
         }
         case(29)://<=
         {
-            tree.get_range(0.0,key,num_rows);
+            tree.delete_range(0.0,key,num_rows,row);
             break;
             
         }
         case(30)://>=
         {
-            tree.get_range(key,__FLT32_MAX__,num_rows); 
+            tree.delete_range(key,__FLT32_MAX__,num_rows,row); 
            break;
         }
         case(14):
         {
             std::cout<<"between"<<std::endl;
-            tree.get_range(key,atof(identifiers.at(identifiers.size()-1).c_str()),num_rows);
+            tree.delete_range(key,atof(identifiers.at(identifiers.size()-1).c_str()),num_rows,row);
             break;
         }
     }
 
-    tree.delete_row(obj);
+
+    // tree.delete_row(obj,tree.info.index,tree.info.index_last);
 }
 
 
@@ -157,14 +159,18 @@ void delete_all(std::string table_name,Run* obj){
         fs.write(reinterpret_cast<char*>(&dump),sizeof(dump));
         
     }
-    *ind = em;
-    *rel = empty;
+    ind->ind_height = 0;
+    ind->ind_min = 0;
+    ind->ind_max = 0;
+    rel->num_pages = 0;
+    rel->num_rows = 0;
     obj->tree_rel.dirty = true;
     obj->tree_ind.dirty = true;
     fs.close();
 }
 
 void delete_all_f(std::string table_name,Run* obj){
+    std::cout<<"delete all float"<<std::endl;
     uint16_t key = obj->tree_rel.calc_name(table_name.c_str());
     obj->tree_rel.search_catalog(key,28);
     obj->tree_ind.search_catalog(key,48);
@@ -192,8 +198,11 @@ void delete_all_f(std::string table_name,Run* obj){
         fs.write(reinterpret_cast<char*>(&dump),sizeof(dump));
         
     }
-    *ind = em;
-    *rel = empty;
+    ind->ind_height = 0;
+    ind->ind_min = 0;
+    ind->ind_max = 0;
+    rel->num_pages = 0;
+    rel->num_rows = 0;
     obj->tree_rel.dirty = true;
     obj->tree_ind.dirty = true;
     fs.close();

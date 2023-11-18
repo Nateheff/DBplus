@@ -57,9 +57,10 @@ std::vector<type_size>infos;
 
 std::string file = table_name+".db";
 Curr_Node empty{};
-    std::fstream fs;
+std::fstream fs;
 fs.open(file,std::ios_base::binary|std::ios_base::out|std::ios_base::ate);
-if(fs.tellp()>0){
+std::cout<<fs.tellp()<<std::endl;
+if(fs.tellp()==0){
 fs.write(reinterpret_cast<char*>(&empty),sizeof(empty));
 std::cout<<"first rel"<<std::endl;
 }else{
@@ -80,15 +81,16 @@ for(size_t i = 3;i<full_tok.size();i++){
     };
 }
 uint16_t r_s{4};
-for(size_t i =0;i<id_size;i++){
-    strcpy(attrs.at(i).index,table_name.c_str());
-    strcpy(attrs.at(i).attr_name,identifiers.at(i).c_str());
-    attrs.at(i).position = i;
-    type_size info = infos.at(i);
-    attrs.at(i).check = info.size;
-    attrs.at(i).type = info.type;
+for(size_t i =1;i<=id_size;i++){
+    std::cout<<identifiers.at(i)<<" "<<id_size<<std::endl;
+    strcpy(attrs.at(i-1).index,table_name.c_str());
+    strcpy(attrs.at(i-1).attr_name,identifiers.at(i).c_str());
+    attrs.at(i-1).position = i-1;
+    type_size info = infos.at(i-1);
+    attrs.at(i-1).check = info.size;
+    attrs.at(i-1).type = info.type;
     r_s+=info.size;
-    obj->tree_attr.insert_catalog(obj->tree_attr.calc_name(table_name.c_str()),attrs.at(i),30);
+    obj->tree_attr.insert_catalog(obj->tree_attr.calc_name(table_name.c_str()),attrs.at(i-1),30);
 }
 
 if(fsm.page()>1){

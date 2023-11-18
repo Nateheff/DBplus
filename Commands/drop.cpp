@@ -1,7 +1,11 @@
 #include "Commands.h"
 
 void drop_db(std::string file, Run* obj){
-    remove(file.c_str());
+    std::string db{file+".db"};
+    remove(db.c_str());
+    std::string fsm{file+"_fsm.db"};
+    remove(fsm.c_str());
+    
 }
 
 void drop_table(std::string table_name, Run* obj){
