@@ -14,6 +14,7 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 if(full_tok.at(1)==3){//database
                     create_db(identifiers.at(0));
                     std::cout<<"Creating database!"<<std::endl;
+                    return true;
                 }
                 else if(full_tok.at(1)==11){//table
                 std::string table_name = identifiers.at(0);
@@ -22,9 +23,10 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 std::cout<<"creating table!"<<std::endl;
                 
                 create_table(table_name,full_tok,identifiers,full_tok.size()-3,identifiers.size()-1,list,obj);
+                return true;
                 }else
                 return false;
-                break;
+                
 
             }
             case(6): //insert
@@ -126,9 +128,11 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 if(full_tok.at(1)==3){
                 drop_db(identifiers.at(0),obj); //FOR DATABSE
                 std::cout<<"dropping db"<<std::endl;
+                return true;
                 }else if(full_tok.at(1)==11){
                 drop_table(identifiers.at(0),obj); //FOR TABLE
                 std::cout<<"dropping table"<<std::endl;
+                return true;
                 }else
                 return false;
             }
@@ -158,13 +162,20 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 if(full_tok.at(1)!=9)
                 return false;
                 
-                if(full_tok.at(full_tok.size()-2)!=13){
+                if((std::find(full_tok.cbegin(),full_tok.cend(),13))==full_tok.cend()){
                 update_all(identifiers.at(0),obj,identifiers);
                 std::cout<<"updating all rows"<<std::endl;
                 return true;
                 }
-                
+                if(full_tok.at(full_tok.size()-1)!=8){
+                identifiers.erase(identifiers.cbegin()+identifiers.size()-2,identifiers.cend()-1);
                 update(identifiers.at(0),obj,identifiers,full_tok.at(full_tok.size()-1),identifiers.at(identifiers.size()-1));
+                return true;
+                }else{
+                    identifiers.erase(identifiers.cbegin()+identifiers.size()-3,identifiers.cend()-2);
+                update(identifiers.at(0),obj,identifiers,full_tok.at(full_tok.size()-2),identifiers.at(identifiers.size()-2),identifiers.at(identifiers.size()-1));
+                return true;
+                }
                 // if(identifiers.size() <=5){
                 //     std::string key_column = identifiers.at(3);
                 //     std::string key_val = identifiers.at(4);

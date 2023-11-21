@@ -132,6 +132,7 @@ void delete_row_f(std::string table_name,std::vector<std::string>identifiers,Run
 
 
 void delete_all(std::string table_name,Run* obj){
+    
     uint16_t key = obj->tree_rel.calc_name(table_name.c_str());
     obj->tree_rel.search_catalog(key,28);
     obj->tree_ind.search_catalog(key,48);
@@ -141,6 +142,7 @@ void delete_all(std::string table_name,Run* obj){
 
     Syst_Index_Row* ind = &obj->tree_ind.info.rel.rows[obj->tree_ind.info.index];
     System_Rel_Row* rel = &obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];
+    std::cout<<"deleting table: "<<rel->index<<table_name<<key<<std::endl;
     std::fstream fs;
     if(ind->key_type == 'f'){
     delete_all_f(table_name,obj);

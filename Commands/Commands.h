@@ -37,4 +37,4 @@ void delete_all_f(std::string table_name, Run* obj);
 void drop_db(std::string file, Run* obj);
 void drop_table(std::string table_name, Run* obj);
 void update_all(std::string table_name, Run* obj, std::vector<std::string>identifiers);
-void update(std::string table_name,Run*obj,std::vector<std::string>identifiers,uint16_t op, std::string value);
+void update(std::string table_name,Run*obj,std::vector<std::string>identifiers,uint16_t op, std::string value,std::string v_2 = "");

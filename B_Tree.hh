@@ -7,7 +7,7 @@ uint16_t B_Tree<T,S>::calc_name(const char* arr){
     for(size_t i = 0;i<strlen(arr);i++)
     name += arr[i]=='\0' ? 0:arr[i];
     
-    std::cout<<arr<<std::endl;
+    // std::cout<<arr<<std::endl;
     return name;
 }
 
