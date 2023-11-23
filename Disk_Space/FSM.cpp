@@ -73,7 +73,7 @@ bool FSM::get_fsm(std::string name_val){
         std::cout<<"BAD: "<<fs.gcount()<<std::endl;
         
     }else{
-        // std::cout<<"Read: "<<fs.tellg()<<std::endl;
+        std::cout<<"Read: "<<fs.tellg()<<std::endl;
     }
     fs.close();
   return true;
@@ -119,8 +119,6 @@ void FSM::set_space(uint32_t page_num,uint8_t space){
         if(space == 0){
             if(page_num==root.num_pages -1)
                 root.num_pages--;
-            else if(page_num < root.num_pages && page_num > root.hole)
-                return;
             else
                 root.hole = page_num;
         }else if(space == 1){

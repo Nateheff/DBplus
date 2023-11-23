@@ -27,10 +27,12 @@ class Run{
         B_Tree<Syst_Index,Syst_Index_Row>tree_ind{std::string{"catalog_ind"}};
         B_Tree<Syst_Attr,Syst_Attr_Row>tree_attr{std::string{"catalog_attr"}};
         B_Tree<Syst_Rel,System_Rel_Row>tree_rel{std::string{"catalog_rel"}};
-       
     
+    std::string database{};
     bool run();
     void begin();
     void flush();
+    Run(){};
+    Run(std::string db):database{db}{};
     ~Run();
 };

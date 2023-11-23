@@ -5,6 +5,17 @@
 void delete_row(std::string table_name,std::vector<std::string>identifiers,Run* obj, uint16_t op, std::string value){
     Bp_Tree tree{};
     Row row{};
+    uint16_t key_c = obj->tree_rel.calc_name(table_name.c_str());
+    obj->tree_rel.search_range_catalog(key_c,key_c,28);
+    obj->tree_ind.search_range_catalog(key_c,key_c,48);
+    for(size_t i = 0;i<obj->tree_rel.rows.size();i++){
+        if(strcmp(obj->database.c_str(),obj->tree_rel.rows.at(i).rel_file)){
+            obj->tree_ind.info.index+=i;
+            obj->tree_rel.info.index+=i;
+        }
+    }
+    obj->tree_attr.search_range_catalog(key_c,key_c,30);
+    
    
    uint32_t key{};
     tree.info.relation = obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];
@@ -79,6 +90,16 @@ void delete_row(std::string table_name,std::vector<std::string>identifiers,Run* 
 void delete_row_f(std::string table_name,std::vector<std::string>identifiers,Run* obj, uint16_t op, std::string value){
     Bp_Tree tree{};
     Row row{};
+    uint16_t key_c = obj->tree_rel.calc_name(table_name.c_str());
+    obj->tree_rel.search_range_catalog(key_c,key_c,28);
+    obj->tree_ind.search_range_catalog(key_c,key_c,48);
+    for(size_t i = 0;i<obj->tree_rel.rows.size();i++){
+        if(strcmp(obj->database.c_str(),obj->tree_rel.rows.at(i).rel_file)){
+            obj->tree_ind.info.index+=i;
+            obj->tree_rel.info.index+=i;
+        }
+    }
+    obj->tree_attr.search_range_catalog(key_c,key_c,30);
    
    float key{};
     tree.info.relation = obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];
@@ -134,8 +155,14 @@ void delete_row_f(std::string table_name,std::vector<std::string>identifiers,Run
 void delete_all(std::string table_name,Run* obj){
     
     uint16_t key = obj->tree_rel.calc_name(table_name.c_str());
-    obj->tree_rel.search_catalog(key,28);
-    obj->tree_ind.search_catalog(key,48);
+    obj->tree_rel.search_range_catalog(key,key,28);
+    obj->tree_ind.search_range_catalog(key,key,48);
+    for(size_t i = 0;i<obj->tree_rel.rows.size();i++){
+        if(strcmp(obj->database.c_str(),obj->tree_rel.rows.at(i).rel_file)){
+            obj->tree_ind.info.index+=i;
+            obj->tree_rel.info.index+=i;
+        }
+    }
     obj->tree_attr.search_range_catalog(key,key,30);
     Syst_Index_Row em{};
     System_Rel_Row empty{};
@@ -150,7 +177,7 @@ void delete_all(std::string table_name,Run* obj){
     }
     if(ind->ind_start == 0){
         
-        fs.open(rel->rel_file,std::ios_base::binary|std::ios_base::out);
+        fs.open(rel->rel_file,std::ios_base::binary|std::ios_base::out|std::ios_base::in);
         Curr_Node empty{};
         fs.write(reinterpret_cast<char*>(&empty),sizeof(empty));
 
@@ -189,7 +216,7 @@ void delete_all_f(std::string table_name,Run* obj){
     }
     if(ind->ind_start == 0){
         
-        fs.open(rel->rel_file,std::ios_base::binary|std::ios_base::out);
+        fs.open(rel->rel_file,std::ios_base::binary|std::ios_base::out|std::ios_base::in);
         Curr_Node empty{};
         fs.write(reinterpret_cast<char*>(&empty),sizeof(empty));
 

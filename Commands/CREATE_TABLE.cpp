@@ -48,27 +48,31 @@ void create_table(std::string table_name, std::vector<uint16_t>full_tok, std::ve
 
     FSM fsm;
     
-    fsm.create_fsm(table_name);
+    fsm.get_fsm(identifiers.at(0));
    
 std::vector<Syst_Attr_Row>attrs{id_size};
 Syst_Index_Row ind{};
 System_Rel_Row rel{};
 std::vector<type_size>infos;
 
-std::string file = table_name+".db";
+std::string file = obj->database;
 Curr_Node empty{};
-std::fstream fs;
-fs.open(file,std::ios_base::binary|std::ios_base::out|std::ios_base::ate);
+std::ofstream fs;
+fs.open(file,std::ios_base::binary|std::ios_base::app|std::ios_base::ate);
 std::cout<<fs.tellp()<<std::endl;
+ind.ind_start = fs.tellp();
 if(fs.tellp()==0){
 fs.write(reinterpret_cast<char*>(&empty),sizeof(empty));
 std::cout<<"first rel"<<std::endl;
 }else{
     fs.close();
-    fs.open(file,std::ios_base::binary|std::ios_base::out|std::ios_base::in|std::ios_base::ate);
-    fs.write(reinterpret_cast<char*>(&empty),sizeof(empty));
-    ind.ind_start = fs.tellp();
+    std::fstream fs_;
+    fs_.open(file,std::ios_base::binary|std::ios_base::out|std::ios_base::in|std::ios_base::ate);
+    
+    fs_.write(reinterpret_cast<char*>(&empty),sizeof(empty));
+    
     std::cout<<"many "<<ind.ind_start<<std::endl;
+    fs_.close();
 }
 fs.close();
 
@@ -109,7 +113,7 @@ obj->tree_ind.insert_catalog(key,ind,48);
 
 rel.check = id_size;
 strcpy(rel.index,table_name.c_str());
-table_name+=".db";
+table_name = obj->database;
 strcpy(rel.rel_file,table_name.c_str());
 rel.num_pages = 1;
 rel.num_rows = 0;

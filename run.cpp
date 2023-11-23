@@ -2,6 +2,12 @@
 
 
 bool Run::run(){
+    std::fstream fs;
+    fs.open("databases.txt",std::ios_base::out|std::ios_base::in|std::ios_base::binary|std::ios_base::ate);
+    if(fs.tellp()>0){
+    begin();
+    return true;
+    }else{
     Catalog_Index catalog_ind{};
     Catalog_Rel catalog_rel{};
     Catalog_Attr catalog_attr{};
@@ -26,8 +32,11 @@ bool Run::run(){
     tree_attr.height = tree_ind.info.rel.rows[tree_ind.info.index].ind_height;
     // std::cout<<"ran "<<tree_attr.height<<" "<<tree_rel.height<<std::endl;
     //1141
+    std::fstream fs;
+    fs.open("databases.txt",std::ios_base::out|std::ios_base::binary);
+    fs.close();
     return true;
-    
+    }
 }
 
 void Run::begin(){
@@ -42,6 +51,9 @@ void Run::begin(){
     tree_rel.height = tree_ind.info.rel.rows[tree_ind.info.index].ind_height;
     tree_ind.search_catalog(1269,48);
     tree_attr.height = tree_ind.info.rel.rows[tree_ind.info.index].ind_height;
+    
+
+    
 }
 /*
 

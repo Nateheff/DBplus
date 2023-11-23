@@ -58,7 +58,7 @@ class B_Tree
     std::vector<Syst_Attr_Row*>attrs{};
     uint16_t out{};
     
-    void search_catalog(uint16_t key,uint16_t num_rows);
+    void search_catalog(uint16_t key,uint16_t num_rows,std::string database = "");
     void remove_catalog(uint16_t key, uint16_t num_rows);
     void insert_catalog(uint16_t key, S row,uint16_t num_rows);
     void search_range_catalog(uint16_t key_first,uint16_t key_last,uint16_t num_rows);

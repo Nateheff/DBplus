@@ -12,7 +12,7 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
             {
                 uint8_t mode {};
                 if(full_tok.at(1)==3){//database
-                    create_db(identifiers.at(0));
+                    create_db(identifiers.at(0),obj);
                     std::cout<<"Creating database!"<<std::endl;
                     return true;
                 }

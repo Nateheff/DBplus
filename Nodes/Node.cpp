@@ -7,14 +7,22 @@ void create_tuple(std::string table_name,Run* obj,Row* row,std::vector<std::stri
     //// std::cout<<"CREATING TUPLE"<<std::endl;
     
    uint16_t key =obj->tree_attr.calc_name(table_name.c_str());
-    obj->tree_rel.search_catalog(key,28);
+    obj->tree_rel.search_range_catalog(key,key,28);
     //// std::cout<<"searched rel "<<key<<std::endl;
-    obj->tree_ind.search_catalog(key,48);
+    obj->tree_ind.search_range_catalog(key,key,48);
+    for(size_t i = 0;i<obj->tree_rel.rows.size();i++){
+        if(strcmp(obj->database.c_str(),obj->tree_rel.rows.at(i).rel_file)){
+            obj->tree_ind.info.index+=i;
+            obj->tree_rel.info.index+=i;
+        }
+    }
+    
     //// std::cout<<"searched ind"<<std::endl;
     obj->tree_attr.search_range_catalog(key,key,30);
     //// std::cout<<"searched attr"<<std::endl;
     System_Rel_Row rel = obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];
     Syst_Index_Row ind = obj->tree_ind.info.rel.rows[obj->tree_ind.info.index];
+    std::cout<<"CHECK: "<<rel.rel_file<<" "<<rel.row_size<<std::endl;
     row->data.resize(rel.row_size);
     // for(auto& d:row->data){
     //// std::cout<<identifiers.at(1)<<std::endl;
@@ -46,9 +54,9 @@ void create_tuple(std::string table_name,Run* obj,Row* row,std::vector<std::stri
         }
     }
     char* test;
-    //// std::cout<<row->index<<std::endl;
+    std::cout<<row->index<<std::endl;
     memcpy(row->data.data(),&row->index,4);
-    //// std::cout<<row->index<<std::endl;
+    std::cout<<row->index<<std::endl;
     uint16_t pos{sizeof(row->index)};
     
     
@@ -103,7 +111,7 @@ void create_tuple(std::string table_name,Run* obj,Row* row,std::vector<std::stri
         }
         
     }else{
-        //// std::cout<<"length"<<std::endl;
+        std::cout<<"length"<<std::endl;
         switch(obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1-i).type){
             case('b'):
             {
@@ -151,7 +159,7 @@ void create_tuple(std::string table_name,Run* obj,Row* row,std::vector<std::stri
     }
     
     } 
-    //// std::cout<<row->index<<std::endl;
+    std::cout<<row->index<<std::endl;
     return;
 };
 
@@ -159,9 +167,15 @@ float create_tuple_f(std::string table_name,Run* obj,Row* row,std::vector<std::s
    // std::cout<<"CREATING FLOAT TUPLE"<<std::endl;
     
    uint16_t key =obj->tree_attr.calc_name(table_name.c_str());
-    obj->tree_rel.search_catalog(key,28);
+    obj->tree_rel.search_range_catalog(key,key,28);
     //// std::cout<<"searched rel "<<key<<std::endl;
-    obj->tree_ind.search_catalog(key,48);
+    obj->tree_ind.search_range_catalog(key,key,48);
+    for(size_t i = 0;i<obj->tree_rel.rows.size();i++){
+        if(strcmp(obj->database.c_str(),obj->tree_rel.rows.at(i).rel_file)){
+            obj->tree_ind.info.index+=i;
+            obj->tree_rel.info.index+=i;
+        }
+    }
     //// std::cout<<"searched ind"<<std::endl;
     obj->tree_attr.search_range_catalog(key,key,30);
     //// std::cout<<"searched attr"<<std::endl;
@@ -285,48 +299,49 @@ float create_tuple_f(std::string table_name,Run* obj,Row* row,std::vector<std::s
     return index;
 };
 
-void edit_row(Curr_Node* node,std::vector<uint16_t>positions,std::vector<char>types, std::vector<std::string>values, uint16_t num_rows, uint16_t row_size, Run* obj){
+void edit_row(Curr_Node* node,std::vector<uint16_t>positions,std::vector<char>types, std::vector<std::string>values, uint16_t num_rows, uint16_t row_size, Run* obj,uint16_t index_first){
     std::vector<uint16_t>offsets{};
     std::cout<<"editting row"<<std::endl;
-    uint16_t off{};
+    uint16_t off{4};
+    offsets.push_back(off);
     for(int i = obj->tree_attr.rows.size()-1;i>=0;i--){
-       // std::cout<<i<<std::endl;
+    //    std::cout<<i<<std::endl;
         off+=obj->tree_attr.rows.at(i).check;
-       // std::cout<<off<<" v "<<i<<std::endl;
+    //    std::cout<<off<<" v "<<i<<std::endl;
         offsets.push_back(off);
-       // std::cout<<i<<std::endl;
+    //    std::cout<<i<<std::endl;
     }
-   std::cout<<"offsets covered "<<num_rows<<" "<<positions.size()<<" "<<values.size()<<std::endl;
+//    std::cout<<"offsets covered "<<num_rows<<" "<<positions.size()<<" "<<values.size()<<std::endl;
     for(size_t i = 0;i<num_rows;i++){
         for(size_t j = 0; j<positions.size();j++){
-           // std::cout<<values.at(j)<<" k "<<offsets.at(j)<<std::endl;
-           // std::cout<<(i*row_size)+offsets.at(positions.at(j))<<std::endl;
+        //    std::cout<<values.at(j)<<" k "<<offsets.at(j)<<std::endl;
+        //    std::cout<<(i*row_size)+offsets.at(positions.at(j))<<std::endl;
             switch(types.at(j)){
             case('b'):
             {
                 bool d{atoi(values.at(j).c_str())};
-                memcpy(&node->data[(i*row_size)+offsets.at(positions.at(j))],&d,1);
+                memcpy(&node->data[((i+index_first)*row_size)+offsets.at(positions.at(j))],&d,1);
                 break;
                 
             }
             case('c'):
             {
                 char d{values.at(j).at(0)};
-                memcpy(&node->data[(i*row_size)+offsets.at(positions.at(j))],&d,1);
+                memcpy(&node->data[((i+index_first)*row_size)+offsets.at(positions.at(j))],&d,1);
                 break;
             }
             case('f'):
             {
                // std::cout<<"float"<<std::endl;
                 float d{atof(values.at(j).c_str())};
-                memcpy(&node->data[(i*row_size)+offsets.at(positions.at(j))],&d,4);
+                memcpy(&node->data[((i+index_first)*row_size)+offsets.at(positions.at(j))],&d,4);
                 break;
             }
             case('i'):
             {
                // std::cout<<"int"<<std::endl;
                 uint32_t d{atoi(values.at(j).c_str())};
-                memcpy(&node->data[(i*row_size)+offsets.at(positions.at(j))],&d,4);
+                memcpy(&node->data[((i+index_first)*row_size)+offsets.at(positions.at(j))],&d,4);
                 //// std::cout<<"success"<<std::endl;
                 break;
             }
@@ -334,38 +349,38 @@ void edit_row(Curr_Node* node,std::vector<uint16_t>positions,std::vector<char>ty
             {
                 char d[64];
                 strcpy(d,values.at(j).c_str());
-                memcpy(&node->data[(i*row_size)+offsets.at(positions.at(j))],&d,64);
+                memcpy(&node->data[((i+index_first)*row_size)+offsets.at(positions.at(j))],&d,64);
                 break;
             }
             case('s'):
             {
                 uint16_t d{atoi(values.at(j).c_str())};
-                memcpy(&node->data[(i*row_size)+offsets.at(positions.at(j))],&d,2);
+                memcpy(&node->data[((i+index_first)*row_size)+offsets.at(positions.at(j))],&d,2);
                 break;
             }
         }
         }}
-   std::cout<<"edited"<<std::endl;
+//    std::cout<<"edited"<<std::endl;
 }
 
-std::vector<Row> edit_rows(Curr_Node* node,std::vector<uint16_t>positions,std::vector<char>types, std::vector<std::string>values, uint16_t num_rows, uint16_t row_size, Run* obj){
+std::vector<Row> edit_rows(Curr_Node* node,std::vector<uint16_t>positions,std::vector<char>types, std::vector<std::string>values, uint16_t num_rows, uint16_t row_size, Run* obj,uint16_t index_first){
     std::vector<uint16_t>offsets{};
     std::vector<Row>rows{};
-    uint16_t off{};
-    // offsets.push_back(off);
+    uint16_t off{4};
+    offsets.push_back(off);
     for(int i = obj->tree_attr.rows.size()-1;i>=0;i--){
-       // std::cout<<i<<std::endl;
+    //    std::cout<<(int)obj->tree_attr.rows.at(i).check<<std::endl;
         off+=obj->tree_attr.rows.at(i).check;
-       // std::cout<<off<<" v "<<i<<std::endl;
+    //    std::cout<<off<<" v "<<i<<std::endl;
         offsets.push_back(off);
-       // std::cout<<i<<std::endl;
+    //    std::cout<<i<<std::endl;
     }
 
-   // std::cout<<"offsets covered rows"<<num_rows<<" "<<positions.size()<<" "<<values.size()<<std::endl;
+//    std::cout<<"offsets covered rows"<<num_rows<<" "<<positions.size()<<" "<<values.size()<<std::endl;
     Row row{};
     row.data.resize(row_size);
     for(size_t i = 0;i<num_rows;i++){
-        memcpy(row.data.data(),&node->data[(i*num_rows)],row_size);
+        memcpy(row.data.data(),&node->data[((i+index_first)*num_rows)],row_size);
         if(types.at(0)=='f'){
             float d{atof(values.at(0).c_str())};
             memcpy(row.data.data(),&d,4);
@@ -374,8 +389,8 @@ std::vector<Row> edit_rows(Curr_Node* node,std::vector<uint16_t>positions,std::v
             memcpy(row.data.data(),&d,4);
         }
         for(size_t j = 0; j<positions.size();j++){
-           // std::cout<<values.at(j)<<" "<<j<<" "<<offsets.at(j)<<std::endl;
-           // std::cout<<(i*row_size)+offsets.at(positions.at(j))<<std::endl;
+        //    std::cout<<values.at(j)<<" "<<j<<" "<<offsets.at(positions.at(j))<<std::endl;
+        //    std::cout<<(i*row_size)+offsets.at(positions.at(j))<<std::endl;
             switch(types.at(j)){
             case('b'):
             {
@@ -392,17 +407,17 @@ std::vector<Row> edit_rows(Curr_Node* node,std::vector<uint16_t>positions,std::v
             }
             case('f'):
             {
-               // std::cout<<"float"<<std::endl;
+            //    std::cout<<"float"<<std::endl;
                 float d{atof(values.at(j).c_str())};
                 memcpy(&row.data.data()[offsets.at(positions.at(j))],&d,4);
                 break;
             }
             case('i'):
             {
-               // std::cout<<"int"<<std::endl;
+               std::cout<<"int"<<std::endl;
                 uint32_t d{atoi(values.at(j).c_str())};
                 memcpy(&row.data.data()[offsets.at(positions.at(j))],&d,4);
-                //// std::cout<<"success"<<std::endl;
+                std::cout<<"success"<<std::endl;
                 break;
             }
             case('v'):
@@ -422,8 +437,8 @@ std::vector<Row> edit_rows(Curr_Node* node,std::vector<uint16_t>positions,std::v
         }
         rows.push_back(row);
         // for(auto i: row.data)
-       // std::cout<<i;
-       // std::cout<<std::endl;
+    //    std::cout<<i;
+    //    std::cout<<std::endl;
     }
     return rows;
 }

@@ -55,8 +55,8 @@ void Bp_Tree::search(uint32_t key,uint16_t num_rows, uint16_t row_size){
         
         uint16_t index = info.root.next_index;
         info.offsets.push_back(0);
-        // std::cout<<"Root: "<<root.page_id<<" "<<root.arr[0].key<<" "<<(int)root.next_index<<std::endl;
-        // std::cout<<"Bottom: "<<root.bottom_p<<std::endl;
+        // std::cout<<"Root: "<<info.root.page_id<<" "<<info.root.arr[0].key<<std::endl;
+        // std::cout<<"Bottom: "<<info.root.bottom_p<<std::endl;
     // for(size_t i = 0;i<15;i++)
     // std::cout<<i<<": "<<"Key: "<<root.arr[i].key<<" Pointer: "<<root.arr[i].pointer<<std::endl;
     
@@ -182,14 +182,16 @@ void Bp_Tree::search(uint32_t key,uint16_t num_rows, uint16_t row_size){
         info.leaf.page_id = 0;
 
     };
-    
-    // std::cout<<"got the rel"<<info.leaf.page_id<<" "<<info.leaf.bottom_p<<" "<<info.leaf.is_index<<std::endl;
+   
+    std::cout<<"got the rel"<<info.leaf.page_id<<" "<<info.leaf.bottom_p<<" "<<info.leaf.is_index<<std::endl;
     for(size_t i =0;i<num_rows;i++){
             uint32_t index{};
             memcpy(&index,&info.leaf.data[i*row_size],4);
-            // std::cout<<"name: "<<index<<" key: "<<key<<std::endl;
+            
+            std::cout<<"name: "<<index<<" key: "<<key<<std::endl;
             if(key <= index || (i == num_rows-1 && key > index)||index == 0){
-            // std::cout<<"found "<<i<<std::endl;
+               
+            std::cout<<"found "<<i<<std::endl;
                 info.index = i;
                 
                 return;
@@ -496,12 +498,12 @@ void Bp_Tree::insert(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj
     
 //search normally
     
-    // std::cout<<"Key: "<<key<<std::endl;
     // if(test > num_rows)
     // search(key,num_rows,ind_type);
     // else
     info.relation = obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];
     info.ind = &obj->tree_ind.info.rel.rows[obj->tree_ind.info.index];
+    std::cout<<"INSERT CHECK: "<<info.relation.rel_file<<" "<<info.relation.row_size<<" "<<row_size<<std::endl;
     search(key,num_rows,row_size);
     // std::cout<<"searched"<<std::endl;
     std::fstream fs;
@@ -520,7 +522,7 @@ void Bp_Tree::insert(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj
     // std::cout<<"beginning insert: "<<info.relation.index<<std::endl;
    
     if(!fsm.has_root()){
-    fsm.get_fsm(info.relation.index);
+    fsm.get_fsm(obj->database.substr(0,obj->database.size()-3));
     // std::cout<<"got fsm"<<std::endl;
     }
     
@@ -538,13 +540,17 @@ void Bp_Tree::insert(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj
         // std::cout<<"INDEX: "<<info.index<<std::endl;
         std::vector<char>empty{};
         empty.resize(row_size);
-        // uint32_t index_t{};
-        // for(size_t i=0;i<5;i++){
-        //     memcpy(&index_t,&info.leaf.data[i*row_size],4);
-        //     std::cout<<i<<": "<<index_t<<" "<<i*row_size<<std::endl;
-        // }
+        uint32_t index_t{};
+        for(size_t i=0;i<5;i++){
+            memcpy(&index_t,&info.leaf.data[i*row_size],4);
+            std::cout<<i<<": "<<index_t<<" "<<i*row_size<<std::endl;
+        }
         
         //  std::cout<<"pre-loop"<<std::endl;
+        uint32_t index{};
+        memcpy(&index,&info.leaf.data[info.index*row_size],4);
+        // std::cout<<index<<std::endl;;
+        if(index != key){
         for(size_t i = num_rows-2;i >= info.index;i--){
             // std::cout<<i<<std::endl;
             memcpy(&info.leaf.data[(i+1)*row_size],&info.leaf.data[i*row_size],row_size);
@@ -553,11 +559,12 @@ void Bp_Tree::insert(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj
             if(i == 0)
             break;
         }
+        }
         // std::cout<<"post loop"<<std::endl;
-        // for(size_t i=0;i<4;i++){
-        //     memcpy(&index_t,&info.leaf.data[i*row_size],4);
-        //     std::cout<<i<<": "<<index_t<<" "<<i*row_size<<std::endl;
-        // }
+        for(size_t i=0;i<4;i++){
+            memcpy(&index_t,&info.leaf.data[i*row_size],4);
+            std::cout<<i<<": "<<index_t<<" "<<i*row_size<<std::endl;
+        }
         // for(size_t i=0;i<26;i++)
         //     std::cout<<i<<"b: "<<leaf.data[i].index<<std::endl;
         // std::cout<<"ROW: "<<row.check<<std::endl;
@@ -568,9 +575,9 @@ void Bp_Tree::insert(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj
         //     std::cout<<i<<": "<<leaf.data[i].index<<std::endl;
         fsm.set_space(info.leaf.page_id,1);
         //  std::cout<<"ATTENTION: "<<leaf.data[0].check<<leaf.data[1].check<<std::endl;
-        uint32_t index{};
-        memcpy(&index,&info.leaf.data[(num_rows-1)*row_size],4);
-        if(index != 0){
+        uint32_t index_last{};
+        memcpy(&index_last,&info.leaf.data[(num_rows-1)*row_size],4);
+        if(index_last != 0){
         std::cout<<"1!"<<std::endl;
         fsm.set_space(info.leaf.page_id,2);
         }
@@ -604,7 +611,7 @@ void Bp_Tree::insert(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj
         // std::cout<<"PAGE: "<<half.page_id;
         new_page_offset = (half.page_id) * 4096+info.ind->ind_start;
         // std::cout<<"OFF: "<<new_page_offset<<std::endl;
-    
+        uint32_t index{};
         std::vector<char>empty{};
         empty.resize(row_size);
 
@@ -626,26 +633,39 @@ void Bp_Tree::insert(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj
             
             memcpy(&key_of_interest,&info.leaf.data[((num_rows/2)-1)*row_size],4);
             
+            
+        memcpy(&index,&info.leaf.data[info.index*row_size],4);
+        // std::cout<<index<<std::endl;;
+        if(index != key){
             for(size_t i = num_rows/2; i > info.index;i--){
                 memcpy(&info.leaf.data[i*row_size],&info.leaf.data[(i-1)*row_size],row_size);
             };
+        }
             memcpy(&info.leaf.data[info.index*row_size],row.data.data(),row_size);
             
         }else if(info.index > num_rows/2){
             
-            memcpy(&key_of_interest,&info.leaf.data[info.index*row_size],4);
+            memcpy(&key_of_interest,half.data,4);
             
             // std::cout<<"Bruh: "<<key_of_interest<<std::endl;
+            memcpy(&index,&half.data[(info.index-(num_rows/2))*row_size],4);
+            // std::cout<<index<<std::endl;
+        if(index != key){
             for(size_t i = num_rows/2;i > info.index - (num_rows/2);i--){
                 memcpy(&half.data[i*row_size],&half.data[(i-1)*row_size],row_size);
             }
+        }
             memcpy(&half.data[(info.index -(num_rows/2))*row_size],row.data.data(),row_size);//FIXX////////////////////////////////////////////////////////////////////////////
         }else{
             key_of_interest = key;
-            for(size_t i = num_rows/2;i > info.index - (num_rows/2);i--){
-                memcpy(&info.leaf.data[i*row_size],&info.leaf.data[(i-1)*row_size],row_size);
+            memcpy(&index,&half.data[(info.index-(num_rows/2))*row_size],4);
+            // std::cout<<index<<std::endl;
+        if(index != key){
+            for(size_t i = num_rows/2;i > 0;i--){
+                memcpy(&half.data[i*row_size],&half.data[(i-1)*row_size],row_size);
             }
-            memcpy(&half.data[(info.index -(num_rows/2))*row_size],row.data.data(),row_size);//FIXX////////////////////////////////////////////////////////////////////////////
+        }
+            memcpy(&half.data[0],row.data.data(),row_size);//FIXX////////////////////////////////////////////////////////////////////////////
         };
         half.bottom_p = info.leaf.bottom_p;
         info.leaf.bottom_p = half.page_id*4096+info.ind->ind_start;
@@ -728,7 +748,7 @@ void Bp_Tree::insert(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj
             return;
         }else if(fsm.has_space(info.root.page_id)!=1 && i != 0){
             //If parent does not have room, split parent and get location of new parent.
-            std::cout<<"splitting index: "<<info.root.page_id<<" "<<info.index_root<<" "<<info.offsets.size()<<std::endl;
+            // std::cout<<"splitting index: "<<info.root.page_id<<" "<<info.index_root<<" "<<info.offsets.size()<<std::endl;
 
             Syst_Root half_root;
             half_root.page_id = fsm.page();
@@ -1045,7 +1065,7 @@ void Bp_Tree::insert(float key, uint16_t num_rows,uint16_t row_size, Run* obj, R
     // std::cout<<"beginning insert: "<<info.relation.index<<std::endl;
    
     if(!fsm.has_root()){
-    fsm.get_fsm(info.relation.index);
+    fsm.get_fsm(obj->database.substr(0,obj->database.size()-3));
     std::cout<<"got fsm"<<std::endl;
     }
     
@@ -1063,13 +1083,17 @@ void Bp_Tree::insert(float key, uint16_t num_rows,uint16_t row_size, Run* obj, R
         // std::cout<<"INDEX: "<<info.index<<std::endl;
         std::vector<char>empty{};
         empty.resize(row_size);
-        // float index_t{};
-        // for(size_t i=0;i<5;i++){
-        //     memcpy(&index_t,&info.leaf.data[i*row_size],4);
-        //     std::cout<<i<<": "<<index_t<<" "<<i*row_size<<std::endl;
-        // }
+        float index_t{};
+        for(size_t i=0;i<5;i++){
+            memcpy(&index_t,&info.leaf.data[i*row_size],4);
+            std::cout<<i<<": "<<index_t<<" "<<i*row_size<<std::endl;
+        }
         
         //  std::cout<<"pre-loop"<<std::endl;
+        float index{};
+        memcpy(&index,&info.leaf.data[info.index*row_size],4);
+        // std::cout<<index<<std::endl;
+        if(index != key){
         for(size_t i = num_rows-2;i >= info.index;i--){
             // std::cout<<i<<std::endl;
             memcpy(&info.leaf.data[(i+1)*row_size],&info.leaf.data[i*row_size],row_size);
@@ -1078,11 +1102,12 @@ void Bp_Tree::insert(float key, uint16_t num_rows,uint16_t row_size, Run* obj, R
             if(i == 0)
             break;
         }
-        // std::cout<<"post loop"<<std::endl;
-        // for(size_t i=0;i<4;i++){
-        //     memcpy(&index_t,&info.leaf.data[i*row_size],4);
-        //     std::cout<<i<<": "<<index_t<<" "<<i*row_size<<std::endl;
-        // }
+        };
+        std::cout<<"post loop"<<std::endl;
+        for(size_t i=0;i<4;i++){
+            memcpy(&index_t,&info.leaf.data[i*row_size],4);
+            std::cout<<i<<": "<<index_t<<" "<<i*row_size<<std::endl;
+        }
         // for(size_t i=0;i<26;i++)
         //     std::cout<<i<<"b: "<<leaf.data[i].index<<std::endl;
         // std::cout<<"ROW: "<<row.check<<std::endl;
@@ -1093,9 +1118,9 @@ void Bp_Tree::insert(float key, uint16_t num_rows,uint16_t row_size, Run* obj, R
         //     std::cout<<i<<": "<<leaf.data[i].index<<std::endl;
         fsm.set_space(info.leaf.page_id,1);
         //  std::cout<<"ATTENTION: "<<leaf.data[0].check<<leaf.data[1].check<<std::endl;
-        float index{};
-        memcpy(&index,&info.leaf.data[(num_rows-1)*row_size],4);
-        if(index != 0){
+        float index_last{};
+        memcpy(&index_last,&info.leaf.data[(num_rows-1)*row_size],4);
+        if(index_last != 0){
         std::cout<<"1!"<<std::endl;
         fsm.set_space(info.leaf.page_id,2);
         }
@@ -1132,6 +1157,7 @@ void Bp_Tree::insert(float key, uint16_t num_rows,uint16_t row_size, Run* obj, R
     
         std::vector<char>empty{};
         empty.resize(row_size);
+        float index{};
 
         for(size_t i = num_rows/2; i<num_rows;i++){
             memcpy(&half.data[(i-(num_rows/2))*row_size],&info.leaf.data[i*row_size],row_size);
@@ -1151,26 +1177,39 @@ void Bp_Tree::insert(float key, uint16_t num_rows,uint16_t row_size, Run* obj, R
             
             memcpy(&key_of_interest,&info.leaf.data[((num_rows/2)-1)*row_size],4);
             
+            
+        memcpy(&index,&info.leaf.data[info.index*row_size],4);
+        std::cout<<index<<std::endl;;
+        if(index != key){
             for(size_t i = num_rows/2; i > info.index;i--){
                 memcpy(&info.leaf.data[i*row_size],&info.leaf.data[(i-1)*row_size],row_size);
             };
+        }
             memcpy(&info.leaf.data[info.index*row_size],row.data.data(),row_size);
             
         }else if(info.index > num_rows/2){
             
-            memcpy(&key_of_interest,&info.leaf.data[info.index*row_size],4);
+            memcpy(&key_of_interest,half.data,4);
             
             // std::cout<<"Bruh: "<<key_of_interest<<std::endl;
+            memcpy(&index,&half.data[(info.index-(num_rows/2))*row_size],4);
+            std::cout<<index<<std::endl;
+        if(index != key){
             for(size_t i = num_rows/2;i > info.index - (num_rows/2);i--){
                 memcpy(&half.data[i*row_size],&half.data[(i-1)*row_size],row_size);
             }
+        }
             memcpy(&half.data[(info.index -(num_rows/2))*row_size],row.data.data(),row_size);//FIXX////////////////////////////////////////////////////////////////////////////
         }else{
             key_of_interest = key;
-            for(size_t i = num_rows/2;i > info.index - (num_rows/2);i--){
-                memcpy(&info.leaf.data[i*row_size],&info.leaf.data[(i-1)*row_size],row_size);
+            memcpy(&index,&half.data[(info.index-(num_rows/2))*row_size],4);
+            std::cout<<index<<std::endl;
+        if(index != key){
+            for(size_t i = num_rows/2;i > 0;i--){
+                memcpy(&half.data[i*row_size],&half.data[(i-1)*row_size],row_size);
             }
-            memcpy(&half.data[(info.index -(num_rows/2))*row_size],row.data.data(),row_size);//FIXX////////////////////////////////////////////////////////////////////////////
+        }
+            memcpy(&half.data[0],row.data.data(),row_size);//FIXX////////////////////////////////////////////////////////////////////////////
         };
         half.bottom_p = info.leaf.bottom_p;
         info.leaf.bottom_p = half.page_id*4096+info.ind->ind_start;
@@ -1497,6 +1536,7 @@ void Bp_Tree::insert(float key, uint16_t num_rows,uint16_t row_size, Run* obj, R
         new_root.next_index=0;
         info.leaf.page_id = 1;
         half.page_id = 2;
+        half.bottom_p = 0;
         info.leaf.bottom_p = half.page_id*4096+info.ind->ind_start;
         // std::cout<<"Info: "<<half.page_id<<" "<<info.leaf.page_id<<std::endl;
             //switch the current 0 index page and the root page  so the root is always at index 0
@@ -1721,7 +1761,7 @@ void Bp_Tree::delete_range(uint32_t key_first,uint32_t key_last,uint16_t num_row
     row_empty.data.resize(info.relation.row_size);
     row.data.resize(info.relation.row_size);
     // row_dump.data.resize(info.relation.row_size);
-    std::cout<<"resized "<<row.data.size()<<std::endl;
+    std::cout<<"resized "<<row.data.size()<<" "<<info.leaf.page_id<<" "<<info.ind->ind_height<<std::endl;
     
     if(info.ind->ind_height > 0){
 
@@ -1729,8 +1769,9 @@ void Bp_Tree::delete_range(uint32_t key_first,uint32_t key_last,uint16_t num_row
             memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
             memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
             memcpy(&index_i,row_empty.data.data(),4);
+            // std::cout<<"deleting: "<<index<<" "<<index_i<<std::endl;
             if(index_i != 0){
-            std::cout<<"row pushed "<<index_i<<std::endl;
+            // std::cout<<"row pushed "<<index_i<<std::endl;
             // info.rows.push_back(row);
             memcpy(&info.leaf.data[i*info.relation.row_size],row.data.data(),info.relation.row_size);
             }
@@ -1750,29 +1791,35 @@ void Bp_Tree::delete_range(uint32_t key_first,uint32_t key_last,uint16_t num_row
                 break;
             }
         }
+        
+        
         fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
         fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
         fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
+        fs.close();
         while(!found){
         
         
-
-            // fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
+            std::cout<<info.leaf.bottom_p<<std::endl;
+            fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
             fs.seekg(info.leaf.bottom_p);
             fs.read(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
-
+            fs.close();
+            std::cout<<"read "<<info.leaf.page_id<<std::endl;
             for(size_t i = 0; i< num_rows;i++){
                 memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
                 memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
                 memcpy(&index_i,row_empty.data.data(),4);
+
                 if(index_i != 0){
-                std::cout<<"row pushed"<<std::endl;
+                // std::cout<<"row pushed"<<std::endl;
                 memcpy(&info.leaf.data[i*info.relation.row_size],row.data.data(),info.relation.row_size);
                 
                 }
-                if(index > key_last || index == 0){
+
+                if(index > key_last || (info.leaf.bottom_p == 0 && index==0)){
                     info.index_last = i;
-                
+                    found = true;
                     for(size_t j = info.index; j<num_rows-info.index_last-1;j++){
                         memcpy(&index,&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],4);
                 
@@ -1785,9 +1832,177 @@ void Bp_Tree::delete_range(uint32_t key_first,uint32_t key_last,uint16_t num_row
                     }
                     break;
                 } 
+                if(index == 0){
+                    info.index_last = i;
+                    for(size_t j = info.index; j<num_rows-info.index_last-1;j++){
+                        memcpy(&index,&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],4);
+
+                        memcpy(&info.leaf.data[j*info.relation.row_size],&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],info.relation.row_size);
+                        memcpy(&info.leaf.data[(j+i+1)*info.relation.row_size],row.data.data(),info.relation.row_size);
+
+                    }
+                    break;
+                }
                 
 
             }
+            
+            
+        fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
+        fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
+        fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
+        fs.close();
+        }
+
+
+        
+       
+    
+    }else{
+        std::cout<<"no height"<<std::endl;
+        
+        // std::cout<<"assigned "<<info.index<<std::endl;
+        for(size_t i = info.index; i < num_rows-1;i++){
+
+            memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
+            // std::cout<<"index copied "<<i*info.relation.row_size<<std::endl;
+            memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
+            memcpy(&index_i,row_empty.data.data(),4);
+
+            if(index_i != 0.0){
+            // std::cout<<"row pushed "<<index_i<<" "<<i<<std::endl;
+            memcpy(&info.leaf.data[i*info.relation.row_size],row.data.data(),info.relation.row_size);
+            
+            }
+            if(index > key_last || index == 0.0){
+
+                info.index_last = i;
+                
+                for(size_t j = info.index; j<num_rows-info.index_last-1;j++){
+                memcpy(&index,&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],4);
+                
+                if(index == 0)
+                break;
+
+                memcpy(&info.leaf.data[j*info.relation.row_size],&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],info.relation.row_size);
+                memcpy(&info.leaf.data[(j+i+1)*info.relation.row_size],row.data.data(),info.relation.row_size);
+
+                }
+                break;
+            }
+        }
+        
+        
+        fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
+        fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
+        fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
+        fs.close();
+        std::cout<<"should return"<<std::endl;
+    }
+    
+    
+};
+void Bp_Tree::delete_range(float key_first,float key_last,uint16_t num_rows,Row row){
+    search(key_first,num_rows,info.relation.row_size);
+    // std::cout<<"searched float"<<std::endl;
+    std::fstream fs;
+    bool found{};
+    float index{};
+    float index_i{};
+    Row row_empty{};
+
+    // Row row_dump{};
+    
+    
+    
+
+    row_empty.data.resize(info.relation.row_size);
+    row.data.resize(info.relation.row_size);
+    // row_dump.data.resize(info.relation.row_size);
+    // std::cout<<"resized "<<row_empty.data.size()<<std::endl;
+    
+    if(info.ind->ind_height > 0){
+
+        for(size_t i = info.index; i < num_rows;i++){
+            memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
+            memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
+            memcpy(&index_i,row_empty.data.data(),4);
+            if(index_i != 0){
+            // std::cout<<"row pushed "<<index_i<<std::endl;
+            // info.rows.push_back(row);
+            memcpy(&info.leaf.data[i*info.relation.row_size],row.data.data(),info.relation.row_size);
+            }
+            if(index > key_last || index == 0.0){
+                info.index_last = i;
+                
+                for(size_t j = info.index; j<num_rows-info.index_last-1;j++){
+                memcpy(&index,&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],4);
+                
+                if(index == 0)
+                break;
+
+                memcpy(&info.leaf.data[j*info.relation.row_size],&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],info.relation.row_size);
+                memcpy(&info.leaf.data[(j+i+1)*info.relation.row_size],row.data.data(),info.relation.row_size);
+
+                }
+                break;
+            }
+        }
+        
+        
+        fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
+        fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
+        fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
+        fs.close();
+        while(!found){
+        
+        
+
+            fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
+            fs.seekg(info.leaf.bottom_p);
+            fs.read(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
+            fs.close();
+            for(size_t i = 0; i< num_rows;i++){
+                memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
+                memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
+                memcpy(&index_i,row_empty.data.data(),4);
+                if(index_i != 0){
+                // std::cout<<"row pushed"<<std::endl;
+                memcpy(&info.leaf.data[i*info.relation.row_size],row.data.data(),info.relation.row_size);
+                
+                }
+                if(index > key_last || (info.leaf.bottom_p == 0 && index==0.0)){
+                    info.index_last = i;
+                    found = true;
+                    for(size_t j = info.index; j<num_rows-info.index_last-1;j++){
+                        memcpy(&index,&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],4);
+                
+                        
+
+                        memcpy(&info.leaf.data[j*info.relation.row_size],&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],info.relation.row_size);
+                        memcpy(&info.leaf.data[(j+i+1)*info.relation.row_size],row.data.data(),info.relation.row_size);
+
+                    }
+                    break;
+                } 
+                if(index == 0.0){
+                    info.index_last = i;
+                    for(size_t j = info.index; j<num_rows-info.index_last-1;j++){
+                        memcpy(&index,&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],4);
+                
+                        
+
+                        memcpy(&info.leaf.data[j*info.relation.row_size],&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],info.relation.row_size);
+                        memcpy(&info.leaf.data[(j+i+1)*info.relation.row_size],row.data.data(),info.relation.row_size);
+
+                    }
+                    break;
+                }
+                
+
+            }
+           
+            
         fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
         fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
         fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
@@ -1809,7 +2024,7 @@ void Bp_Tree::delete_range(uint32_t key_first,uint32_t key_last,uint16_t num_row
             memcpy(&index_i,row_empty.data.data(),4);
 
             if(index_i != 0.0){
-            std::cout<<"row pushed "<<index_i<<" "<<i<<std::endl;
+            // std::cout<<"row pushed "<<index_i<<" "<<i<<std::endl;
             memcpy(&info.leaf.data[i*info.relation.row_size],row.data.data(),info.relation.row_size);
             
             }
@@ -1830,141 +2045,9 @@ void Bp_Tree::delete_range(uint32_t key_first,uint32_t key_last,uint16_t num_row
                 break;
             }
         }
-        fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
-        fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
-        fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
-        std::cout<<"should return"<<std::endl;
-    }
-    
-    
-};
-void Bp_Tree::delete_range(float key_first,float key_last,uint16_t num_rows,Row row){
-    search(key_first,num_rows,info.relation.row_size);
-    std::cout<<"searched float"<<std::endl;
-    std::fstream fs;
-    bool found{};
-    float index{};
-    float index_i{};
-    Row row_empty{};
-
-    // Row row_dump{};
-    
-    
-    
-
-    row_empty.data.resize(info.relation.row_size);
-    row.data.resize(info.relation.row_size);
-    // row_dump.data.resize(info.relation.row_size);
-    std::cout<<"resized "<<row_empty.data.size()<<std::endl;
-    
-    if(info.ind->ind_height > 0){
-
-        for(size_t i = info.index; i < num_rows;i++){
-            memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
-            memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
-            memcpy(&index_i,row_empty.data.data(),4);
-            if(index_i != 0){
-            std::cout<<"row pushed "<<index_i<<std::endl;
-            // info.rows.push_back(row);
-            memcpy(&info.leaf.data[i*info.relation.row_size],row.data.data(),info.relation.row_size);
-            }
-            if(index > key_last || index == 0.0){
-                info.index_last = i;
-                
-                for(size_t j = info.index; j<num_rows-info.index_last-1;j++){
-                memcpy(&index,&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],4);
-                
-                if(index == 0)
-                break;
-
-                memcpy(&info.leaf.data[j*info.relation.row_size],&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],info.relation.row_size);
-                memcpy(&info.leaf.data[(j+i+1)*info.relation.row_size],row.data.data(),info.relation.row_size);
-
-                }
-                break;
-            }
-        }
-        fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
-        fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
-        fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
-        while(!found){
+        // std::cout<<"out of loop"<<std::endl;
         
         
-
-            // fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
-            fs.seekg(info.leaf.bottom_p);
-            fs.read(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
-
-            for(size_t i = 0; i< num_rows;i++){
-                memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
-                memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
-                memcpy(&index_i,row_empty.data.data(),4);
-                if(index_i != 0){
-                std::cout<<"row pushed"<<std::endl;
-                memcpy(&info.leaf.data[i*info.relation.row_size],row.data.data(),info.relation.row_size);
-                
-                }
-                if(index > key_last || index == 0){
-                    info.index_last = i;
-                
-                    for(size_t j = info.index; j<num_rows-info.index_last-1;j++){
-                        memcpy(&index,&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],4);
-                
-                        if(index == 0)
-                        break;
-
-                        memcpy(&info.leaf.data[j*info.relation.row_size],&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],info.relation.row_size);
-                        memcpy(&info.leaf.data[(j+i+1)*info.relation.row_size],row.data.data(),info.relation.row_size);
-
-                    }
-                    break;
-                } 
-                
-
-            }
-        fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
-        fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
-        fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
-        }
-
-
-        
-       
-    
-    }else{
-        std::cout<<"no height"<<std::endl;
-        
-        std::cout<<"assigned "<<info.index<<std::endl;
-        for(size_t i = info.index; i < num_rows-1;i++){
-
-            memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
-            std::cout<<"index copied "<<i*info.relation.row_size<<std::endl;
-            memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
-            memcpy(&index_i,row_empty.data.data(),4);
-
-            if(index_i != 0.0){
-            std::cout<<"row pushed "<<index_i<<" "<<i<<std::endl;
-            memcpy(&info.leaf.data[i*info.relation.row_size],row.data.data(),info.relation.row_size);
-            
-            }
-            if(index > key_last || index == 0.0){
-
-                info.index_last = i;
-                
-                for(size_t j = info.index; j<num_rows-info.index_last-1;j++){
-                memcpy(&index,&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],4);
-                
-                if(index == 0)
-                break;
-
-                memcpy(&info.leaf.data[j*info.relation.row_size],&info.leaf.data[(j+info.index_last+1)*info.relation.row_size],info.relation.row_size);
-                memcpy(&info.leaf.data[(j+i+1)*info.relation.row_size],row.data.data(),info.relation.row_size);
-
-                }
-                break;
-            }
-        }
-        std::cout<<"out of loop"<<std::endl;
         fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
         fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
         fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
@@ -1987,10 +2070,10 @@ void Bp_Tree::update_range(uint32_t key_first,uint32_t key_last,uint16_t num_row
 
     row_empty.data.resize(info.relation.row_size);
     // row_dump.data.resize(info.relation.row_size);
-    std::cout<<"resized "<<row_empty.data.size()<<std::endl;
+    // std::cout<<"resized "<<row_empty.data.size()<<std::endl;
     
     if(info.ind->ind_height > 0){
-        std::cout<<"height "<<key_last<<std::endl;
+        // std::cout<<"height "<<key_last<<std::endl;
         for(size_t i = info.index; i < num_rows;i++){
             memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
             memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
@@ -2005,15 +2088,15 @@ void Bp_Tree::update_range(uint32_t key_first,uint32_t key_last,uint16_t num_row
                 break;
             }
         }
-        edit_row(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj);
-        std::cout<<"first edit done "<<info.leaf.page_id<<" "<<info.leaf.bottom_p<<std::endl;
+        edit_row(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj,info.index);
+        // std::cout<<"first edit done "<<info.leaf.page_id<<" "<<info.leaf.bottom_p<<std::endl;
         fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
         fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
         fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
         fs.close();
-        std::cout<<"first wrote "<<found<<std::endl;
+        // std::cout<<"first wrote "<<found<<std::endl;
         while(!found){
-            std::cout<<"in the loop"<<std::endl;
+            // std::cout<<"in the loop"<<std::endl;
         
             
             fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
@@ -2021,7 +2104,7 @@ void Bp_Tree::update_range(uint32_t key_first,uint32_t key_last,uint16_t num_row
             fs.seekg(info.leaf.bottom_p);
             fs.read(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
             fs.close();
-            std::cout<<"read "<<info.leaf.page_id<<std::endl;
+            // std::cout<<"read "<<info.leaf.page_id<<std::endl;
             for(size_t i = 0; i< num_rows;i++){
                 memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
                 memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
@@ -2029,7 +2112,7 @@ void Bp_Tree::update_range(uint32_t key_first,uint32_t key_last,uint16_t num_row
                 if(index > key_last || (info.leaf.bottom_p == 0 && index==0)){
                     info.index_last = i;
                     found = true;
-                    std::cout<<"found! "<<info.index_last<<" "<<index<<std::endl;
+                    // std::cout<<"found! "<<info.index_last<<" "<<index<<std::endl;
                     break;
                 }
                 if(index == 0){
@@ -2072,7 +2155,7 @@ void Bp_Tree::update_range(uint32_t key_first,uint32_t key_last,uint16_t num_row
                 break;
             }
         }
-        edit_row(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj);
+        edit_row(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj,info.index);
         fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
         fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
         fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
@@ -2083,7 +2166,7 @@ void Bp_Tree::update_range(uint32_t key_first,uint32_t key_last,uint16_t num_row
 void Bp_Tree::update_range(float key_first,float key_last,uint16_t num_rows,std::vector<uint16_t>positions,std::vector<char>types, Run* obj, std::vector<std::string>values){
     Row row{};
     search(key_first,num_rows,info.relation.row_size);
-    std::cout<<"searched"<<std::endl;
+    // std::cout<<"searched"<<std::endl;
     std::fstream fs;
     bool found{};
     float index{};
@@ -2094,7 +2177,7 @@ void Bp_Tree::update_range(float key_first,float key_last,uint16_t num_rows,std:
 
     row_empty.data.resize(info.relation.row_size);
     // row_dump.data.resize(info.relation.row_size);
-    std::cout<<"resized "<<row.data.size()<<std::endl;
+    // std::cout<<"resized "<<row.data.size()<<std::endl;
     
     if(info.ind->ind_height > 0){
 
@@ -2108,34 +2191,41 @@ void Bp_Tree::update_range(float key_first,float key_last,uint16_t num_rows,std:
                 break;
             }
         }
-        edit_row(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj);
+        edit_row(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj,info.index);
         fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
         fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
         fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
+        fs.close();
         while(!found){
         
         
 
-            // fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
+            fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
             fs.seekg(info.leaf.bottom_p);
             fs.read(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
-
+            fs.close();
             for(size_t i = 0; i< num_rows;i++){
                 memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
                 memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
                 memcpy(&index_i,row_empty.data.data(),4);
                 
-                if(index > key_last || index == 0.0){
+                if(index > key_last || (info.leaf.bottom_p == 0 && index==0.0)){
                     info.index_last = i;
+                    found = true;
                     break;
                 } 
+                if(index == 0.0){
+                    info.index_last = i;
+                    break;
+                }
                 
 
             }
-        edit_row(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj);
+        edit_row(&info.leaf,positions,types,values,info.index_last+1,info.relation.row_size,obj);
         fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
         fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
         fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
+        fs.close();
         }
 
 
@@ -2162,11 +2252,11 @@ void Bp_Tree::update_range(float key_first,float key_last,uint16_t num_rows,std:
                 break;
             }
         }
-        edit_row(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj);
+        edit_row(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj,info.index);
         fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
         fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
         fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
-        std::cout<<"should return "<<info.leaf.page_id<<info.ind->ind_start<<fs.tellp()<<std::endl;
+        // std::cout<<"should return "<<info.leaf.page_id<<info.ind->ind_start<<fs.tellp()<<std::endl;
         fs.close();
     }
 }
@@ -2195,14 +2285,21 @@ void Bp_Tree::update_index_range(uint32_t key_first,uint32_t key_last,uint16_t n
             memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
             memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
             memcpy(&index_i,row_empty.data.data(),4);
-            
-            if(index > key_last || index == 0.0){
+            std::cout<<index<<" "<<index_i<<std::endl;
+            if(index > key_last){
+                info.index_last = i;
+                found = true;
+                break;
+            }
+            if(index == 0){
                 info.index_last = i;
                 break;
             }
+
         }
-        info.rows = edit_rows(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj);
-        delete_range(info.index,index_i,num_rows,row_dump);
+        // std::cout<<"index "<<info.index<<" "<<index_i<<std::endl;
+        info.rows = edit_rows(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj,info.index);
+        delete_range(key_first,index_i,num_rows,row_dump);
         for(size_t i = 0; i< info.rows.size();i++){
             uint32_t ind{};
             memcpy(&ind,info.rows.at(i).data.data(),4);
@@ -2212,26 +2309,30 @@ void Bp_Tree::update_index_range(uint32_t key_first,uint32_t key_last,uint16_t n
         // fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
         // fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
         while(!found){
-        
-        
-
+            // std::cout<<"bottom p "<<info.leaf.bottom_p<<std::endl; 
             fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
             fs.seekg(info.leaf.bottom_p);
             fs.read(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
-
+            // std::cout<<"read "<<info.leaf.page_id<<std::endl;
             for(size_t i = 0; i< num_rows;i++){
                 memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
                 memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
                 memcpy(&index_i,row_empty.data.data(),4);
-                if(index > key_last || index == 0.0){
+                if(index > key_last || (info.leaf.bottom_p == 0 && index==0)){
+                    found = true;
                     info.index_last = i;
                     break;
-                } 
+                }
+                if(index == 0){
+                    info.index_last = 1;
+                    break;
+                }
                 
 
             }
-        info.rows = edit_rows(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj);
-        delete_range(info.index,index_i,num_rows,row_dump);
+        // std::cout<<"INDEX_I "<<index_i<<" "<<info.index_last<<std::endl;
+        info.rows = edit_rows(&info.leaf,positions,types,values,info.index_last+1,info.relation.row_size,obj);
+        delete_range(key_first,index_i,num_rows,row_dump);
         for(size_t i = 0; i< info.rows.size();i++){
             uint32_t ind{};
             memcpy(&ind,info.rows.at(i).data.data(),4);
@@ -2256,8 +2357,9 @@ void Bp_Tree::update_index_range(uint32_t key_first,uint32_t key_last,uint16_t n
             // std::cout<<"index copied "<<i*info.relation.row_size<<std::endl;
             memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
             memcpy(&index_i,row_empty.data.data(),4);
+
             
-            if(index > key_last || index == 0.0){
+            if(index > key_last || index == 0){
 
                 info.index_last = i;
                 
@@ -2265,8 +2367,8 @@ void Bp_Tree::update_index_range(uint32_t key_first,uint32_t key_last,uint16_t n
                 break;
             }
         }
-        info.rows = edit_rows(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj);
-        std::cout<<"editted"<<std::endl;
+        info.rows = edit_rows(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj,info.index);
+        // std::cout<<"editted "<<index_i<<std::endl;
         delete_range(key_first,index_i,num_rows,row_dump);
         for(size_t i = 0; i< info.rows.size();i++){
             uint32_t ind{};
@@ -2287,7 +2389,7 @@ void Bp_Tree::update_index_range(float key_first,float key_last,uint16_t num_row
     Row row{};
     std::cout<<info.relation.row_size<<std::endl;
     search(key_first,num_rows,info.relation.row_size);
-    std::cout<<"searched "<<info.relation.row_size<<std::endl;
+    // std::cout<<"searched "<<info.relation.row_size<<std::endl;
     std::fstream fs;
     bool found{};
     float index{};
@@ -2298,7 +2400,7 @@ void Bp_Tree::update_index_range(float key_first,float key_last,uint16_t num_row
 
     row_empty.data.resize(info.relation.row_size);
     // row_dump.data.resize(info.relation.row_size);
-    std::cout<<"resized "<<row_empty.data.size()<<std::endl;
+    // std::cout<<"resized "<<row_empty.data.size()<<std::endl;
     
     if(info.ind->ind_height > 0){
 
@@ -2306,12 +2408,17 @@ void Bp_Tree::update_index_range(float key_first,float key_last,uint16_t num_row
             memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
             memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
             memcpy(&index_i,row_empty.data.data(),4);
-            if(index > key_last || index == 0.0){
+            if(index > key_last){
+                info.index_last = i;
+                found = true;
+                break;
+            }
+            if(index == 0.0){
                 info.index_last = i;
                 break;
             }
         }
-        info.rows = edit_rows(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj);
+        info.rows = edit_rows(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj,info.index);
         delete_range(info.index,index_i,num_rows,row_dump);
         for(size_t i = 0; i< info.rows.size();i++){
             float ind{};
@@ -2321,26 +2428,30 @@ void Bp_Tree::update_index_range(float key_first,float key_last,uint16_t num_row
         // fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
         // fs.seekp(info.leaf.page_id*4096+info.ind->ind_start);
         // fs.write(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
+        fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
         while(!found){
         
         
 
-            fs.open(info.relation.rel_file,std::ios_base::binary|std::ios_base::in|std::ios_base::out);
+            
             fs.seekg(info.leaf.bottom_p);
             fs.read(reinterpret_cast<char*>(&info.leaf),sizeof(info.leaf));
-
+            
             for(size_t i = 0; i< num_rows;i++){
                 memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
                 memcpy(row_empty.data.data(),&info.leaf.data[i*info.relation.row_size],info.relation.row_size);
                 memcpy(&index_i,row_empty.data.data(),4);
-                if(index > key_last || index == 0.0){
+                if(index > key_last || (info.leaf.bottom_p == 0 && index==0)){
                     info.index_last = i;
+                    found = true;
                     break;
                 } 
-                
-
+                if(index == 0.0){
+                    info.index_last = i;
+                    break;
+                }
             }
-        info.rows = edit_rows(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj);
+        info.rows = edit_rows(&info.leaf,positions,types,values,info.index_last+1,info.relation.row_size,obj);
         delete_range(key_first,key_last,num_rows,row_dump);
         for(size_t i = 0; i< info.rows.size();i++){
             float ind{};
@@ -2353,13 +2464,13 @@ void Bp_Tree::update_index_range(float key_first,float key_last,uint16_t num_row
         }
 
 
-        
+        fs.close();
        
     
     }else{
         std::cout<<"no height"<<std::endl;
         
-        std::cout<<"assigned "<<info.index<<std::endl;
+        // std::cout<<"assigned "<<info.index<<std::endl;
         for(size_t i = info.index; i < num_rows-1;i++){
 
             memcpy(&index,&info.leaf.data[(i+1)*info.relation.row_size],4);
@@ -2376,7 +2487,7 @@ void Bp_Tree::update_index_range(float key_first,float key_last,uint16_t num_row
                 break;
             }
         }
-        info.rows = edit_rows(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj);
+        info.rows = edit_rows(&info.leaf,positions,types,values,(info.index_last-info.index)+1,info.relation.row_size,obj,info.index);
         std::cout<<info.index_last<<" "<<info.index<<" "<<index_i<<std::endl;
         delete_range(key_first,key_last,num_rows,row_dump);
         for(size_t i = 0; i< info.rows.size();i++){

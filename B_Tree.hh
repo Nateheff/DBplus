@@ -15,7 +15,7 @@ uint16_t B_Tree<T,S>::calc_name(const char* arr){
 
 
 template<typename T,typename S>
-void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
+void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows,std::string database){
     
     // std::cout<<"start "<<height<<" "<<file<<std::endl;
     // fs.clear();
@@ -185,9 +185,11 @@ void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
             //  std::cout<<"name: "<<name<<" key: "<<key<<std::endl;
             if(key <= name || (i == num_rows-1 && key > name)||info.rel.rows[i].check == 0){
             // std::cout<<"found "<<i<<std::endl;
+                
                 info.index = i;
                 
                 return;
+                
         }
         
     }
@@ -200,7 +202,7 @@ void B_Tree<T,S>::remove_catalog(uint16_t key, uint16_t num_rows){
     //search like you did in search
     
     search_catalog(key,num_rows);
-    
+    std::fstream fs;
     if(!fsm.has_root())
     fsm.get_fsm(file);
     
@@ -213,6 +215,7 @@ void B_Tree<T,S>::remove_catalog(uint16_t key, uint16_t num_rows){
         info.rel.rows[i] = info.rel.rows[i+1];
     }
     
+    
     if(info.rel.rows[0].check == 0)
         fsm.set_space(info.rel.page_id,0);
         
@@ -220,7 +223,10 @@ void B_Tree<T,S>::remove_catalog(uint16_t key, uint16_t num_rows){
     fsm.set_space(info.rel.page_id,1);
 
     fsm.flush_fsm(info.rel.page_id);
-    
+    fs.open(file+".db",std::ios_base::binary | std::ios_base::out | std::ios_base::in);
+    fs.seekp(info.rel.page_id*4096);
+    fs.write(reinterpret_cast<char*>(&info.rel),sizeof(info.rel));
+    fs.close();
 
 };
 

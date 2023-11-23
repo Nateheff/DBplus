@@ -25,7 +25,7 @@ struct type_size{
 };
 
 type_size attr_info(uint16_t token);
-void create_db(std::string name);
+void create_db(std::string name, Run* obj);
 void create_table(std::string table_name, std::vector<uint16_t>full_tok, std::vector<std::string>identifiers,size_t ft_size,size_t id_size,Keyword_List*list,Run* obj);
 std::vector<Row> select(std::string table_name, Run* obj, std::vector<std::string>identifiers);
 std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint16_t op,std::string value,std::string v_2 = "");

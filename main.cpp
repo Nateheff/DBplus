@@ -69,9 +69,28 @@ std::vector<std::string>vec{"7824"/*,"0588","3746","5702","5959","1165","7673","
 
 int main()
 {
-    Run obj;
-    obj.begin();
-    // obj.run();
+    
+    std::string db{};
+    std::fstream fs;
+    fs.open("databases.txt",std::ios_base::out|std::ios_base::in|std::ios_base::binary|std::ios_base::ate);
+    
+    if(fs.tellp()>0){
+    fs.close();
+    fs.open("databases.txt",std::ios_base::out|std::ios_base::in|std::ios_base::binary);
+    std::cout<<"Welcome back to DB+! Your databases are: "<<std::endl;
+    while(fs>>db){
+        std::cout<<db<<std::endl;
+    }
+    std::cout<<"Enter the database you'd like to work in this session: ";
+    std::cin >> db;
+    std::cin.ignore();
+    std::cout<<db<<std::endl;
+    db+=".db";
+    }
+    
+    Run obj(db);
+    
+    obj.run();
     // std::cout<<"flush"<<std::endl;
     obj.tree_rel.search_catalog(1141,28);
     obj.tree_ind.rel = obj.tree_rel.info.rel.rows[obj.tree_rel.info.index];
@@ -88,6 +107,7 @@ int main()
     
     Scanner test(query,&res_list,operators);
     test.scanner_run();
+    
     // // std::cout<<"ran s"<<std::endl;
     test.print_query();
     // std::cout<<"printed"<<std::endl;

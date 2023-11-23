@@ -9,8 +9,14 @@ std::vector<Row> select(std::string table_name, Run* obj, std::vector<std::strin
     // std::cout<<"comp"<<std::endl;
     uint32_t key = obj->tree_attr.calc_name(table_name.c_str());
     
-    obj->tree_rel.search_catalog(key,28); 
-    obj->tree_ind.search_catalog(key,48);
+    obj->tree_rel.search_range_catalog(key,key,28); 
+    obj->tree_ind.search_range_catalog(key,key,48);
+    for(size_t i = 0;i<obj->tree_rel.rows.size();i++){
+        if(strcmp(obj->database.c_str(),obj->tree_rel.rows.at(i).rel_file)){
+            obj->tree_ind.info.index+=i;
+            obj->tree_rel.info.index+=i;
+        }
+    }
     obj->tree_attr.search_range_catalog(key,key,30);
     std::cout<<"YEP "<<obj->tree_rel.info.rel.rows[obj->tree_rel.info.index].row_size<<std::endl;
     uint16_t row_size = obj->tree_rel.info.rel.rows[obj->tree_rel.info.index].row_size;
@@ -40,8 +46,14 @@ std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint
     // std::cout<<"comp"<<std::endl;
     uint16_t key = obj->tree_attr.calc_name(table_name.c_str());
     
-    obj->tree_rel.search_catalog(key,28); 
-    obj->tree_ind.search_catalog(key,48);
+    obj->tree_rel.search_range_catalog(key,key,28); 
+    obj->tree_ind.search_range_catalog(key,key,48);
+    for(size_t i = 0;i<obj->tree_rel.rows.size();i++){
+        if(strcmp(obj->database.c_str(),obj->tree_rel.rows.at(i).rel_file)){
+            obj->tree_ind.info.index+=i;
+            obj->tree_rel.info.index+=i;
+        }
+    }
     obj->tree_attr.search_range_catalog(key,key,30);
     
     tree.info.relation = obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];

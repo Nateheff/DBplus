@@ -5,10 +5,16 @@
 void update(std::string table_name,Run*obj,std::vector<std::string>identifiers,uint16_t op, std::string value,std::string v_2){
     uint16_t key = obj->tree_attr.calc_name(table_name.c_str());
     std::cout<<"comp up"<<table_name<<" "<<key<<" "<<op<<std::endl;
-    obj->tree_ind.search_catalog(key,48);
+    obj->tree_ind.search_range_catalog(key,key,48);
     std::cout<<"searched ind"<<std::endl;
-    obj->tree_rel.search_catalog(key,28);
+    obj->tree_rel.search_range_catalog(key,key,28);
     std::cout<<"search rel"<<std::endl;
+    for(size_t i = 0;i<obj->tree_rel.rows.size();i++){
+        if(strcmp(obj->database.c_str(),obj->tree_rel.rows.at(i).rel_file)){
+            obj->tree_ind.info.index+=i;
+            obj->tree_rel.info.index+=i;
+        }
+    }
     obj->tree_attr.search_range_catalog(key,key,30);
     
     std::cout<<"post searches"<<std::endl;
@@ -112,6 +118,7 @@ void update(std::string table_name,Run*obj,std::vector<std::string>identifiers,u
         {
             tree.update_range(key,__UINT32_MAX__,num_rows,positions,types,obj,values); 
            break;
+           
         }
         case(14):
         {
@@ -206,8 +213,14 @@ void update(std::string table_name,Run*obj,std::vector<std::string>identifiers,u
 void update_all(std::string table_name, Run* obj, std::vector<std::string>identifiers){
      uint16_t key = obj->tree_attr.calc_name(table_name.c_str());
     std::cout<<"comp up all"<<table_name<<key<<std::endl;
-    obj->tree_ind.search_catalog(key,48);
-    obj->tree_rel.search_catalog(key,28);
+    obj->tree_ind.search_range_catalog(key,key,48);
+    obj->tree_rel.search_range_catalog(key,key,28);
+    for(size_t i = 0;i<obj->tree_rel.rows.size();i++){
+        if(strcmp(obj->database.c_str(),obj->tree_rel.rows.at(i).rel_file)){
+            obj->tree_ind.info.index+=i;
+            obj->tree_rel.info.index+=i;
+        }
+    }
     obj->tree_attr.search_range_catalog(key,key,30);
     std::vector<uint16_t>positions{};
     std::vector<char>types{};
