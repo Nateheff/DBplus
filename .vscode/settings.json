@@ -52,6 +52,12 @@
     "compare": "cpp",
     "concepts": "cpp",
     "numbers": "cpp",
-    "bitset": "cpp"
+    "bitset": "cpp",
+    "ctime": "cpp",
+    "iomanip": "cpp",
+    "charconv": "cpp",
+    "format": "cpp",
+    "span": "cpp",
+    "variant": "cpp"
   }
 }

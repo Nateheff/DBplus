@@ -98,7 +98,7 @@ void create_tuple(std::string table_name,Run* obj,Row* row,std::vector<std::stri
             }
             case('v'):
             {
-                char d[64];
+                char d[64]={};
                 memcpy(&row->data.data()[pos],&d,64);
                 break;
             }
@@ -143,7 +143,7 @@ void create_tuple(std::string table_name,Run* obj,Row* row,std::vector<std::stri
             }
             case('v'):
             {
-                char d[64];
+                char d[64] = {};
                 strcpy(d,identifiers.at(i+1).c_str());
                 memcpy(&row->data.data()[pos],&d,64);
                 break;
@@ -234,7 +234,7 @@ float create_tuple_f(std::string table_name,Run* obj,Row* row,std::vector<std::s
             }
             case('v'):
             {
-                char d[64];
+                char d[64]={};
                 memcpy(&row->data.data()[pos],&d,64);
                 break;
             }
@@ -279,7 +279,7 @@ float create_tuple_f(std::string table_name,Run* obj,Row* row,std::vector<std::s
             }
             case('v'):
             {
-                char d[64];
+                char d[64]={};
                 strcpy(d,identifiers.at(i+1).c_str());
                 memcpy(&row->data.data()[pos],&d,64);
                 break;
@@ -347,7 +347,7 @@ void edit_row(Curr_Node* node,std::vector<uint16_t>positions,std::vector<char>ty
             }
             case('v'):
             {
-                char d[64];
+                char d[64]={};
                 strcpy(d,values.at(j).c_str());
                 memcpy(&node->data[((i+index_first)*row_size)+offsets.at(positions.at(j))],&d,64);
                 break;
@@ -422,7 +422,7 @@ std::vector<Row> edit_rows(Curr_Node* node,std::vector<uint16_t>positions,std::v
             }
             case('v'):
             {
-                char d[64];
+                char d[64]={};
                 strcpy(d,values.at(j).c_str());
                 memcpy(&row.data.data()[offsets.at(positions.at(j))],&d,64);
                 break;
