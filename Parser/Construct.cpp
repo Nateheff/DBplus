@@ -5,7 +5,6 @@
 
 bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> identifiers,Keyword_List* list,Run* obj){
     
-    std::cout<<full_tok.size()<<" "<<identifiers.size()<<std::endl;
     // for(size_t i = 0; i < full_tok.size();i++){
         switch(full_tok.at(0)){
             case(2): //create 
@@ -41,23 +40,19 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
             }
             case(10)://select
             {
-                for(auto id:identifiers)
-                std::cout<<id<<std::endl;
+                
 
                 std::string table_name{};
                 
                 // bool get_all = false;
 
                 if(full_tok.at(1)==20 && full_tok.at(2)==5){
-                    std::cout<<"ok "<<full_tok.at(3)<<std::endl;
                     table_name = identifiers.at(0);
                     if(full_tok.size()==3){
-                        std::cout<<"all simple"<<std::endl;
                     select(table_name,obj,identifiers);
                     return true;
                     }
                     else if(full_tok.at(3)==13){
-                        std::cout<<"all where"<<std::endl;
                         if(full_tok.at(full_tok.size()-1)!=8)
                         select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2));
                         else
