@@ -5,9 +5,7 @@
 
 std::vector<Row> select(std::string table_name, Run* obj, std::vector<std::string>identifiers){
     Bp_Tree tree{};
-    // for(auto id:identifiers)
-    // std::cout<<id<<std::endl;
-    // std::cout<<"comp"<<std::endl;
+    
     uint32_t key = obj->tree_attr.calc_name(table_name.c_str());
     
     obj->tree_rel.search_range_catalog(key,key,28); 
@@ -19,7 +17,6 @@ std::vector<Row> select(std::string table_name, Run* obj, std::vector<std::strin
         }
     }
     obj->tree_attr.search_range_catalog(key,key,30);
-    std::cout<<"YEP "<<obj->tree_rel.info.rel.rows[obj->tree_rel.info.index].row_size<<std::endl;
     uint16_t row_size = obj->tree_rel.info.rel.rows[obj->tree_rel.info.index].row_size;
     if(obj->tree_ind.info.rel.rows[obj->tree_ind.info.index].key_type=='f'){
         float k{};
@@ -29,10 +26,7 @@ std::vector<Row> select(std::string table_name, Run* obj, std::vector<std::strin
     key = 0;
     tree.search_range(key,UINT32_MAX,(4087/obj->tree_rel.info.rel.rows[obj->tree_rel.info.index].row_size));
     }
-    std::cout<<"SearcheD"<<std::endl;
-    // Row row{};
-    // memcpy(&row.data,&tree.info.leaf.data[tree.info.index*row_size],row_size);
-    // memcpy(&row.index,&row.data,4);
+    
     std::vector<uint16_t>offsets{};
     uint16_t off{4};
     for(int i = obj->tree_attr.rows.size()-1;i>=0;i--){
@@ -112,13 +106,12 @@ std::vector<Row> select(std::string table_name, Run* obj, std::vector<std::strin
 
 std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint16_t op,std::string value,std::string v_2)
 {
-    std::cout<<"select all where "<<attr<<" "<<op<<" "<<value<<std::endl;
+    
     Bp_Tree tree{};
     uint32_t index{};
     float ind{};
     
     
-    // std::cout<<"comp"<<std::endl;
     uint16_t key = obj->tree_attr.calc_name(table_name.c_str());
     
     obj->tree_rel.search_range_catalog(key,key,28); 
@@ -133,7 +126,6 @@ std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint
     
     tree.info.relation = obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];
     tree.info.ind = &obj->tree_ind.info.rel.rows[obj->tree_rel.info.index];
-    std::cout<<"catalogs done "<<obj->tree_attr.rows.size()<<std::endl;
     if(tree.info.ind->key_type != 'f'){
 
         switch(obj->tree_attr.rows.at(obj->tree_attr.rows.size()-1).type){
@@ -141,15 +133,10 @@ std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint
         case 'i':
         case 'b':
         {
-        // std::cout<<"int/short/bool"<<std::endl;
         index = atoi(value.c_str());
         break;
         }
-        // case('f'):
-        // {
-        // row->index = atof(identifiers.at(1).c_str());
-        // break;
-        // }
+        
         case('c'):
         {
         index = value.at(0);
@@ -163,7 +150,6 @@ std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint
     }
     uint16_t row_size = tree.info.relation.row_size;
     uint16_t num_rows = (4087/row_size);
-    std::cout<<"switch 1"<<std::endl;
     switch(op){
         case(21)://>
         {
@@ -192,7 +178,6 @@ std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint
         }
         case(14):
         {
-            std::cout<<"between"<<std::endl;
             tree.search_range(index,atoi(v_2.c_str()),num_rows);
             break;
         }
@@ -230,14 +215,12 @@ std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint
         }
         case(14):
         {
-            std::cout<<"between"<<std::endl;
             tree.search_range(ind,atof(v_2.c_str()),num_rows);
            break;
 
         }
     }
     }
-    std::cout<<"SearchEd"<<std::endl;
     std::vector<uint16_t>offsets{};
     uint16_t off{4};
     for(int i = obj->tree_attr.rows.size()-1;i>=0;i--){

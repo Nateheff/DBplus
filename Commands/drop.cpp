@@ -9,12 +9,12 @@ void drop_db(std::string file, Run* obj){
     fs.open("databases.txt",std::ios_base::in|std::ios_base::out|std::ios_base::binary);
     std::string data{};
     while(std::getline(fs,data)){}
-    std::cout<<"db: "<<data<<std::endl;
+    
     auto first = data.find(file);
     if(first != data.npos){
-        std::cout<<"erasing "<<first<<std::endl;
+        
     data.erase(first,file.length()+1);
-    std::cout<<data<<std::endl;
+    
     }
     fs.close();
     fs.open("databases.txt",std::ios_base::out|std::ios_base::binary);
@@ -23,7 +23,7 @@ void drop_db(std::string file, Run* obj){
 }
 
 void drop_table(std::string table_name, Run* obj){
-    std::cout<<"TABLE DROP"<<std::endl;
+    
     uint16_t key = obj->tree_rel.calc_name(table_name.c_str());
     obj->tree_rel.search_range_catalog(key,key,28);
     for(size_t i = 0;i<obj->tree_rel.rows.size();i++){
@@ -36,7 +36,7 @@ void drop_table(std::string table_name, Run* obj){
     obj->tree_ind.remove_catalog(key,48);
     std::string fsm{table_name+"_fsm.db"};
 
-    std::cout<<num_attrs<<std::endl;
+    
 
     for(size_t i = 0;i<num_attrs;i++)
     obj->tree_attr.remove_catalog(key,30);

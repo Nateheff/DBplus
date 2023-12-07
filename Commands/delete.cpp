@@ -26,7 +26,7 @@ void delete_row(std::string table_name,std::vector<std::string>identifiers,Run* 
         case 'i':
         case 'b':
         {
-        // std::cout<<"int/short/bool"<<std::endl;
+        
         key = atoi(identifiers.at(2).c_str());
         break;
         }
@@ -77,7 +77,7 @@ void delete_row(std::string table_name,std::vector<std::string>identifiers,Run* 
         }
         case(14):
         {
-            std::cout<<"between"<<std::endl;
+            
             tree.delete_range(key,atoi(identifiers.at(identifiers.size()-1).c_str()),num_rows,row);
             break;
         }
@@ -111,7 +111,7 @@ void delete_row_f(std::string table_name,std::vector<std::string>identifiers,Run
     key = atof(identifiers.at(2).c_str());
     row.data.resize(tree.info.relation.row_size);
     uint16_t num_rows = 4087/tree.info.relation.row_size;
-    std::cout<<op<<std::endl;
+    
     switch(op){
         case(21)://>
         {
@@ -141,7 +141,7 @@ void delete_row_f(std::string table_name,std::vector<std::string>identifiers,Run
         }
         case(14):
         {
-            std::cout<<"between"<<std::endl;
+            
             tree.delete_range(key,atof(identifiers.at(identifiers.size()-1).c_str()),num_rows,row);
             break;
         }
@@ -169,7 +169,7 @@ void delete_all(std::string table_name,Run* obj){
 
     Syst_Index_Row* ind = &obj->tree_ind.info.rel.rows[obj->tree_ind.info.index];
     System_Rel_Row* rel = &obj->tree_rel.info.rel.rows[obj->tree_rel.info.index];
-    std::cout<<"deleting table: "<<rel->index<<table_name<<key<<std::endl;
+    
     std::fstream fs;
     if(ind->key_type == 'f'){
     delete_all_f(table_name,obj);
@@ -199,7 +199,7 @@ void delete_all(std::string table_name,Run* obj){
 }
 
 void delete_all_f(std::string table_name,Run* obj){
-    std::cout<<"delete all float"<<std::endl;
+    
     uint16_t key = obj->tree_rel.calc_name(table_name.c_str());
     obj->tree_rel.search_catalog(key,28);
     obj->tree_ind.search_catalog(key,48);

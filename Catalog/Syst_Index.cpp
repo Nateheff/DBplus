@@ -12,9 +12,6 @@ uint16_t Catalog_Index::calc_name(const char* arr){
 void Catalog_Index::create_catalog(){
     std::string name = {"catalog_ind"};
     
-    
-    // std::cout<<"t: "<<tree.calc_name(name.c_str())<<std::endl;
-    
     Syst_Index root;
     Syst_Index_Row ind{};
     Syst_Index_Row attr{};
@@ -22,7 +19,7 @@ void Catalog_Index::create_catalog(){
     uint16_t ind_ind = calc_name(name.c_str());
     uint16_t ind_rel = calc_name("catalog_rel");
     uint16_t ind_attr = calc_name("catalog_attr");
-    std::cout<<"1 "<<std::endl;
+    
     ind.check = 1;
     strcpy(ind.index,"catalog_ind");
     ind.key_type = 's';
@@ -38,19 +35,19 @@ void Catalog_Index::create_catalog(){
     strcpy(rel.index,"catalog_rel");
     rel.key_type = 's';
 
-std::cout<<ind_ind<<" "<<ind_rel<<" "<<ind_attr<<std::endl;
+
     root.rows[0] = ind;
     root.rows[1] = rel;
     root.rows[2] = attr;
     std::ofstream fs;
-    std::cout<<"2"<<std::endl;
+    
     fs.open(name+".db",std::ios_base::binary|std::ios_base::out);
     fs.write(reinterpret_cast<char*>(&root),sizeof(root));
-    std::cout<<"3 "<<fs.tellp()<<std::endl;
+    
     fs.close();
     FSM fsm;
     fsm.create_fsm(name);
-    std::cout<<"4"<<std::endl;
+    
     return;    
 }
 

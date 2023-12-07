@@ -36,14 +36,7 @@ type_size attr_info(uint16_t token){
 }
 
 void create_table(std::string table_name, std::vector<uint16_t>full_tok, std::vector<std::string>identifiers,size_t ft_size,size_t id_size,Keyword_List*list,Run*obj){
-    for(size_t i = 0;i<full_tok.size();i++){
-        std::cout<<i<<": "<<full_tok.at(i)<<std::endl;
-    }
-    for(size_t i = 0;i<identifiers.size();i++){
-        std::cout<<i<<": "<<identifiers.at(i)<<std::endl;
-    }
-    // std::cout<<ft_size<<std::endl;
-    // std::cout<<id_size<<std::endl;
+    
     
 
     FSM fsm;
@@ -59,11 +52,11 @@ std::string file = obj->database;
 Curr_Node empty{};
 std::ofstream fs;
 fs.open(file,std::ios_base::binary|std::ios_base::app|std::ios_base::ate);
-std::cout<<fs.tellp()<<std::endl;
+
 ind.ind_start = fs.tellp();
 if(fs.tellp()==0){
 fs.write(reinterpret_cast<char*>(&empty),sizeof(empty));
-std::cout<<"first rel"<<std::endl;
+
 }else{
     fs.close();
     std::fstream fs_;
@@ -71,7 +64,7 @@ std::cout<<"first rel"<<std::endl;
     
     fs_.write(reinterpret_cast<char*>(&empty),sizeof(empty));
     
-    std::cout<<"many "<<ind.ind_start<<std::endl;
+   
     fs_.close();
 }
 fs.close();
@@ -86,7 +79,7 @@ for(size_t i = 3;i<full_tok.size();i++){
 }
 uint16_t r_s{4};
 for(size_t i =1;i<=id_size;i++){
-    std::cout<<identifiers.at(i)<<" "<<id_size<<std::endl;
+    
     strcpy(attrs.at(i-1).index,table_name.c_str());
     strcpy(attrs.at(i-1).attr_name,identifiers.at(i).c_str());
     attrs.at(i-1).position = i-1;

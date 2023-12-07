@@ -2,23 +2,12 @@
 #include "FSM.h"
 
 bool FSM::create_fsm(std::string name_val){
-    // data.free_page = 0;
-    // data.hole = 0;
-    // data.free_space[0] = 1;
-    // data.free_space[1]=1;
-    // std::ofstream fs;
-    // fs.open(name+"_fsm.db",std::ios_base::binary);
-    // fs.write(reinterpret_cast<char*>(&data),51250);
-    // std::cout<<"wrote: "<<fs.tellp()<<std::endl;
-    // fs.close();
-    // delete [] data.free_space;
+    
     name = name_val+"_fsm.db";
     
     std::fstream fs;
-    std::cout<<name<<std::endl;
     fs.open(name,std::ios_base::binary|std::ios_base::out);
-    // FSM_Data_Root root_empty;
-    // root = &root_empty;
+    
     root.num_pages = 1;
     set_space(0,1);
     fs.write(reinterpret_cast<char*>(&root),sizeof(root));
@@ -29,7 +18,6 @@ bool FSM::create_fsm(std::string name_val){
 };
 
 void FSM::new_page(){
-    std::cout<<"CALLED"<<std::endl;
     // std::fstream fs;
     // fs.open(name,std::ios_base::binary);
 
@@ -51,16 +39,12 @@ void FSM::new_page(){
 bool FSM::get_fsm(std::string name_val){
     
     std::fstream fs;
-    //std::cout<<name<<std::endl;
     name = name_val + "_fsm.db";
-    // std::cout<<name<<std::endl;
     // FSM_Data_Root empty;
     // root= &empty;
     int x = -1;
     try{
     fs.open(name,std::ios_base::binary | std::ios_base::in|std::ios_base::out);
-    // if(fs.is_open() && fs.good())
-    // std::cout<<"early"<<std::endl;
     fs.read(reinterpret_cast<char*>(&root),sizeof(root));
     throw x;
     }catch(int x){
@@ -91,7 +75,6 @@ void FSM::set_space(uint32_t page_num,uint8_t space){
         std::fstream fs;
     
         fs.open(name,std::ios_base::binary | std::ios_base::in);
-        std::cout<<"WOAH"<<std::endl;
         uint32_t offset = ((((page_num)-4088)/4096)+1)*4096;
         fs.seekp(offset);
         fs.read(reinterpret_cast<char*>(data),sizeof(*data));
@@ -111,7 +94,6 @@ void FSM::set_space(uint32_t page_num,uint8_t space){
         }
         if(data->free_space[4095] != 0 && root.hole > offset && root.hole < offset+4096){
             this->new_page();
-            std::cout<<"hole: "<<root.hole<<" page: "<<page_num<<std::endl;
         }
         fs.close();
     }else{
@@ -128,23 +110,18 @@ void FSM::set_space(uint32_t page_num,uint8_t space){
             root.hole = 0;
         }
         if(root.free_space[4087]!= 0 && (root.hole > 4088 || root.hole == 0)){
-        std::cout<<"hole2: "<<root.hole<<" page2: "<<page_num<<(int)root.free_space[4087]<<std::endl;
         this->new_page();
         
         }
     }
-    if(root.num_pages >= 4000)
-    std::cout<<"NUM Pages: "<<root.num_pages<<std::endl;
+    
     
 };
 void FSM::flush_fsm(uint32_t page_num){
     std::fstream fs;
     fs.open(name,std::ios_base::binary | std::ios_base::out | std::ios_base::in);
-    // std::cout<<name<<std::endl;
-    // fs.seekp(0);
-    // std::cout<<root.num_pages<<" "<<root.hole<<" "<<(int)root.free_space[3]<<std::endl;
+    
     fs.write(reinterpret_cast<char*>(&root),sizeof(root));
-    // std::cout<<fs.tellp()<<std::endl;
     if(page_num > 4088){
         std::cout<<"wrong"<<std::endl;
     uint32_t offset = ((((page_num)-4088)/4096)+1)*4096;
@@ -155,7 +132,6 @@ void FSM::flush_fsm(uint32_t page_num){
 }
 
 uint8_t FSM::has_space(uint32_t page_num){
-    //std::cout<<"Here: "<<page_num<<std::endl;
     if(page_num > 4088){
         std::cout<<"wrong2: "<<page_num<<std::endl;
         return 0;
@@ -171,8 +147,7 @@ uint8_t FSM::has_space(uint32_t page_num){
 }
 
 uint32_t FSM::page() {
-    // if(root.num_pages > 600)
-    // std::cout<<root.num_pages<<std::endl;
+    
     if(!root.hole || root.hole >= root.num_pages)
     return root.num_pages; 
     else { 

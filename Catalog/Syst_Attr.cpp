@@ -2,7 +2,7 @@
 
 
 void Catalog_Attr::create_catalog(){
-    std::cout<<"6"<<std::endl;
+    
     std::string name = {"catalog_attr"};
     std::vector<Syst_Attr_Row>vec{};
     for(size_t i = 0;i<20;i++){
