@@ -84,7 +84,7 @@ int main()
     std::cout<<"Enter the database you'd like to work in this session: ";
     std::cin >> db;
     std::cin.ignore();
-    std::cout<<db<<std::endl;
+    
     db+=".db";
     }
     
