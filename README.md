@@ -29,8 +29,7 @@ This repository holds the exhaustive source code of DB+.
 - SHORT
 - FLOAT
 ## Example
-`
-CREATE DATABASE example_db`\
+`CREATE DATABASE example_db`\
 `CREATE TABLE table1 ( int a, float b, short c, bool d, char e, varchar f )`\
 `INSERT INTO table1 ( 1, 1.1, 2, 0, a, welcome to my repo! )`\
 `SELECT * FROM table1 WHERE a = 1`\
