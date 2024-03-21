@@ -431,6 +431,7 @@ void Bp_Tree::insert(uint32_t key, uint16_t num_rows,uint16_t row_size, Run* obj
             };
             for(size_t i = 510;i > info.index_root;i--)
             info.root.arr[i] = info.root.arr[i-1];
+            
             info.root.arr[info.index_root] = k_p;
             if(info.root.arr[510].key != 0){
             fsm.set_space(info.root.page_id,2);
