@@ -2,7 +2,9 @@
     WELCOME TO DB+
    SQL RDBMS By Nathan Heffington
 
-    I am proud to present this system and codebase to you and hope it serves you in whatever capacity you desire it to. If you want mroe general information about the project or me, the readme.txt file has all of that so I'd recommend starting there.
+    I am proud to present this system and codebase to you and hope it serves you in whatever
+     capacity you desire it to. If you want mroe general information about the project or me, 
+     the readme.txt file has all of that so I'd recommend starting there.
 
     Thank you!
    
@@ -60,7 +62,10 @@ Meta_Results do_meta(std::string cmd){
 /*
     main()
     THIS IS A MESS
-    I know...it's not pretty, but it works and serves it's purpose. The function itself pretty much only controls the initial prompting and then lets the rest of the system do the rest. This function is kind of like a beat up squeaky door with at the entrance of heaven (a little dramatic but you get the point).
+    I know...it's not pretty, but it works and serves it's purpose. The function itself pretty much
+     only controls the initial prompting and then lets the rest of the system do the rest. 
+     This function is kind of like a beat up squeaky door with at the entrance of heaven 
+     (a little dramatic but you get the point).
 
 
 

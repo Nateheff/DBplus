@@ -3,9 +3,13 @@
 /*
     run.h
 
-    Run class is what (shockingly) is responsible for preparing the system and running the inital setup. This largely involves accessing and preparing the system catalogs which hold the information of all the data in each database. 
+    Run class is what (shockingly) is responsible for preparing the system and running the inital setup. 
+    This largely involves accessing and preparing the system catalogs which hold the information of all
+     the data in each database. 
 
-    The three trees which are attributes of the run class are of the class called "B_Tree", but they are really B+ Trees, these are just specialized for the catalogs and I wanted the B+ Trees used for user data to have the class name B+ Tree. These trees are implemented in B_Tree.h and B_Tree.hh
+    The three trees which are attributes of the run class are of the class called "B_Tree", but they
+     are really B+ Trees, these are just specialized for the catalogs and I wanted the B+ Trees used 
+     for user data to have the class name B+ Tree. These trees are implemented in B_Tree.h and B_Tree.hh
 */
 
 #include "Catalog/Syst_Attr.h"

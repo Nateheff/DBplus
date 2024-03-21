@@ -3,9 +3,12 @@
 /*
     run()
 
-    This function does all the prep and setup when the program is initially ran. It open databases.txt which is our system's very groteque method of keeping track of user databases. 
-    If the user has a database, the function will print out all their databases and they can choose to work in a preexisting database or create a new one.
-    If the user has no previous databases (most likely this is their first time running the program), the function will create all of the necessary catalog files.
+    This function does all the prep and setup when the program is initially ran. It open databases.txt 
+    which is our system's very groteque method of keeping track of user databases. 
+    If the user has a database, the function will print out all their databases and they can choose 
+    to work in a preexisting database or create a new one.
+    If the user has no previous databases (most likely this is their first time running the program), 
+    the function will create all of the necessary catalog files.
 */
 bool Run::run(){
     std::fstream fs;
@@ -45,7 +48,8 @@ bool Run::run(){
 /*
     begin()
 
-    This function uses the information in catalog_ing to get the heights of each of the catalogs so that they can be searched. 
+    This function uses the information in catalog_ing to get the heights of each of the catalogs 
+    so that they can be searched. 
 */
 void Run::begin(){
     Catalog_Index catalog_ind{};
@@ -65,7 +69,9 @@ void Run::begin(){
 /*
     flush()
 
-    If the user has made any changes to any of the catalogs, the catalog will be labeled "dirty" and will be rewritten to the file overriding the old data. Otherwise, the catalog pages just go out of memory and the disk information is unchanged.
+    If the user has made any changes to any of the catalogs, the catalog will be labeled "dirty" 
+    and will be rewritten to the file overriding the old data. Otherwise, the catalog pages just 
+    go out of memory and the disk information is unchanged.
 */
 void Run::flush(){
     std::fstream fs;
