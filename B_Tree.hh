@@ -1,5 +1,47 @@
 #pragma once
 
+/*
+    B_Tree.hh
+
+    This is a BIG file with tons of information and code so to keep your sanity
+    read the descriptions below first.
+
+    calc_name: A helper function which retunrs the numerical value of the passed in string.
+    Used mainly for data rows that indexes by strings (converted to ints using this function)
+
+    search_catalog: 
+    key: The key to search the catalog for
+    num_rows: The number of rows in a leaf node
+
+    Opens the catalog file and reads in the root. 
+    Uses the height information acquired in the run() function (see run.cpp) to
+    check if the tree has any height. If it does, it searches through the tree 
+    as a B+ Tree seach algorithm should. If not, it just searches through the root.
+    Once the data row is found, it's page is read into memory and it's index is saved
+    for easy access later.
+
+    remove_catalog:
+    Same parameters as search_catalog
+    Searchs the catalog via search_catalog()
+    Once the desired row is found, the row is set to empty, and all
+    rows "above" it are moved down one. The FSM is updated to show the 
+    page now has space and if the page is empty, the FSM is alerted of this.
+    (see Disk_Space/FSM.h for info on FSM)
+
+    insert_catalog:
+    Same two parameters as search_catalog
+    row: The catalog row to be inserted
+
+    Uses search_catalog() to find location where the row should be inserted.
+    If the page where it belongs has space, then the row is inserted in order.
+    If the page is now full after this insertion, the FSM is alerted.
+    If the page where it belongs is full, the page is split and the row is then
+    inserted in the appropriate location.
+
+    search_range_catalog: This function is never used in practice.
+    See B+_Tree.cpp for full practical implementation that is used.
+
+*/
 
 template<typename T,typename S>
 uint16_t B_Tree<T,S>::calc_name(const char* arr){
@@ -11,25 +53,11 @@ uint16_t B_Tree<T,S>::calc_name(const char* arr){
 }
 
 
-
-
 template<typename T,typename S>
-void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows,std::string database){
-    
-    
-    
-        
+void B_Tree<T,S>::search_catalog(uint16_t key,uint16_t num_rows){
+       
     std::fstream fs;
-    
-    
-    
-   
     fs.open(file+".db",std::ios_base::binary | std::ios_base::out | std::ios_base::in);
-    //search through root
-    
-    
-    
-    //get pointer
     
     uint32_t offset{};
     
