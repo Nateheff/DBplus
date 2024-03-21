@@ -1,6 +1,12 @@
 #include "run.h"
 
+/*
+    run()
 
+    This function does all the prep and setup when the program is initially ran. It open databases.txt which is our system's very groteque method of keeping track of user databases. 
+    If the user has a database, the function will print out all their databases and they can choose to work in a preexisting database or create a new one.
+    If the user has no previous databases (most likely this is their first time running the program), the function will create all of the necessary catalog files.
+*/
 bool Run::run(){
     std::fstream fs;
     fs.open("databases.txt",std::ios_base::out|std::ios_base::in|std::ios_base::binary|std::ios_base::ate);
@@ -36,6 +42,11 @@ bool Run::run(){
     }
 }
 
+/*
+    begin()
+
+    This function uses the information in catalog_ing to get the heights of each of the catalogs so that they can be searched. 
+*/
 void Run::begin(){
     Catalog_Index catalog_ind{};
     catalog_ind.has_height();
@@ -50,10 +61,12 @@ void Run::begin(){
 
     
 }
+
 /*
+    flush()
 
+    If the user has made any changes to any of the catalogs, the catalog will be labeled "dirty" and will be rewritten to the file overriding the old data. Otherwise, the catalog pages just go out of memory and the disk information is unchanged.
 */
-
 void Run::flush(){
     std::fstream fs;
 
@@ -83,6 +96,10 @@ void Run::flush(){
     tree_rel.dirty = false;
     tree_ind.dirty = false;
 }
+
+/*
+    Basically the same as flush() above
+*/
 Run::~Run(){
     std::fstream fs;
 
