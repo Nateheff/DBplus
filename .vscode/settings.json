@@ -58,6 +58,20 @@
     "charconv": "cpp",
     "format": "cpp",
     "span": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "chrono": "cpp",
+    "condition_variable": "cpp",
+    "forward_list": "cpp",
+    "ratio": "cpp",
+    "future": "cpp",
+    "mutex": "cpp",
+    "thread": "cpp",
+    "buffer": "cpp",
+    "executor": "cpp",
+    "io_context": "cpp",
+    "netfwd": "cpp",
+    "socket": "cpp",
+    "semaphore": "cpp",
+    "stop_token": "cpp"
   }
 }

@@ -3,8 +3,17 @@
 #include "../Disk_Space/FSM.h"
 #include "../B+_Tree.h"
 
-bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> identifiers,Keyword_List* list,Run* obj){
-    
+std::string process_rows(std::vector<Row>rows){
+    std::string final_s;
+    for(Row row: rows){
+        std::string data(row.data.data());
+        final_s.append(data+"\n");
+    }
+    return final_s;
+}
+
+std::string receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> identifiers,Keyword_List* list,Run* obj){
+    std::vector<Row> selected;
     // for(size_t i = 0; i < full_tok.size();i++){
         switch(full_tok.at(0)){
             case(2): //create 
@@ -13,18 +22,18 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 if(full_tok.at(1)==3){//database
                     create_db(identifiers.at(0),obj);
                     std::cout<<"Creating database!"<<std::endl;
-                    return true;
+                    return "success";
                 }
                 else if(full_tok.at(1)==11){//table
                 std::string table_name = identifiers.at(0);
                 if(full_tok.at(full_tok.size()-1)!=25)//(
-                return false;
+                    return NULL;
                 std::cout<<"creating table!"<<std::endl;
                 
                 create_table(table_name,full_tok,identifiers,full_tok.size()-3,identifiers.size()-1,list,obj);
-                return true;
+                return "success";
                 }else
-                return false;
+                return NULL;
                 
 
             }
@@ -32,10 +41,10 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
             {
                 std::string table_name = identifiers.at(0);
                 if(full_tok.at(1)!= 19 || full_tok.at(2)!=24)
-                return false;
+                return "success";
                 std::cout<<"inserting "<<table_name<<std::endl;
                 insert(table_name,identifiers,obj);
-                return true;
+                return NULL;
                 
             }
             case(10)://select
@@ -49,15 +58,15 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 if(full_tok.at(1)==20 && full_tok.at(2)==5){
                     table_name = identifiers.at(0);
                     if(full_tok.size()==3){
-                    select(table_name,obj,identifiers);
-                    return true;
+                    selected = select(table_name,obj,identifiers);
+                    break;
                     }
                     else if(full_tok.at(3)==13){
                         if(full_tok.at(full_tok.size()-1)!=8)
-                        select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2));
+                        selected = select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2));
                         else
-                        select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2),identifiers.at(3));
-                        return true;
+                        selected = select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2),identifiers.at(3));
+                        break;
                     }
                 }
                 
@@ -67,19 +76,21 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                         table_name = identifiers.at(identifiers.size()-3);
                         
                         if(full_tok.at(full_tok.size()-1)!=8)
-                        select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2));
+                        selected = select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2));
                         else
-                        select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2),identifiers.at(3));
-                        return true;
+                        selected = select_all(table_name,obj,identifiers.at(1),full_tok.at(4),identifiers.at(2),identifiers.at(3));
+                        break;
                     }
                     else if(full_tok.size()==2){
                         table_name = identifiers.at(identifiers.size()-1);
-                        select(table_name,obj,identifiers);
-                        return true;
+                        selected = select(table_name,obj,identifiers);
+                        break;
                     }
 
                 }
-                return false;
+                if(selected.size() > 0)
+                    return process_rows(selected);
+                return NULL;
                 // std::cout<<"change"<<std::endl;
                 // select(false,identifiers.at(0),identifiers.at(1),obj);
                 /*
@@ -123,13 +134,13 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 if(full_tok.at(1)==3){
                 drop_db(identifiers.at(0),obj); //FOR DATABSE
                 std::cout<<"dropping db"<<std::endl;
-                return true;
+                return "success";
                 }else if(full_tok.at(1)==11){
                 drop_table(identifiers.at(0),obj); //FOR TABLE
-                std::cout<<"dropping table"<<std::endl;
-                return true;
+                std::cout<<"success"<<std::endl;
+                return " ";
                 }else
-                return false;
+                return NULL;
             }
             case(16):
             {
@@ -142,7 +153,7 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
                 break;
                 };
                 if(full_tok.at(1)!=5 || full_tok.at(2)!=13)
-                return false;
+                return NULL;
                 
 
                 
@@ -155,21 +166,21 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
             case(17):
             {
                 if(full_tok.at(1)!=9)
-                return false;
+                return NULL;
                 
                 if((std::find(full_tok.cbegin(),full_tok.cend(),13))==full_tok.cend()){
                 update_all(identifiers.at(0),obj,identifiers);
                 std::cout<<"updating all rows"<<std::endl;
-                return true;
+                return "success";
                 }
                 if(full_tok.at(full_tok.size()-1)!=8){
                 identifiers.erase(identifiers.cbegin()+identifiers.size()-2,identifiers.cend()-1);
                 update(identifiers.at(0),obj,identifiers,full_tok.at(full_tok.size()-1),identifiers.at(identifiers.size()-1));
-                return true;
+                return "success";
                 }else{
                     identifiers.erase(identifiers.cbegin()+identifiers.size()-3,identifiers.cend()-2);
                 update(identifiers.at(0),obj,identifiers,full_tok.at(full_tok.size()-2),identifiers.at(identifiers.size()-2),identifiers.at(identifiers.size()-1));
-                return true;
+                return "success";
                 }
                 // if(identifiers.size() <=5){
                 //     std::string key_column = identifiers.at(3);
@@ -190,5 +201,5 @@ bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> ident
             
         // }
     }
-    return true;
+    return "success";
 };

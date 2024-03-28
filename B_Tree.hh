@@ -6,8 +6,8 @@
     This is a BIG file with tons of information and code so to keep your sanity
     read the descriptions below first.
 
-    calc_name: A helper function which retunrs the numerical value of the passed in string.
-    Used mainly for data rows that indexes by strings (converted to ints using this function)
+    calc_name: A helper function which returns the numerical value of the passed in string.
+    Used mainly for data rows that are indexed by strings (converted to ints using this function)
 
     search_catalog: 
     key: The key to search the catalog for
@@ -25,7 +25,7 @@
     Searchs the catalog via search_catalog()
     Once the desired row is found, the row is set to empty, and all
     rows "above" it are moved down one. The FSM is updated to show the 
-    page now has space and if the page is empty, the FSM is alerted of this.
+    page now has space and if the page is now empty, the FSM is alerted of this.
     (see Disk_Space/FSM.h for info on FSM)
 
     insert_catalog:

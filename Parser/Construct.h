@@ -10,4 +10,5 @@
 #include "../Lexer/list.h"
 
 
-bool receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> identifiers,Keyword_List* list,Run* obj);
+std::string receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> identifiers,Keyword_List* list,Run* obj);
+std::string process_rows(std::vector<Row>rows);
