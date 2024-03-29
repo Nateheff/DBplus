@@ -8,6 +8,7 @@
 // #include "../run.h"
 #include "../run.h"
 #include "../Lexer/list.h"
+#include "../Nodes/Node.h"
 
 
 std::string receiver_main(std::vector<uint16_t> full_tok,std::vector<std::string> identifiers,Keyword_List* list,Run* obj);

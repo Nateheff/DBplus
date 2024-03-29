@@ -71,7 +71,7 @@ Meta_Results do_meta(std::string cmd){
 
 
 */
-
+KW_OP kw_ops;
 int main()
 {
     
@@ -110,12 +110,12 @@ int main()
     std::getline(std::cin,query);
 
     //Parses the query into tokens (see Lexer/Scanner.h)
-    Scanner test(query,&res_list,operators);
+    Scanner test(query,&kw_ops.res_list,kw_ops.operators);
     test.scanner_run();
     
 
     //Recieves parsed query in form of tokens and makes necessary function calls (see Parser/Construct.h)
-    receiver_main(test.full_tok,test.identifiers,&res_list,&obj);
+    receiver_main(test.full_tok,test.identifiers,&kw_ops.res_list,&obj);
     };
     
     //Fun little test function

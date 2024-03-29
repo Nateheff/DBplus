@@ -1,10 +1,11 @@
+#pragma once
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <stdint.h>
 #include <iostream>
 
-#include "../Parser/Construct.h"
-
+#include "../Lexer/list.h"
+#include "../run.h"
 
 #define DEFAULT_SERVER "127.0.0.1"
 #define DEFAULT_PORT "3490"
@@ -56,7 +57,8 @@ class Server{
     public:
 
     Server();
+    ~Server();
     socket_query get_query();
-    void execute_query(SOCKET* fd, Keyword_List &res_list, std::unordered_map<std::string,uint16_t>operators, std::string query, Run* obj);
+    void execute_query(SOCKET* fd, Keyword_List &res, std::unordered_map<std::string,uint16_t>operators, std::string query, Run* obj);
 };
 

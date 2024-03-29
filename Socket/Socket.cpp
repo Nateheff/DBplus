@@ -1,9 +1,11 @@
 #include "Socket.h"
 #include "../Lexer/scanner.h"
+#include "../Parser/Construct.h"
+
 
 
 Server::Server(){
-    WSAStartup(MAKEWORD(2, 2), &wsaData);
+    WSAStartup(MAKEWORD(2, 2), &wsaData); 
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
@@ -50,11 +52,20 @@ socket_query Server::get_query(){
 
 }
 
-void Server::execute_query(SOCKET* fd, Keyword_List &res_list, std::unordered_map<std::string,uint16_t>operators, std::string query, Run* obj){
-    Scanner scanner(query, &res_list, operators);
+void Server::execute_query(SOCKET* fd, Keyword_List &res, std::unordered_map<std::string,uint16_t>operators, std::string query, Run* obj){
+    Scanner scanner(query, &res, operators);
     scanner.scanner_run();
 
-    std::string response = receiver_main(scanner.full_tok, scanner.identifiers, &res_list, obj);
+    std::string response = receiver_main(scanner.full_tok, scanner.identifiers, &res, obj);
 
+    int send_conf = send(*fd, response.data(), response.length(), 0);
+    if(send_conf == -1){
+        perror("response");
+    }
+};
 
+Server::~Server(){
+    closesocket(sock);
+    closesocket(sockfd);
+    closesocket(new_fd);
 }

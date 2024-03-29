@@ -10,5 +10,5 @@ void create_db(std::string name, Run* obj){
     fs.close();
     fs.open("databases.txt",std::ios_base::in|std::ios_base::out|std::ios_base::app);
     fs << name+" ";
-    fs.close();
+    fs.close(); 
 }
