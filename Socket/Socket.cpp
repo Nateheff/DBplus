@@ -16,9 +16,6 @@ Server::Server(){
     SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-}
-
-socket_query Server::get_query(){
 
     if(bind(sockfd, res->ai_addr, res->ai_addrlen)==-1){
         closesocket(sockfd);
@@ -29,15 +26,21 @@ socket_query Server::get_query(){
         perror("listen");
         exit(1);
     }
-
-    
+}
+SOCKET Server::get_connection(){
     addr_size = sizeof(their_addr);
-
+    std::cout<<"in query"<<std::endl;
     new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
     if(new_fd == -1){
         perror("accept");
     }
 
+    return new_fd;
+}
+
+std::string Server::get_query(SOCKET* fd){
+
+    
     char buff[4096];
     int buff_len = recv(new_fd, buff, 4096, 0);
     if(buff_len == -1){
@@ -45,10 +48,8 @@ socket_query Server::get_query(){
     }
 
     std::string query(buff);
-    socket_query output;
-    output.query = query;
-    output.current_socket = new_fd;
-    return output;
+    
+    return query;
 
 }
 

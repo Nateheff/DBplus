@@ -231,13 +231,13 @@ std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint
     off+=attr.check;
     }
     std::cout<<"\n"<<std::endl;
-    char y_n{};
-    if(tree.info.rows.size()>100){
-        std::cout<<"Do you want to print out "<<tree.info.rows.size()<<" rows? (Y/N): ";
-        std::cin >> y_n;
-        std::cin.ignore();
-    }
-    if(y_n == 'y' || y_n == 'Y'||y_n == '\0'){
+    // char y_n{};
+    // if(tree.info.rows.size()>100){
+    //     std::cout<<"Do you want to print out "<<tree.info.rows.size()<<" rows? (Y/N): ";
+    //     std::cin >> y_n;
+    //     std::cin.ignore();
+    // }
+    // if(y_n == 'y' || y_n == 'Y'||y_n == '\0'){
     for(size_t i = 0; i<tree.info.rows.size();i++){
         for(size_t j = 0; j<obj->tree_attr.rows.size();j++){
             
@@ -292,7 +292,7 @@ std::vector<Row> select_all(std::string table_name,Run*obj,std::string attr,uint
         }
         }
         std::cout<<std::endl;
-    }
+    // }
     std::cout<<std::endl;
     }
     return tree.info.rows;

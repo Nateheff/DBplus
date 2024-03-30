@@ -58,7 +58,8 @@ class Server{
 
     Server();
     ~Server();
-    socket_query get_query();
+    std::string get_query(SOCKET* fd);
+    SOCKET get_connection();
     void execute_query(SOCKET* fd, Keyword_List &res, std::unordered_map<std::string,uint16_t>operators, std::string query, Run* obj);
 };
 

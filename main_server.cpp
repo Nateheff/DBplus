@@ -18,8 +18,13 @@ int main()
         
         Server server;
         while(true){
-            socket_query info = server.get_query();
-            server.execute_query(&info.current_socket, kw_ops.res_list, kw_ops.operators, info.query, &obj);
+            SOCKET new_fd = server.get_connection();
+            while(new_fd){
+                std::string info = server.get_query(&new_fd);
+                if(info.length() == 0)
+                    break;
+                server.execute_query(&new_fd, kw_ops.res_list, kw_ops.operators, info, &obj);
+            }
         }
 
     }catch(std::string val){
