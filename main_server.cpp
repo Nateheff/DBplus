@@ -7,6 +7,7 @@ KW_OP kw_ops;
 int main()
 {
     try{
+        //Check out run.h & run.cpp for docs on this
         Run obj;
         obj.run();
         obj.tree_rel.search_catalog(1141,28);
@@ -16,6 +17,7 @@ int main()
         obj.tree_rel.search_catalog(1269,28);
         obj.tree_attr.rel = obj.tree_rel.info.rel.rows[obj.tree_rel.info.index];
         
+        //Server class is defined in Socket/Socket.h
         Server server;
         while(true){
             SOCKET new_fd = server.get_connection();

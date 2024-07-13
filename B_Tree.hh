@@ -43,6 +43,23 @@
 
 */
 
+/*
+
+FIXES / IMRPOVEMENTS TO BE IMPLEMENTED:
+
+GLOBAL VARIABLES:
+
+Root Node Size : 512 (Explain why you use 511 in all the loops)
+Root Node Size / 2: 256
+Node Bytes: 4096
+
+BINARY SEARCH
+
+~line 360 explain why you multiply by .66 (its because most leaf nodes in a B+ tree are 
+roughly 2/3 full)
+
+*/
+
 template<typename T,typename S>
 uint16_t B_Tree<T,S>::calc_name(const char* arr){
     uint16_t name{};

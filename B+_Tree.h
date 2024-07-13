@@ -8,6 +8,18 @@
 #include "Nodes/Node.h"
 #include "Catalog/Syst_Root.h"
 
+/*
+B+_Tree.h
+
+This is the definition of the B+ trees which we use to store users' data. This implementation
+is similar to the trees in B_Tree.h, but since user data can be of any type, size, or length,
+we have to account for this in our B+ Tree operations.
+
+Info
+
+A helper strcuture that holds the key information for the database.
+*/
+
 struct Info{
     uint16_t index{};
     uint16_t index_root{};

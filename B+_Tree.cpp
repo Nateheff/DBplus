@@ -1,5 +1,21 @@
 #include "B+_Tree.h"
 
+/*
+
+FIXES / IMRPOVEMENTS TO BE IMPLEMENTED:
+
+GLOBAL VARIABLES:
+
+Root Node Size : 512 (Explain why you use 511 in all the loops)
+Root Node Size / 2: 256
+Node Bytes: 4096
+
+BINARY SEARCH
+
+~line 410 explain why you multiply by .66 (its because most leaf nodes in a B+ tree are 
+roughly 2/3 full)
+
+*/
 
 
 void Bp_Tree::search(uint32_t key,uint16_t num_rows, uint16_t row_size){
