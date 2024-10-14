@@ -27,10 +27,6 @@
 #include "Socket/Socket.h"
 #include "Lexer/list.h"
 
-#define SIZE_NAME_COLUMN 10
-#define NUM_MEASUREMENTS 1
-#define SIZE_PAGE 
-
 /*
     main()
     I know...it's not pretty, but it works and serves it's purpose. The function itself pretty much
